@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
@@ -31,8 +31,73 @@
     <section id="review-section">
       <div class="review-card">
         <h3>🔄 오늘의 질문</h3>
-        <p>"과거의 결핍을 강점으로 만들겠다던 다짐, 잘 지켜지고 있나요?"</p>
+        <p id="daily-question">
+          "과거의 결핍을 강점으로 만들겠다던 다짐, 잘 지켜지고 있나요?"
+        </p>
+      </div>
+
+      <div class="review-input-wrapper">
+        <textarea
+          id="review-answer"
+          rows="10"
+          placeholder="여기에 답변을 남겨 카드에 기록하세요..."
+        ></textarea>
+        <button id="save-review-btn" class="icon-btn">
+          <i class="fas fa-paper-plane"></i>
+        </button>
       </div>
     </section>
+
+    <main>
+      <div class="controls">
+        <select id="filter-type">
+          <option value="all">모든 기록 (All)</option>
+          <option value="book">Book</option>
+          <option value="article">Article</option>
+        </select>
+      </div>
+
+      <!-- is this just a sample template? because otherwise I would need to input all these data everytime -->
+      <div id="card-grid" class="masonry-grid">
+        <div class="card type-book">
+          <div class="card-header">
+            <span class="tag">비문학 - IT</span>
+            <span class="date">2025-10-01</span>
+          </div>
+
+          <div class="card-body">
+            <h2 class="card-title">Moral AI (도덕적인 AI)</h2>
+            <p class="card-author">Walter Sinnott-Armstrong 외</p>
+
+            <div class="section">
+              <h4>📌 Fact</h4>
+              <p>AI의 도덕적 한계는 결국 인간의 미성숙함에서 비롯된다.</p>
+            </div>
+
+            <div class="section">
+              <h4>🪞 Insight</h4>
+              <p>
+                AI의 결함에서 나를 보았다. 지식만 쫒던 나의 공허함은 내면의 윤리
+                부재 탓이었다.
+              </p>
+            </div>
+
+            <div class="section action-section">
+              <h4>✅ Action</h4>
+              <p>AI에게 묻기 전, 스스로에게 먼저 질문하고 비판하기.</p>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="discussion-topic">
+              <strong>💬 Discussion:</strong>
+              <p>부모님 세대가 느끼는 AI 공포감에 대해 어떻게 생각하는가?</p>
+            </div>
+            <div class="card-actions">
+              <button class="btn-text">More Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
   </body>
 </html>
