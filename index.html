@@ -1,9 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Insight Bridge: 사고의 확장과 연결</title>
+    <title>인사이트 덱 (Insight Deck)</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,7 +17,6 @@
     />
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
     <link rel="stylesheet" href="style.css" />
 
     <script>
@@ -30,20 +29,20 @@
             },
             colors: {
               primary: {
-                DEFAULT: "#3E5C53", // 로고/강조색
+                DEFAULT: "#3E5C53",
                 light: "#5B7C72",
                 dark: "#2A4039",
               },
               accent: {
-                classic: "#B38F64", // 고전 (금색)
-                news: "#7D8FA1", // 신문 (회청색)
-                nonfiction: "#648F73", // 비문학 (녹색)
-                dialogue: "#9A7D64", // 대화 로그 (브라운)
-                action: "#3E5C53", // 실천 과제
+                fiction: "#B38F64", // (변경) 고전 -> 문학/Fiction
+                news: "#7D8FA1",
+                nonfiction: "#648F73",
+                dialogue: "#9A7D64",
+                action: "#3E5C53",
               },
               background: {
-                DEFAULT: "#F5F3F0", // 베이지 배경
-                card: "#FFFFFF", // 카드 배경
+                DEFAULT: "#F5F3F0",
+                card: "#FFFFFF",
                 hover: "#F9F8F6",
                 section: "#EFECE8",
               },
@@ -59,7 +58,7 @@
       };
     </script>
   </head>
-  <body class="font-sans">
+  <body class="font-sans text-text-main">
     <header
       class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-border px-6 lg:px-8 py-4 flex items-center justify-between shadow-sm"
     >
@@ -75,7 +74,7 @@
           <h1
             class="font-black text-xl tracking-tight text-text-main leading-tight"
           >
-            Insight Deck
+            인사이트 덱 (Insight Deck)
           </h1>
           <p class="text-xs text-text-sub font-bold tracking-wider uppercase">
             위기지학(爲己之學): 나를 위한 공부
@@ -110,6 +109,7 @@
           />
         </div>
         <button
+          id="new-insight-btn"
           class="btn-primary flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-primary-dark transition-all shadow-sm active:scale-[0.98]"
         >
           <span class="material-symbols-outlined !text-[20px]">add_circle</span>
@@ -123,7 +123,8 @@
           >
         </button>
         <div
-          class="size-9 rounded-full bg-accent-classic/20 border-2 border-white shadow-sm overflow-hidden"
+          class="size-9 rounded-full bg-accent-fiction/20 border-2 border-white shadow-sm overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+          title="Lisa님의 프로필 (클릭하여 설정)"
         >
           <img
             src="https://api.dicebear.com/7.x/initials/svg?seed=Lisa&backgroundColor=B38F64&textColor=ffffff"
@@ -142,7 +143,7 @@
           class="bg-white rounded-3xl p-6 border border-border shadow-sm"
         >
           <div class="flex items-center justify-between mb-5">
-            <h2 class="font-black text-lg">Intellectual Map</h2>
+            <h2 class="font-black text-lg">나의 지식 지도 (Map)</h2>
             <span
               class="material-symbols-outlined text-text-muted cursor-pointer hover:text-primary"
               >bubble_chart</span
@@ -152,15 +153,16 @@
             class="h-4 w-full rounded-full bg-background-section overflow-hidden flex mb-4"
           >
             <div class="h-full bg-accent-nonfiction" style="width: 50%"></div>
-            <div class="h-full bg-accent-news" style="width: 50%"></div>
+            <div class="h-full bg-accent-news" style="width: 30%"></div>
+            <div class="h-full bg-accent-fiction" style="width: 20%"></div>
           </div>
-          <div class="grid grid-cols-2 gap-2 text-center mb-6">
+          <div class="grid grid-cols-3 gap-2 text-center mb-6">
             <div class="flex flex-col items-center">
               <div class="flex items-center gap-1.5 mb-1">
                 <span class="size-2 rounded-full bg-accent-nonfiction"></span>
                 <span
                   class="text-[10px] font-bold text-text-sub uppercase tracking-wider"
-                  >Non-Fiction</span
+                  >Non-Fi</span
                 >
               </div>
               <span class="text-sm font-black text-accent-nonfiction">50%</span>
@@ -170,10 +172,20 @@
                 <span class="size-2 rounded-full bg-accent-news"></span>
                 <span
                   class="text-[10px] font-bold text-text-sub uppercase tracking-wider"
-                  >Article</span
+                  >News</span
                 >
               </div>
-              <span class="text-sm font-black text-accent-news">50%</span>
+              <span class="text-sm font-black text-accent-news">30%</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="size-2 rounded-full bg-accent-fiction"></span>
+                <span
+                  class="text-[10px] font-bold text-text-sub uppercase tracking-wider"
+                  >Fiction</span
+                >
+              </div>
+              <span class="text-sm font-black text-accent-fiction">20%</span>
             </div>
           </div>
           <div class="grid grid-cols-3 gap-4 border-t border-border pt-5">
@@ -193,7 +205,7 @@
               >
               <span
                 class="text-[10px] font-bold text-text-muted uppercase tracking-wider"
-                >Discussions</span
+                >Hub</span
               >
             </div>
             <div class="text-center">
@@ -203,7 +215,7 @@
               >
               <span
                 class="text-[10px] font-bold text-text-muted uppercase tracking-wider"
-                >Total Hub</span
+                >Total</span
               >
             </div>
           </div>
@@ -222,17 +234,17 @@
             <button
               class="px-4 py-2 rounded-full bg-primary text-white text-sm font-bold shadow-sm"
             >
-              전체 보기
+              All
             </button>
             <button
               class="px-4 py-2 rounded-full bg-white border border-border text-text-sub text-sm font-bold hover:bg-background-hover hover:text-primary transition-all"
             >
-              비문학
+              Non-Fiction
             </button>
             <button
               class="px-4 py-2 rounded-full bg-white border border-border text-text-sub text-sm font-bold hover:bg-background-hover hover:text-primary transition-all"
             >
-              신문기사
+              Fiction
             </button>
           </div>
         </section>
@@ -250,139 +262,9 @@
             <span
               id="count-ready"
               class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full"
-              >2</span
+              >0</span
             >
           </div>
-
-          <article
-            class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
-          >
-            <div class="flex justify-between items-start mb-3">
-              <div
-                class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-news/10 text-accent-news text-[10px] font-black uppercase tracking-wider"
-              >
-                <span class="material-symbols-outlined !text-[14px]"
-                  >newspaper</span
-                >
-                신문기사 - 심리학
-              </div>
-              <span class="text-[10px] font-bold text-text-muted"
-                >Sep 2025</span
-              >
-            </div>
-            <h4
-              class="font-bold text-lg leading-snug mb-3 serif group-hover:text-primary transition-colors"
-            >
-              친애하는 나의 결함에게
-            </h4>
-            <p class="text-sm text-text-sub font-medium leading-relaxed mb-4">
-              "누구나 결함을 가지고 있다. 이를 어떻게 생각하고 어떻게
-              사용하는지에 따라 삶이 달라진다."
-            </p>
-
-            <div class="bg-background-section/50 p-4 rounded-xl mb-4">
-              <h5
-                class="text-xs font-bold text-accent-dialogue mb-2 flex items-center gap-1.5 uppercase tracking-wider"
-              >
-                <span class="material-symbols-outlined !text-[16px]"
-                  >psychology_alt</span
-                >
-                자기 투영 (Reflect)
-              </h5>
-              <p
-                class="text-xs text-text-main leading-relaxed font-medium line-clamp-3"
-              >
-                나는 결함을 없애야 할 적으로만 여겼다. 하지만 상담가로서
-                타인에게 했던 말과 나의 행동의 모순을 깨달았다. 결핍은 나를
-                나답게 만드는 원동력이다.
-              </p>
-            </div>
-
-            <div
-              class="bg-accent-dialogue/10 p-3 rounded-xl mb-4 border border-accent-dialogue/20"
-            >
-              <h5
-                class="text-[10px] font-bold text-accent-dialogue mb-1 uppercase"
-              >
-                💬 Discussion Topic
-              </h5>
-              <p class="text-xs text-text-main font-bold">
-                "당신의 결핍은 무엇인가? 그리고 그 결핍을 당신은 어떻게 사용하고
-                있는가?"
-              </p>
-            </div>
-
-            <button
-              class="w-full py-2.5 rounded-xl border border-dashed border-border text-text-sub text-xs font-bold flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary-light hover:text-primary transition-all"
-            >
-              <span class="material-symbols-outlined !text-[18px]"
-                >chat_add_on</span
-              >
-              가족 대화 로그 추가
-            </button>
-          </article>
-
-          <article
-            class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
-          >
-            <div class="flex justify-between items-start mb-3">
-              <div
-                class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-nonfiction/10 text-accent-nonfiction text-[10px] font-black uppercase tracking-wider"
-              >
-                <span class="material-symbols-outlined !text-[14px]"
-                  >menu_book</span
-                >
-                비문학 - IT
-              </div>
-              <span class="text-[10px] font-bold text-text-muted"
-                >Oct 2025</span
-              >
-            </div>
-            <h4
-              class="font-bold text-lg leading-snug mb-3 serif group-hover:text-primary transition-colors"
-            >
-              Moral AI (도덕적인 AI)
-            </h4>
-            <p class="text-sm text-text-sub font-medium leading-relaxed mb-4">
-              "AI의 도덕적 한계는 결국 인간의 도덕적 미성숙함에서 비롯된다."
-            </p>
-
-            <div class="bg-accent-action/10 p-4 rounded-xl mb-4">
-              <h5
-                class="text-xs font-bold text-accent-action mb-2 flex items-center gap-1.5 uppercase tracking-wider"
-              >
-                <span class="material-symbols-outlined !text-[16px]">bolt</span>
-                실천 과제 (Action)
-              </h5>
-              <p class="text-xs text-text-main leading-relaxed font-medium">
-                AI에게 질문하기 전, 나 스스로에게 끝없이 질문하며 비판하는
-                훈련을 할 것. 나의 도덕적 미성숙을 먼저 성찰하자.
-              </p>
-            </div>
-
-            <div
-              class="bg-accent-dialogue/10 p-3 rounded-xl mb-4 border border-accent-dialogue/20"
-            >
-              <h5
-                class="text-[10px] font-bold text-accent-dialogue mb-1 uppercase"
-              >
-                💬 Discussion Topic
-              </h5>
-              <p class="text-xs text-text-main font-bold">
-                "우리는 점점 AI에게 의존하는 사회가 되고 있다. 부모님 세대가
-                느끼는 공포감에 대해 어떻게 생각하는가?"
-              </p>
-            </div>
-
-            <button
-              class="w-full py-2.5 rounded-xl border border-dashed border-border text-text-sub text-xs font-bold flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary-light hover:text-primary transition-all"
-            >
-              <span class="material-symbols-outlined !text-[18px]"
-                >chat_add_on</span
-              >
-              가족 대화 로그 추가
-            </button>
-          </article>
         </section>
 
         <section id="zone-logged" class="space-y-5">
@@ -397,18 +279,6 @@
               >0</span
             >
           </div>
-
-          <div
-            class="border-2 border-dashed border-border rounded-2xl p-8 text-center"
-          >
-            <span
-              class="material-symbols-outlined text-border !text-[40px] mb-2"
-              >forum</span
-            >
-            <p class="text-xs text-text-sub font-bold">
-              아직 대화 기록이 없습니다.<br />가족과 토론 후 기록을 남겨보세요.
-            </p>
-          </div>
         </section>
 
         <section id="zone-internalized" class="space-y-5">
@@ -422,18 +292,6 @@
               class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full"
               >0</span
             >
-          </div>
-
-          <div
-            class="border-2 border-dashed border-border rounded-2xl p-8 text-center"
-          >
-            <span
-              class="material-symbols-outlined text-border !text-[40px] mb-2"
-              >check_circle</span
-            >
-            <p class="text-xs text-text-sub font-bold">
-              완전히 내면화된 인사이트가<br />이곳에 쌓이게 됩니다.
-            </p>
           </div>
         </section>
       </div>
@@ -450,16 +308,195 @@
           <span class="font-black text-sm tracking-tight">Insight Deck</span>
         </div>
         <p class="text-xs text-text-muted font-medium">
-          © 2026 Insight Deck. 기록을 넘어 성찰과 연결로.
+          © 2026 Insight Deck. 위기지학의 실천.
         </p>
-        <div
-          class="flex items-center gap-6 text-xs font-bold text-text-sub uppercase tracking-wider"
-        >
-          <a href="#" class="hover:text-primary transition-colors">Guide</a>
-          <a href="#" class="hover:text-primary transition-colors">Privacy</a>
-        </div>
       </div>
     </footer>
+
+    <div
+      id="write-modal"
+      class="fixed inset-0 z-[100] hidden"
+      aria-labelledby="modal-title"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+      ></div>
+      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div
+          class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+        >
+          <div
+            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
+          >
+            <div
+              class="bg-primary px-4 py-3 sm:px-6 flex justify-between items-center"
+            >
+              <h3 class="text-base font-bold leading-6 text-white">
+                New Insight 기록하기
+              </h3>
+              <button
+                type="button"
+                id="close-modal-btn"
+                class="text-white hover:text-gray-200"
+              >
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <form id="insight-form" class="px-4 py-5 sm:p-6 space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-text-sub mb-1"
+                    >Category</label
+                  >
+                  <select
+                    id="input-category"
+                    class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary bg-background-section"
+                  >
+                    <option value="news">신문기사</option>
+                    <option value="fiction">문학 (Fiction)</option>
+                    <option value="nonfiction">비문학 (Non-fiction)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-text-sub mb-1"
+                    >Date</label
+                  >
+                  <input
+                    type="text"
+                    id="input-date"
+                    placeholder="Ex) Jan 2026"
+                    class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-text-sub mb-1"
+                  >Title</label
+                >
+                <input
+                  type="text"
+                  id="input-title"
+                  required
+                  class="w-full rounded-lg border-border text-sm font-bold focus:border-primary focus:ring-primary"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-text-sub mb-1"
+                  >Core Message (Fact)</label
+                >
+                <textarea
+                  id="input-content"
+                  rows="3"
+                  required
+                  class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary resize-none"
+                ></textarea>
+              </div>
+              <div class="pt-2">
+                <button
+                  type="submit"
+                  class="w-full rounded-full bg-primary px-3 py-3 text-sm font-bold text-white hover:bg-primary-dark transition-all"
+                >
+                  기록 저장하기
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="log-type-modal"
+      class="fixed inset-0 z-[110] hidden"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+        onclick="closeLogModal()"
+      ></div>
+      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div
+          class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+        >
+          <div
+            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm"
+          >
+            <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+              <h3 class="text-lg font-black leading-6 text-text-main mb-4">
+                어떤 로그를 추가할까요?
+              </h3>
+              <div class="space-y-3">
+                <button
+                  onclick="selectLogType('reflect')"
+                  class="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-accent-dialogue/10 hover:border-accent-dialogue transition-all group"
+                >
+                  <span
+                    class="material-symbols-outlined text-accent-dialogue group-hover:scale-110 transition-transform"
+                    >psychology_alt</span
+                  >
+                  <div class="text-left">
+                    <p class="text-sm font-bold text-text-main">자기 투영</p>
+                    <p class="text-[10px] text-text-sub">Reflect</p>
+                  </div>
+                </button>
+                <button
+                  onclick="selectLogType('action')"
+                  class="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-accent-action/10 hover:border-accent-action transition-all group"
+                >
+                  <span
+                    class="material-symbols-outlined text-accent-action group-hover:scale-110 transition-transform"
+                    >bolt</span
+                  >
+                  <div class="text-left">
+                    <p class="text-sm font-bold text-text-main">실천 과제</p>
+                    <p class="text-[10px] text-text-sub">Action Item</p>
+                  </div>
+                </button>
+                <button
+                  onclick="selectLogType('dialogue')"
+                  class="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-primary/10 hover:border-primary transition-all group"
+                >
+                  <span
+                    class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform"
+                    >forum</span
+                  >
+                  <div class="text-left">
+                    <p class="text-sm font-bold text-text-main">대화 로그</p>
+                    <p class="text-[10px] text-text-sub">Dialogue Log</p>
+                  </div>
+                </button>
+                <button
+                  onclick="selectLogType('topic')"
+                  class="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-accent-news/10 hover:border-accent-news transition-all group"
+                >
+                  <span
+                    class="material-symbols-outlined text-accent-news group-hover:scale-110 transition-transform"
+                    >chat_bubble</span
+                  >
+                  <div class="text-left">
+                    <p class="text-sm font-bold text-text-main">토론 주제</p>
+                    <p class="text-[10px] text-text-sub">Discussion Topic</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+              <button
+                type="button"
+                onclick="closeLogModal()"
+                class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="script.js"></script>
   </body>
 </html>
