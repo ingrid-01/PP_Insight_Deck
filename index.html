@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
@@ -149,13 +149,27 @@
               >bubble_chart</span
             >
           </div>
+
           <div
             class="h-4 w-full rounded-full bg-background-section overflow-hidden flex mb-4"
           >
-            <div class="h-full bg-accent-nonfiction" style="width: 50%"></div>
-            <div class="h-full bg-accent-news" style="width: 30%"></div>
-            <div class="h-full bg-accent-fiction" style="width: 20%"></div>
+            <div
+              class="h-full bg-accent-nonfiction"
+              style="width: 50%"
+              title="비문학"
+            ></div>
+            <div
+              class="h-full bg-accent-news"
+              style="width: 50%"
+              title="신문기사"
+            ></div>
+            <div
+              class="h-full bg-accent-fiction"
+              style="width: 0%"
+              title="문학"
+            ></div>
           </div>
+
           <div class="grid grid-cols-3 gap-2 text-center mb-6">
             <div class="flex flex-col items-center">
               <div class="flex items-center gap-1.5 mb-1">
@@ -175,9 +189,9 @@
                   >News</span
                 >
               </div>
-              <span class="text-sm font-black text-accent-news">30%</span>
+              <span class="text-sm font-black text-accent-news">50%</span>
             </div>
-            <div class="flex flex-col items-center">
+            <div class="flex flex-col items-center opacity-50">
               <div class="flex items-center gap-1.5 mb-1">
                 <span class="size-2 rounded-full bg-accent-fiction"></span>
                 <span
@@ -185,9 +199,10 @@
                   >Fiction</span
                 >
               </div>
-              <span class="text-sm font-black text-accent-fiction">20%</span>
+              <span class="text-sm font-black text-text-muted">0%</span>
             </div>
           </div>
+
           <div class="grid grid-cols-3 gap-4 border-t border-border pt-5">
             <div class="text-center">
               <span class="block font-black text-2xl text-primary leading-tight"
@@ -220,7 +235,6 @@
             </div>
           </div>
         </section>
-
         <section>
           <h3
             class="font-bold text-sm text-text-sub mb-4 uppercase tracking-wider flex items-center gap-2"
@@ -232,19 +246,32 @@
           </h3>
           <div class="flex flex-wrap gap-2.5">
             <button
-              class="px-4 py-2 rounded-full bg-primary text-white text-sm font-bold shadow-sm"
+              id="filter-all"
+              onclick="setFilter('all')"
+              class="px-4 py-2 rounded-full bg-primary text-white text-sm font-bold shadow-sm hover:bg-primary-dark transition-all"
             >
               All
             </button>
             <button
+              id="filter-nonfiction"
+              onclick="setFilter('nonfiction')"
               class="px-4 py-2 rounded-full bg-white border border-border text-text-sub text-sm font-bold hover:bg-background-hover hover:text-primary transition-all"
             >
-              Non-Fiction
+              비문학
             </button>
             <button
+              id="filter-news"
+              onclick="setFilter('news')"
               class="px-4 py-2 rounded-full bg-white border border-border text-text-sub text-sm font-bold hover:bg-background-hover hover:text-primary transition-all"
             >
-              Fiction
+              신문기사
+            </button>
+            <button
+              id="filter-fiction"
+              onclick="setFilter('fiction')"
+              class="px-4 py-2 rounded-full bg-white border border-border text-text-sub text-sm font-bold hover:bg-background-hover hover:text-primary transition-all"
+            >
+              문학
             </button>
           </div>
         </section>
@@ -483,11 +510,102 @@
                 </button>
               </div>
             </div>
-            <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+            <div
+              class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6"
+            >
               <button
                 type="button"
                 onclick="closeLogModal()"
                 class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      id="rich-input-modal"
+      class="fixed inset-0 z-[120] hidden"
+      aria-labelledby="modal-title"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity backdrop-blur-sm"
+      ></div>
+
+      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div
+          class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+        >
+          <div
+            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-border"
+          >
+            <div
+              class="bg-white px-4 py-4 sm:px-6 border-b border-border flex justify-between items-center"
+            >
+              <div>
+                <h3
+                  class="text-lg font-black leading-6 text-text-main flex items-center gap-2"
+                  id="rich-modal-title"
+                ></h3>
+              </div>
+              <button
+                type="button"
+                onclick="closeRichInputModal()"
+                class="text-text-sub hover:text-text-main transition-colors"
+              >
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div class="px-6 py-6 bg-[#F9FAFB]">
+              <p
+                id="rich-modal-desc"
+                class="text-sm text-text-sub mb-4 font-medium"
+              ></p>
+
+              <div
+                id="input-container"
+                class="flex flex-col gap-4 rounded-xl bg-white border border-[#d1d5db] p-1 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary shadow-sm transition-all"
+              >
+                <textarea
+                  id="rich-input-field"
+                  class="w-full min-h-[140px] resize-none border-none bg-transparent p-4 text-text-main placeholder:text-[#9ca3af] focus:ring-0 text-base leading-relaxed"
+                  placeholder="내용을 입력하세요..."
+                ></textarea>
+              </div>
+
+              <div class="mt-4 flex items-center gap-2">
+                <span
+                  class="material-symbols-outlined text-[#9ca3af] text-[18px]"
+                  >sell</span
+                >
+                <input
+                  type="text"
+                  placeholder="관련 태그 추가 (쉼표로 구분)"
+                  class="w-full bg-transparent border-none text-sm text-text-main placeholder:text-[#9ca3af] focus:ring-0 p-0"
+                />
+              </div>
+            </div>
+
+            <div
+              class="bg-white px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6 border-t border-border"
+            >
+              <button
+                type="button"
+                onclick="saveRichInput()"
+                class="inline-flex w-full justify-center rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-primary-light sm:ml-3 sm:w-auto transition-all flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-[18px]">save</span>
+                기록 저장
+              </button>
+              <button
+                type="button"
+                onclick="closeRichInputModal()"
+                class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-3 text-sm font-bold text-text-sub shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all"
               >
                 취소
               </button>
