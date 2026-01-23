@@ -347,5 +347,44 @@ function saveRichInput() {
   }
 }
 
+/* =========================================
+   6. 알림(Notification) 시스템 - 드롭다운 방식
+   ========================================= */
+const notiBtn = document.getElementById("notification-btn");
+const notiBadge = document.getElementById("notification-badge");
+const notiDropdown = document.getElementById("notification-dropdown");
+
+// (1) 알림 도착 시뮬레이션 (2초 뒤 빨간 불 켜짐)
+setTimeout(() => {
+  notiBadge.classList.remove("hidden");
+  document.title = "(1) Insight Deck";
+}, 2000);
+
+// (2) 버튼 클릭 시 드롭다운 토글 (Toggle)
+notiBtn.addEventListener("click", (e) => {
+  e.stopPropagation(); // 클릭 이벤트가 부모로 전파되는 것 방지
+  const isHidden = notiDropdown.classList.contains("hidden");
+
+  if (isHidden) {
+    // 메뉴 열기
+    notiDropdown.classList.remove("hidden");
+
+    // 빨간 배지 없애기 (확인했으니까)
+    notiBadge.classList.add("hidden");
+    document.title = "인사이트 덱 (Insight Deck)";
+  } else {
+    // 메뉴 닫기
+    notiDropdown.classList.add("hidden");
+  }
+});
+
+// (3) 화면의 다른 곳을 클릭하면 메뉴 닫기 (UX 필수 기능)
+document.addEventListener("click", (e) => {
+  // 클릭한 곳이 버튼도 아니고, 드롭다운 메뉴 내부도 아니라면 닫음
+  if (!notiBtn.contains(e.target) && !notiDropdown.contains(e.target)) {
+    notiDropdown.classList.add("hidden");
+  }
+});
+
 // 6. 초기 실행
 window.addEventListener("DOMContentLoaded", renderInsights);

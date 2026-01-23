@@ -115,13 +115,70 @@
           <span class="material-symbols-outlined !text-[20px]">add_circle</span>
           New Insight
         </button>
-        <button
-          class="size-9 rounded-full bg-background-section flex items-center justify-center text-text-sub hover:bg-border transition-all"
-        >
-          <span class="material-symbols-outlined !text-[20px]"
-            >notifications</span
+        <div class="relative">
+          <button
+            id="notification-btn"
+            class="relative size-9 rounded-full bg-background-section flex items-center justify-center text-text-sub hover:bg-border transition-all focus:outline-none"
           >
-        </button>
+            <span class="material-symbols-outlined !text-[20px]"
+              >notifications</span
+            >
+            <span
+              id="notification-badge"
+              class="hidden absolute top-0 right-0 size-2.5 bg-red-500 rounded-full border-2 border-white"
+            ></span>
+          </button>
+
+          <div
+            id="notification-dropdown"
+            class="hidden absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-border z-[200] overflow-hidden origin-top-right transition-all"
+          >
+            <div
+              class="px-5 py-4 border-b border-border bg-gray-50 flex justify-between items-center"
+            >
+              <h3 class="font-bold text-sm text-text-main">
+                알림 (Notifications)
+              </h3>
+              <span
+                class="text-[10px] font-bold text-primary cursor-pointer hover:underline"
+                >모두 읽음</span
+              >
+            </div>
+
+            <ul class="max-h-64 overflow-y-auto">
+              <li
+                class="px-5 py-4 border-b border-border hover:bg-background-hover cursor-pointer transition-colors flex gap-3 items-start"
+              >
+                <div
+                  class="mt-1 min-w-[8px] size-2 rounded-full bg-primary"
+                ></div>
+                <div>
+                  <p class="text-xs font-bold text-text-main mb-1 line-clamp-2">
+                    '친애하는 나의 결함에게' 글을 작성한 지 1년이 지났습니다.
+                  </p>
+                  <span class="text-[10px] text-text-sub font-medium"
+                    >2분 전 • 리마인드</span
+                  >
+                </div>
+              </li>
+              <li
+                class="px-5 py-4 hover:bg-background-hover cursor-pointer transition-colors flex gap-3 items-start opacity-60"
+              >
+                <div
+                  class="mt-1 min-w-[8px] size-2 rounded-full bg-transparent"
+                ></div>
+                <div>
+                  <p class="text-xs font-bold text-text-main mb-1">
+                    새로운 기능 '가족 대화 로그'가 추가되었습니다.
+                  </p>
+                  <span class="text-[10px] text-text-sub font-medium"
+                    >1일 전 • 시스템</span
+                  >
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
         <div
           class="size-9 rounded-full bg-accent-fiction/20 border-2 border-white shadow-sm overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary transition-all"
           title="Lisa님의 프로필 (클릭하여 설정)"
