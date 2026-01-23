@@ -348,7 +348,7 @@ function saveRichInput() {
 }
 
 /* =========================================
-   6. 알림(Notification) 시스템 (데이터 연동)
+   6. 알림(Notification) 시스템 (데이터 연동 + 상태 저장)
    ========================================= */
 const notiBtn = document.getElementById("notification-btn");
 const notiBadge = document.getElementById("notification-badge");
@@ -358,14 +358,12 @@ const readAllBtn = document.getElementById("btn-read-all");
 
 // (1) 알림 데이터 생성 및 렌더링 함수
 function renderNotifications() {
-  notiList.innerHTML = ""; // 기존 목록 초기화
+  notiList.innerHTML = "";
 
-  // 예시: 데이터 중 ID가 1인 카드에 대해 '리마인드 알림'을 가짜로 만들어봅니다.
-  // 실제로는 날짜 계산 로직이 들어가야 하지만, 지금은 시뮬레이션입니다.
+  // 예시 데이터 기반 알림
   const targetCard = insights.find((c) => c.id === 1);
 
   if (targetCard) {
-    // 알림 HTML 생성 (Template Literal)
     const notiHTML = `
             <li 
                 onclick="scrollToCard(${targetCard.id}, this)"
@@ -383,7 +381,7 @@ function renderNotifications() {
     notiList.insertAdjacentHTML("beforeend", notiHTML);
   }
 
-  // 시스템 알림 (고정) 예시 추가
+  // 시스템 알림
   const systemNotiHTML = `
         <li class="px-5 py-4 hover:bg-background-hover cursor-pointer transition-colors flex gap-3 items-start opacity-50">
             <div class="mt-1 min-w-[8px] size-2 rounded-full bg-transparent"></div>
@@ -398,26 +396,39 @@ function renderNotifications() {
   notiList.insertAdjacentHTML("beforeend", systemNotiHTML);
 }
 
-// (2) 초기 실행 (2초 뒤 알림 도착 시뮬레이션)
+// (2) 초기 실행 (localStorage 확인 로직 추가)
 setTimeout(() => {
-  renderNotifications(); // 알림 목록 생성
-  notiBadge.classList.remove("hidden"); // 배지 켜기
-  document.title = "(1) Insight Deck";
+  renderNotifications(); // 알림 목록은 항상 생성해둡니다.
+
+  // [핵심] 브라우저 저장소에 '읽음 표시(isNotiRead)'가 있는지 확인
+  const isRead = localStorage.getItem("isNotiRead");
+
+  // '읽음' 기록이 없을 때만 배지를 띄웁니다.
+  if (isRead !== "true") {
+    notiBadge.classList.remove("hidden");
+    document.title = "(1) Insight Deck";
+  }
 }, 2000);
 
 /* =========================================
    7. 알림 기능 (이동 & 읽음 처리)
    ========================================= */
 
-// 드롭다운 토글
+// 드롭다운 토글 및 '읽음' 저장
 notiBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   const isHidden = notiDropdown.classList.contains("hidden");
 
   if (isHidden) {
+    // 메뉴 열기
     notiDropdown.classList.remove("hidden");
+
+    // 배지 끄기
     notiBadge.classList.add("hidden");
     document.title = "인사이트 덱 (Insight Deck)";
+
+    // [핵심] 브라우저 저장소에 "나 알림 확인했어!" 라고 저장 (영구 보존)
+    localStorage.setItem("isNotiRead", "true");
   } else {
     notiDropdown.classList.add("hidden");
   }
@@ -434,7 +445,7 @@ document.addEventListener("click", (e) => {
 function markItemAsRead(liElement) {
   if (!liElement) return;
   liElement.classList.add("opacity-50");
-  const dot = liElement.querySelector(".noti-dot"); // 클래스로 찾기
+  const dot = liElement.querySelector(".noti-dot");
   if (dot) {
     dot.classList.remove("bg-primary");
     dot.classList.add("bg-transparent");
