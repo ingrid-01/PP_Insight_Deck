@@ -110,7 +110,7 @@ function renderInsights() {
     const style = styles[data.category] || styles.nonfiction;
 
     const cardHTML = `
-      <article class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer group mt-5">
+      <article id="card-${data.id}" class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer group mt-5">
           <div class="flex justify-between items-start mb-3">
               <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider">
                   <span class="material-symbols-outlined !text-[14px]">${style.icon}</span>
@@ -348,43 +348,128 @@ function saveRichInput() {
 }
 
 /* =========================================
-   6. 알림(Notification) 시스템 - 드롭다운 방식
+   6. 알림(Notification) 시스템 (데이터 연동)
    ========================================= */
 const notiBtn = document.getElementById("notification-btn");
 const notiBadge = document.getElementById("notification-badge");
 const notiDropdown = document.getElementById("notification-dropdown");
+const notiList = document.getElementById("notification-list");
+const readAllBtn = document.getElementById("btn-read-all");
 
-// (1) 알림 도착 시뮬레이션 (2초 뒤 빨간 불 켜짐)
+// (1) 알림 데이터 생성 및 렌더링 함수
+function renderNotifications() {
+  notiList.innerHTML = ""; // 기존 목록 초기화
+
+  // 예시: 데이터 중 ID가 1인 카드에 대해 '리마인드 알림'을 가짜로 만들어봅니다.
+  // 실제로는 날짜 계산 로직이 들어가야 하지만, 지금은 시뮬레이션입니다.
+  const targetCard = insights.find((c) => c.id === 1);
+
+  if (targetCard) {
+    // 알림 HTML 생성 (Template Literal)
+    const notiHTML = `
+            <li 
+                onclick="scrollToCard(${targetCard.id}, this)"
+                class="px-5 py-4 border-b border-border hover:bg-background-hover cursor-pointer transition-colors flex gap-3 items-start"
+            >
+                <div class="noti-dot mt-1 min-w-[8px] size-2 rounded-full bg-primary"></div>
+                <div>
+                    <p class="text-xs font-bold text-text-main mb-1 line-clamp-2">
+                        '${targetCard.title}' 글을 작성한 지 1년이 지났습니다. 다시 읽어보시겠습니까?
+                    </p>
+                    <span class="text-[10px] text-text-sub font-medium">방금 전 • 리마인드</span>
+                </div>
+            </li>
+        `;
+    notiList.insertAdjacentHTML("beforeend", notiHTML);
+  }
+
+  // 시스템 알림 (고정) 예시 추가
+  const systemNotiHTML = `
+        <li class="px-5 py-4 hover:bg-background-hover cursor-pointer transition-colors flex gap-3 items-start opacity-50">
+            <div class="mt-1 min-w-[8px] size-2 rounded-full bg-transparent"></div>
+            <div>
+                <p class="text-xs font-bold text-text-main mb-1">
+                    새로운 기능 '가족 대화 로그'가 추가되었습니다.
+                </p>
+                <span class="text-[10px] text-text-sub font-medium">1일 전 • 시스템</span>
+            </div>
+        </li>
+    `;
+  notiList.insertAdjacentHTML("beforeend", systemNotiHTML);
+}
+
+// (2) 초기 실행 (2초 뒤 알림 도착 시뮬레이션)
 setTimeout(() => {
-  notiBadge.classList.remove("hidden");
+  renderNotifications(); // 알림 목록 생성
+  notiBadge.classList.remove("hidden"); // 배지 켜기
   document.title = "(1) Insight Deck";
 }, 2000);
 
-// (2) 버튼 클릭 시 드롭다운 토글 (Toggle)
+/* =========================================
+   7. 알림 기능 (이동 & 읽음 처리)
+   ========================================= */
+
+// 드롭다운 토글
 notiBtn.addEventListener("click", (e) => {
-  e.stopPropagation(); // 클릭 이벤트가 부모로 전파되는 것 방지
+  e.stopPropagation();
   const isHidden = notiDropdown.classList.contains("hidden");
 
   if (isHidden) {
-    // 메뉴 열기
     notiDropdown.classList.remove("hidden");
-
-    // 빨간 배지 없애기 (확인했으니까)
     notiBadge.classList.add("hidden");
     document.title = "인사이트 덱 (Insight Deck)";
   } else {
-    // 메뉴 닫기
     notiDropdown.classList.add("hidden");
   }
 });
 
-// (3) 화면의 다른 곳을 클릭하면 메뉴 닫기 (UX 필수 기능)
+// 외부 클릭 닫기
 document.addEventListener("click", (e) => {
-  // 클릭한 곳이 버튼도 아니고, 드롭다운 메뉴 내부도 아니라면 닫음
   if (!notiBtn.contains(e.target) && !notiDropdown.contains(e.target)) {
     notiDropdown.classList.add("hidden");
   }
 });
 
-// 6. 초기 실행
+// 알림 항목 읽음 처리 스타일
+function markItemAsRead(liElement) {
+  if (!liElement) return;
+  liElement.classList.add("opacity-50");
+  const dot = liElement.querySelector(".noti-dot"); // 클래스로 찾기
+  if (dot) {
+    dot.classList.remove("bg-primary");
+    dot.classList.add("bg-transparent");
+  }
+}
+
+// 개별 알림 클릭 시 이동
+function scrollToCard(cardId, element) {
+  markItemAsRead(element);
+  setFilter("all");
+  notiDropdown.classList.add("hidden");
+
+  const targetCard = document.getElementById(`card-${cardId}`);
+  if (targetCard) {
+    targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    targetCard.classList.add(
+      "ring-4",
+      "ring-primary/50",
+      "transition-all",
+      "duration-500",
+    );
+    setTimeout(() => {
+      targetCard.classList.remove("ring-4", "ring-primary/50");
+    }, 2000);
+  } else {
+    alert("해당 카드를 찾을 수 없습니다.");
+  }
+}
+
+// 모두 읽음 버튼
+readAllBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const allItems = document.querySelectorAll("#notification-list li");
+  allItems.forEach((item) => markItemAsRead(item));
+});
+
+// 8. 초기 실행
 window.addEventListener("DOMContentLoaded", renderInsights);
