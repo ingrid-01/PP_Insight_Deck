@@ -69,14 +69,12 @@ function updateFilterButtons() {
 
   filters.forEach((type) => {
     const btn = document.getElementById(`filter-${type}`);
-    if (!btn) return; // 버튼이 없는 경우 방지
+    if (!btn) return;
 
     if (type === currentFilter) {
-      // 선택됨: Primary 색상
       btn.className =
         "px-4 py-2 rounded-full bg-primary text-white text-sm font-bold shadow-sm transition-all";
     } else {
-      // 선택 안 됨: 흰색 배경
       btn.className =
         "px-4 py-2 rounded-full bg-white border border-border text-text-sub text-sm font-bold transition-all hover:bg-background-hover hover:text-primary";
     }
@@ -84,7 +82,7 @@ function updateFilterButtons() {
 }
 
 /* =========================================
-   3. 화면 렌더링 (Render)
+   3. 화면 렌더링 (Render) - 통계 업데이트 포함
    ========================================= */
 function renderInsights() {
   const zones = {
@@ -104,9 +102,11 @@ function renderInsights() {
       : insights.filter((item) => item.category === currentFilter);
 
   filteredData.forEach((data) => {
+    // 상태별 카운트 (전체 데이터 기준)
+    counts[data.status]++;
+
     if (!zones[data.status]) return;
 
-    counts[data.status]++;
     const style = styles[data.category] || styles.nonfiction;
 
     const cardHTML = `
@@ -187,6 +187,7 @@ function renderInsights() {
     zones[data.status].insertAdjacentHTML("beforeend", cardHTML);
   });
 
+  // 상단 컬럼 카운트 업데이트
   if (document.getElementById("count-ready"))
     document.getElementById("count-ready").innerText = counts.ready;
   if (document.getElementById("count-logged"))
@@ -194,6 +195,14 @@ function renderInsights() {
   if (document.getElementById("count-internalized"))
     document.getElementById("count-internalized").innerText =
       counts.internalized;
+
+  // [신규] 사이드바 통계 업데이트
+  if (document.getElementById("stat-month"))
+    document.getElementById("stat-month").innerText = insights.length;
+  if (document.getElementById("stat-hub"))
+    document.getElementById("stat-hub").innerText = counts.logged; // Hub = Logged 개수
+  if (document.getElementById("stat-total"))
+    document.getElementById("stat-total").innerText = insights.length;
 }
 
 /* =========================================
@@ -231,7 +240,7 @@ form.addEventListener("submit", (e) => {
   };
 
   insights.unshift(newInsight);
-  renderInsights(); // 새로 그릴 때 필터도 자동 적용됨
+  renderInsights();
   modal.classList.add("hidden");
   form.reset();
 });
@@ -324,10 +333,16 @@ function saveRichInput() {
   if (card) {
     if (currentLogType === "reflect") card.reflect = inputVal;
     if (currentLogType === "action") card.action = inputVal;
-    if (currentLogType === "dialogue") card.dialogue = inputVal;
+
+    // [중요] 대화 로그 추가 시 상태 변경 로직
+    if (currentLogType === "dialogue") {
+      card.dialogue = inputVal;
+      card.status = "logged"; // Ready -> Logged로 이동
+    }
+
     if (currentLogType === "topic") card.discussionTopic = inputVal;
 
-    renderInsights();
+    renderInsights(); // 이때 통계도 같이 업데이트됨
     closeRichInputModal();
   }
 }
