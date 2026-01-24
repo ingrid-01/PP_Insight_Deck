@@ -33,8 +33,25 @@ const insights = [
       "우리는 점점 AI에게 의존하는 사회가 되고 있다. 부모님 세대가 느끼는 공포감에 대해 어떻게 생각하는가?",
     dialogue: null,
   },
+  {
+    id: 3,
+    status: "ready",
+    category: "movie",
+    subCategory: "영화 - SF/드라마",
+    date: "Jan 2026",
+    title: "Her (그녀)",
+    content:
+      "사랑은 사회적으로 용인된 미친 짓이다. 우리는 관계를 통해 서로를 성장시키지만, 때로는 그 성장이 이별을 부르기도 한다.",
+    reflect:
+      "AI와의 사랑을 다루지만 결국 인간 관계의 본질을 묻는다. 나는 관계 속에서 상대방을 내 방식대로 정의하려 하지 않았나?",
+    action: null,
+    discussionTopic:
+      "기술이 발전하여 완벽한 정신적 교감이 가능한 AI가 나온다면, 육체적 사랑 없는 플라토닉 러브가 주류가 될 수 있을까?",
+    dialogue: null,
+  },
 ];
 
+// [업데이트] 6가지 카테고리 스타일 매핑
 const styles = {
   news: {
     badgeBg: "bg-accent-news/10",
@@ -44,17 +61,32 @@ const styles = {
   fiction: {
     badgeBg: "bg-accent-fiction/10",
     badgeText: "text-accent-fiction",
-    icon: "auto_stories",
+    icon: "auto_stories", // 책 아이콘
   },
   nonfiction: {
     badgeBg: "bg-accent-nonfiction/10",
     badgeText: "text-accent-nonfiction",
     icon: "menu_book",
   },
+  movie: {
+    badgeBg: "bg-accent-movie/10",
+    badgeText: "text-accent-movie",
+    icon: "movie", // 영화 아이콘
+  },
+  art: {
+    badgeBg: "bg-accent-art/10",
+    badgeText: "text-accent-art",
+    icon: "palette", // 팔레트 아이콘
+  },
+  media: {
+    badgeBg: "bg-accent-media/10",
+    badgeText: "text-accent-media",
+    icon: "play_circle", // 재생 아이콘
+  },
 };
 
 /* =========================================
-   2. 필터링 로직
+   2. 필터링 로직 (6개 카테고리 대응)
    ========================================= */
 let currentFilter = "all";
 
@@ -65,7 +97,15 @@ function setFilter(category) {
 }
 
 function updateFilterButtons() {
-  const filters = ["all", "nonfiction", "news", "fiction"];
+  const filters = [
+    "all",
+    "nonfiction",
+    "news",
+    "fiction",
+    "movie",
+    "art",
+    "media",
+  ];
 
   filters.forEach((type) => {
     const btn = document.getElementById(`filter-${type}`);
@@ -73,16 +113,16 @@ function updateFilterButtons() {
 
     if (type === currentFilter) {
       btn.className =
-        "px-4 py-2 rounded-full bg-primary text-white text-sm font-bold shadow-sm transition-all";
+        "px-3 py-1.5 rounded-full bg-primary text-white text-xs font-bold shadow-sm transition-all";
     } else {
       btn.className =
-        "px-4 py-2 rounded-full bg-white border border-border text-text-sub text-sm font-bold transition-all hover:bg-background-hover hover:text-primary";
+        "px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary hover:bg-background-hover";
     }
   });
 }
 
 /* =========================================
-   3. 화면 렌더링 (Render) - 통계 업데이트 포함
+   3. 화면 렌더링 (Render)
    ========================================= */
 function renderInsights() {
   const zones = {
@@ -92,19 +132,15 @@ function renderInsights() {
   };
   const counts = { ready: 0, logged: 0, internalized: 0 };
 
-  // 구역 초기화
   document.querySelectorAll("article").forEach((el) => el.remove());
 
-  // 필터링 적용
   const filteredData =
     currentFilter === "all"
       ? insights
       : insights.filter((item) => item.category === currentFilter);
 
   filteredData.forEach((data) => {
-    // 상태별 카운트 (전체 데이터 기준)
     counts[data.status]++;
-
     if (!zones[data.status]) return;
 
     const style = styles[data.category] || styles.nonfiction;
@@ -187,7 +223,6 @@ function renderInsights() {
     zones[data.status].insertAdjacentHTML("beforeend", cardHTML);
   });
 
-  // 상단 컬럼 카운트 업데이트
   if (document.getElementById("count-ready"))
     document.getElementById("count-ready").innerText = counts.ready;
   if (document.getElementById("count-logged"))
@@ -196,11 +231,10 @@ function renderInsights() {
     document.getElementById("count-internalized").innerText =
       counts.internalized;
 
-  // [신규] 사이드바 통계 업데이트
   if (document.getElementById("stat-month"))
     document.getElementById("stat-month").innerText = insights.length;
   if (document.getElementById("stat-hub"))
-    document.getElementById("stat-hub").innerText = counts.logged; // Hub = Logged 개수
+    document.getElementById("stat-hub").innerText = counts.logged;
   if (document.getElementById("stat-total"))
     document.getElementById("stat-total").innerText = insights.length;
 }
@@ -220,16 +254,20 @@ form.addEventListener("submit", (e) => {
   e.preventDefault();
   const category = document.getElementById("input-category").value;
 
+  // [업데이트] 서브카테고리 자동 생성 로직 (6개 대응)
+  let subCat = "기타";
+  if (category === "news") subCat = "신문기사";
+  else if (category === "fiction") subCat = "문학";
+  else if (category === "nonfiction") subCat = "비문학";
+  else if (category === "movie") subCat = "영화";
+  else if (category === "art") subCat = "전시/관람";
+  else if (category === "media") subCat = "영상/미디어";
+
   const newInsight = {
     id: Date.now(),
     status: "ready",
     category: category,
-    subCategory:
-      category === "news"
-        ? "신문기사"
-        : category === "fiction"
-          ? "문학"
-          : "비문학",
+    subCategory: subCat,
     date: document.getElementById("input-date").value || "Just Now",
     title: document.getElementById("input-title").value,
     content: document.getElementById("input-content").value,
@@ -246,7 +284,7 @@ form.addEventListener("submit", (e) => {
 });
 
 /* =========================================
-   5. 로그 추가 모달 & 상세 입력(Rich) 모달
+   5. 로그 추가 모달 & 상세 입력 모달
    ========================================= */
 const logModal = document.getElementById("log-type-modal");
 const richInputModal = document.getElementById("rich-input-modal");
@@ -333,22 +371,19 @@ function saveRichInput() {
   if (card) {
     if (currentLogType === "reflect") card.reflect = inputVal;
     if (currentLogType === "action") card.action = inputVal;
-
-    // [중요] 대화 로그 추가 시 상태 변경 로직
     if (currentLogType === "dialogue") {
       card.dialogue = inputVal;
-      card.status = "logged"; // Ready -> Logged로 이동
+      card.status = "logged";
     }
-
     if (currentLogType === "topic") card.discussionTopic = inputVal;
 
-    renderInsights(); // 이때 통계도 같이 업데이트됨
+    renderInsights();
     closeRichInputModal();
   }
 }
 
 /* =========================================
-   6. 알림(Notification) 시스템 (데이터 연동 + 상태 저장)
+   6. 알림(Notification) 시스템
    ========================================= */
 const notiBtn = document.getElementById("notification-btn");
 const notiBadge = document.getElementById("notification-badge");
@@ -356,11 +391,9 @@ const notiDropdown = document.getElementById("notification-dropdown");
 const notiList = document.getElementById("notification-list");
 const readAllBtn = document.getElementById("btn-read-all");
 
-// (1) 알림 데이터 생성 및 렌더링 함수
 function renderNotifications() {
   notiList.innerHTML = "";
 
-  // 예시 데이터 기반 알림
   const targetCard = insights.find((c) => c.id === 1);
 
   if (targetCard) {
@@ -381,7 +414,6 @@ function renderNotifications() {
     notiList.insertAdjacentHTML("beforeend", notiHTML);
   }
 
-  // 시스템 알림
   const systemNotiHTML = `
         <li class="px-5 py-4 hover:bg-background-hover cursor-pointer transition-colors flex gap-3 items-start opacity-50">
             <div class="mt-1 min-w-[8px] size-2 rounded-full bg-transparent"></div>
@@ -396,52 +428,36 @@ function renderNotifications() {
   notiList.insertAdjacentHTML("beforeend", systemNotiHTML);
 }
 
-// (2) 초기 실행 (localStorage 확인 로직 추가)
 setTimeout(() => {
-  renderNotifications(); // 알림 목록은 항상 생성해둡니다.
-
-  // [핵심] 브라우저 저장소에 '읽음 표시(isNotiRead)'가 있는지 확인
+  renderNotifications();
   const isRead = localStorage.getItem("isNotiRead");
-
-  // '읽음' 기록이 없을 때만 배지를 띄웁니다.
   if (isRead !== "true") {
     notiBadge.classList.remove("hidden");
     document.title = "(1) Insight Deck";
   }
 }, 2000);
 
-/* =========================================
-   7. 알림 기능 (이동 & 읽음 처리)
-   ========================================= */
-
-// 드롭다운 토글 및 '읽음' 저장
+// 드롭다운 토글
 notiBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   const isHidden = notiDropdown.classList.contains("hidden");
 
   if (isHidden) {
-    // 메뉴 열기
     notiDropdown.classList.remove("hidden");
-
-    // 배지 끄기
     notiBadge.classList.add("hidden");
     document.title = "인사이트 덱 (Insight Deck)";
-
-    // [핵심] 브라우저 저장소에 "나 알림 확인했어!" 라고 저장 (영구 보존)
     localStorage.setItem("isNotiRead", "true");
   } else {
     notiDropdown.classList.add("hidden");
   }
 });
 
-// 외부 클릭 닫기
 document.addEventListener("click", (e) => {
   if (!notiBtn.contains(e.target) && !notiDropdown.contains(e.target)) {
     notiDropdown.classList.add("hidden");
   }
 });
 
-// 알림 항목 읽음 처리 스타일
 function markItemAsRead(liElement) {
   if (!liElement) return;
   liElement.classList.add("opacity-50");
@@ -452,7 +468,6 @@ function markItemAsRead(liElement) {
   }
 }
 
-// 개별 알림 클릭 시 이동
 function scrollToCard(cardId, element) {
   markItemAsRead(element);
   setFilter("all");
@@ -475,12 +490,10 @@ function scrollToCard(cardId, element) {
   }
 }
 
-// 모두 읽음 버튼
 readAllBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   const allItems = document.querySelectorAll("#notification-list li");
   allItems.forEach((item) => markItemAsRead(item));
 });
 
-// 8. 초기 실행
 window.addEventListener("DOMContentLoaded", renderInsights);
