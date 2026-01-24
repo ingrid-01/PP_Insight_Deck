@@ -634,10 +634,72 @@
           >
             <div
               class="bg-white px-4 py-4 sm:px-6 border-b border-border flex justify-between items-center"
-            ></div>
+            >
+              <div>
+                <h3
+                  class="text-lg font-black leading-6 text-text-main flex items-center gap-2"
+                  id="rich-modal-title"
+                ></h3>
+              </div>
+              <button
+                type="button"
+                onclick="closeRichInputModal()"
+                class="text-text-sub hover:text-text-main transition-colors"
+              >
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div class="px-6 py-6 bg-[#F9FAFB]">
+              <p
+                id="rich-modal-desc"
+                class="text-sm text-text-sub mb-4 font-medium"
+              ></p>
+              <div
+                id="input-container"
+                class="flex flex-col gap-4 rounded-xl bg-white border border-[#d1d5db] p-1 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary shadow-sm transition-all"
+              >
+                <textarea
+                  id="rich-input-field"
+                  class="w-full min-h-[140px] resize-none border-none bg-transparent p-4 text-text-main placeholder:text-[#9ca3af] focus:ring-0 text-base leading-relaxed"
+                  placeholder="내용을 입력하세요..."
+                ></textarea>
+              </div>
+              <div class="mt-4 flex items-center gap-2">
+                <span
+                  class="material-symbols-outlined text-[#9ca3af] text-[18px]"
+                  >sell</span
+                >
+                <input
+                  type="text"
+                  placeholder="관련 태그 추가 (쉼표로 구분)"
+                  class="w-full bg-transparent border-none text-sm text-text-main placeholder:text-[#9ca3af] focus:ring-0 p-0"
+                />
+              </div>
+            </div>
+            <div
+              class="bg-white px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6 border-t border-border"
+            >
+              <button
+                type="button"
+                onclick="saveRichInput()"
+                class="inline-flex w-full justify-center rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-primary-light sm:ml-3 sm:w-auto transition-all flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-[18px]">save</span>
+                기록 저장
+              </button>
+              <button
+                type="button"
+                onclick="closeRichInputModal()"
+                class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-3 text-sm font-bold text-text-sub shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all"
+              >
+                취소
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <script src="script.js"></script>
   </body>
 </html>
