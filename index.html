@@ -134,25 +134,70 @@
             ></span>
           </button>
 
-          <div
-            id="notification-dropdown"
-            class="hidden absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-border z-[200] overflow-hidden origin-top-right transition-all"
-          >
-            <div
-              class="px-5 py-4 border-b border-border bg-gray-50 flex justify-between items-center"
+<div 
+                id="profile-dropdown" 
+                class="hidden absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-border z-[200] overflow-hidden origin-top-right transition-all"
             >
-              <h3 class="font-bold text-sm text-text-main">
-                알림 (Notifications)
-              </h3>
-              <span
-                id="btn-read-all"
-                class="text-[10px] font-bold text-primary cursor-pointer hover:underline"
-                >모두 읽음</span
-              >
+                <div class="px-5 py-5 border-b border-border bg-gradient-to-br from-[#F5F3F0] to-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10">
+                        <span class="material-symbols-outlined text-[60px] text-primary">military_tech</span>
+                    </div>
+
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-end mb-1">
+                            <p id="profile-level-badge" class="text-xs font-black text-primary bg-primary/10 px-2 py-0.5 rounded text-center">Lv.0</p>
+                            <span id="profile-next-goal" class="text-[10px] text-text-muted font-bold">다음 레벨까지: 기록 1개</span>
+                        </div>
+                        
+                        <h3 id="profile-name-display" class="font-black text-lg text-text-main leading-tight">Lisa</h3>
+                        <p id="profile-title-display" class="text-xs font-bold text-text-sub mb-3">Insight Newbie (통찰 새싹)</p>
+
+                        <div class="w-full bg-border/50 h-2 rounded-full overflow-hidden mb-2">
+                            <div id="profile-progress-bar" class="bg-primary h-full rounded-full transition-all duration-1000" style="width: 5%"></div>
+                        </div>
+                        
+                        <p id="profile-desc-display" class="text-[10px] text-text-muted font-medium leading-relaxed">
+                            "아직 아무것도 기록하지 않았지만, 생각을 남길 준비가 되었다."
+                        </p>
+                    </div>
+                </div>
+
+                <div class="p-2 space-y-1">
+                    <button onclick="editProfileName()" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-background-hover text-left transition-colors group">
+                        <span class="material-symbols-outlined text-text-sub group-hover:text-primary text-[18px]">edit</span>
+                        <span class="text-xs font-bold text-text-sub group-hover:text-text-main">이름 변경</span>
+                    </button>
+                    
+                    <button onclick="editProfileImage()" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-background-hover text-left transition-colors group">
+                        <span class="material-symbols-outlined text-text-sub group-hover:text-primary text-[18px]">account_circle</span>
+                        <span class="text-xs font-bold text-text-sub group-hover:text-text-main">프로필 사진 변경</span>
+                    </button>
+                </div>
+
+                <div class="h-px bg-border mx-2"></div>
+
+                <div class="p-4 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-text-sub flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">language</span> 언어
+                        </span>
+                        <div class="flex bg-background-section p-1 rounded-lg">
+                            <button class="px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all">KR</button>
+                            <button class="px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all">EN</button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-text-sub flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">dark_mode</span> 테마
+                        </span>
+                        <div class="flex bg-background-section p-1 rounded-lg">
+                            <button class="px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all">Light</button>
+                            <button class="px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all">Dark</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <ul id="notification-list" class="max-h-64 overflow-y-auto"></ul>
-          </div>
-        </div>
 
 <div class="relative">
             <button
