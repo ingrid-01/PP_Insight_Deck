@@ -437,21 +437,28 @@ setTimeout(() => {
   }
 }, 2000);
 
-// 드롭다운 토글
+// (2) 드롭다운 토글 (프로필 창 닫기 기능 추가)
 notiBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   const isHidden = notiDropdown.classList.contains("hidden");
 
   if (isHidden) {
+    // 알림 메뉴 열기
     notiDropdown.classList.remove("hidden");
+
+    // 배지 끄기 & 읽음 처리
     notiBadge.classList.add("hidden");
     document.title = "인사이트 덱 (Insight Deck)";
     localStorage.setItem("isNotiRead", "true");
+
+    // [핵심] 프로필 창이 열려있다면 강제로 닫기!
+    if (document.getElementById("profile-dropdown")) {
+      document.getElementById("profile-dropdown").classList.add("hidden");
+    }
   } else {
     notiDropdown.classList.add("hidden");
   }
 });
-
 document.addEventListener("click", (e) => {
   if (!notiBtn.contains(e.target) && !notiDropdown.contains(e.target)) {
     notiDropdown.classList.add("hidden");
