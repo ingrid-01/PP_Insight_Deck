@@ -490,10 +490,52 @@ function scrollToCard(cardId, element) {
   }
 }
 
+// ... (위쪽 코드 생략) ...
+
 readAllBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   const allItems = document.querySelectorAll("#notification-list li");
   allItems.forEach((item) => markItemAsRead(item));
 });
 
+// ▼▼▼▼ [여기!] 이 공간에 새 코드를 붙여넣으세요 ▼▼▼▼
+
+/* =========================================
+   8. 프로필 설정 드롭다운 (Step 1-1)
+   ========================================= */
+const profileBtn = document.getElementById("profile-btn");
+const profileDropdown = document.getElementById("profile-dropdown");
+
+// 드롭다운 토글
+profileBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const isHidden = profileDropdown.classList.contains("hidden");
+
+  if (isHidden) {
+    profileDropdown.classList.remove("hidden");
+    // 알림창이 열려있다면 닫기
+    document.getElementById("notification-dropdown").classList.add("hidden");
+  } else {
+    profileDropdown.classList.add("hidden");
+  }
+});
+
+// 외부 클릭 시 닫기
+document.addEventListener("click", (e) => {
+  if (!profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+    profileDropdown.classList.add("hidden");
+  }
+});
+
+function editProfileName() {
+  alert("다음 단계에서 '이름 변경 모달'을 띄울 예정입니다!");
+}
+
+function editProfileImage() {
+  alert("다음 단계에서 '사진 변경 기능'을 구현할 예정입니다!");
+}
+
+// ▲▲▲▲ 여기까지 붙여넣으면 됩니다 ▲▲▲▲
+
+// 이 줄은 파일의 항상 맨 마지막에 유지하세요!
 window.addEventListener("DOMContentLoaded", renderInsights);
