@@ -34,13 +34,12 @@
                 dark: "#2A4039",
               },
               accent: {
-                nonfiction: "#648F73", // 비문학 (녹색)
-                fiction: "#B38F64", // 문학 (금색/브라운)
-                news: "#7D8FA1", // 신문 (회청색)
-                movie: "#8E7CC3", // [New] 영화 (보라색)
-                art: "#D0607A", // [New] 전시 (로즈핑크)
-                media: "#E08E79", // [New] 미디어 (오렌지)
-
+                nonfiction: "#648F73",
+                fiction: "#B38F64",
+                news: "#7D8FA1",
+                movie: "#8E7CC3",
+                art: "#D0607A",
+                media: "#E08E79",
                 dialogue: "#9A7D64",
                 action: "#3E5C53",
               },
@@ -134,131 +133,182 @@
             ></span>
           </button>
 
-<div 
-                id="profile-dropdown" 
-                class="hidden absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-border z-[200] overflow-hidden origin-top-right transition-all"
+          <div
+            id="notification-dropdown"
+            class="hidden absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-border z-[200] overflow-hidden origin-top-right transition-all"
+          >
+            <div
+              class="px-5 py-4 border-b border-border bg-gray-50 flex justify-between items-center"
             >
-                <div class="px-5 py-5 border-b border-border bg-gradient-to-br from-[#F5F3F0] to-white relative overflow-hidden">
-                    <div class="absolute top-0 right-0 p-4 opacity-10">
-                        <span class="material-symbols-outlined text-[60px] text-primary">military_tech</span>
-                    </div>
-
-                    <div class="relative z-10">
-                        <div class="flex justify-between items-end mb-1">
-                            <p id="profile-level-badge" class="text-xs font-black text-primary bg-primary/10 px-2 py-0.5 rounded text-center">Lv.0</p>
-                            <span id="profile-next-goal" class="text-[10px] text-text-muted font-bold">다음 레벨까지: 기록 1개</span>
-                        </div>
-                        
-                        <h3 id="profile-name-display" class="font-black text-lg text-text-main leading-tight">Lisa</h3>
-                        <p id="profile-title-display" class="text-xs font-bold text-text-sub mb-3">Insight Newbie (통찰 새싹)</p>
-
-                        <div class="w-full bg-border/50 h-2 rounded-full overflow-hidden mb-2">
-                            <div id="profile-progress-bar" class="bg-primary h-full rounded-full transition-all duration-1000" style="width: 5%"></div>
-                        </div>
-                        
-                        <p id="profile-desc-display" class="text-[10px] text-text-muted font-medium leading-relaxed">
-                            "아직 아무것도 기록하지 않았지만, 생각을 남길 준비가 되었다."
-                        </p>
-                    </div>
-                </div>
-
-                <div class="p-2 space-y-1">
-                    <button onclick="editProfileName()" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-background-hover text-left transition-colors group">
-                        <span class="material-symbols-outlined text-text-sub group-hover:text-primary text-[18px]">edit</span>
-                        <span class="text-xs font-bold text-text-sub group-hover:text-text-main">이름 변경</span>
-                    </button>
-                    
-                    <button onclick="editProfileImage()" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-background-hover text-left transition-colors group">
-                        <span class="material-symbols-outlined text-text-sub group-hover:text-primary text-[18px]">account_circle</span>
-                        <span class="text-xs font-bold text-text-sub group-hover:text-text-main">프로필 사진 변경</span>
-                    </button>
-                </div>
-
-                <div class="h-px bg-border mx-2"></div>
-
-                <div class="p-4 space-y-4">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-text-sub flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[16px]">language</span> 언어
-                        </span>
-                        <div class="flex bg-background-section p-1 rounded-lg">
-                            <button class="px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all">KR</button>
-                            <button class="px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all">EN</button>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-text-sub flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[16px]">dark_mode</span> 테마
-                        </span>
-                        <div class="flex bg-background-section p-1 rounded-lg">
-                            <button class="px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all">Light</button>
-                            <button class="px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all">Dark</button>
-                        </div>
-                    </div>
-                </div>
+              <h3 class="font-bold text-sm text-text-main">
+                알림 (Notifications)
+              </h3>
+              <span
+                id="btn-read-all"
+                class="text-[10px] font-bold text-primary cursor-pointer hover:underline"
+                >모두 읽음</span
+              >
             </div>
-
-<div class="relative">
-            <button
-              id="profile-btn"
-              class="size-9 rounded-full bg-accent-fiction/20 border-2 border-white shadow-sm overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary transition-all focus:outline-none"
-              title="프로필 설정"
-            >
-              <img
-                id="profile-img"
-                src="https://api.dicebear.com/7.x/initials/svg?seed=Lisa&backgroundColor=B38F64&textColor=ffffff"
-                alt="Profile"
-                class="w-full h-full object-cover"
-              />
-            </button>
-
-            <div 
-                id="profile-dropdown" 
-                class="hidden absolute right-0 top-full mt-3 w-64 bg-white rounded-2xl shadow-xl border border-border z-[200] overflow-hidden origin-top-right transition-all"
-            >
-                <div class="px-5 py-4 border-b border-border bg-gray-50">
-                    <p id="profile-name-display" class="font-black text-sm text-text-main">Lisa</p>
-                    <p class="text-[10px] text-text-sub font-medium">Insight Traveler</p>
-                </div>
-
-                <div class="p-2 space-y-1">
-                    <button onclick="editProfileName()" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-background-hover text-left transition-colors group">
-                        <span class="material-symbols-outlined text-text-sub group-hover:text-primary text-[18px]">edit</span>
-                        <span class="text-xs font-bold text-text-sub group-hover:text-text-main">이름 변경</span>
-                    </button>
-                    
-                    <button onclick="editProfileImage()" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-background-hover text-left transition-colors group">
-                        <span class="material-symbols-outlined text-text-sub group-hover:text-primary text-[18px]">account_circle</span>
-                        <span class="text-xs font-bold text-text-sub group-hover:text-text-main">프로필 사진 변경</span>
-                    </button>
-                </div>
-
-                <div class="h-px bg-border mx-2"></div>
-
-                <div class="p-4 space-y-4">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-text-sub flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[16px]">language</span> 언어
-                        </span>
-                        <div class="flex bg-background-section p-1 rounded-lg">
-                            <button class="px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all">KR</button>
-                            <button class="px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all">EN</button>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-text-sub flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[16px]">dark_mode</span> 테마
-                        </span>
-                        <div class="flex bg-background-section p-1 rounded-lg">
-                            <button class="px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all">Light</button>
-                            <button class="px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all">Dark</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <ul id="notification-list" class="max-h-64 overflow-y-auto"></ul>
+          </div>
         </div>
+
+        <div class="relative">
+          <button
+            id="profile-btn"
+            class="size-9 rounded-full bg-accent-fiction/20 border-2 border-white shadow-sm overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary transition-all focus:outline-none"
+            title="프로필 설정"
+          >
+            <img
+              id="profile-img"
+              src="https://api.dicebear.com/7.x/initials/svg?seed=Lisa&backgroundColor=B38F64&textColor=ffffff"
+              alt="Profile"
+              class="w-full h-full object-cover"
+            />
+          </button>
+
+          <div
+            id="profile-dropdown"
+            class="hidden absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-border z-[200] overflow-hidden origin-top-right transition-all"
+          >
+            <div
+              class="px-5 py-5 border-b border-border bg-gradient-to-br from-[#F5F3F0] to-white relative overflow-hidden"
+            >
+              <div class="absolute top-0 right-0 p-4 opacity-10">
+                <span class="material-symbols-outlined text-[60px] text-primary"
+                  >military_tech</span
+                >
+              </div>
+
+              <div class="relative z-10">
+                <div class="flex justify-between items-end mb-1">
+                  <p
+                    id="profile-level-badge"
+                    class="text-xs font-black text-primary bg-primary/10 px-2 py-0.5 rounded text-center"
+                  >
+                    Lv.0
+                  </p>
+                  <span
+                    id="profile-next-goal"
+                    class="text-[10px] text-text-muted font-bold"
+                    >다음 레벨까지: 기록 1개</span
+                  >
+                </div>
+
+                <h3
+                  id="profile-name-display"
+                  class="font-black text-lg text-text-main leading-tight"
+                >
+                  Lisa
+                </h3>
+                <p
+                  id="profile-title-display"
+                  class="text-xs font-bold text-text-sub mb-3"
+                >
+                  Insight Newbie (통찰 새싹)
+                </p>
+
+                <div
+                  class="w-full bg-border/50 h-2 rounded-full overflow-hidden mb-2"
+                >
+                  <div
+                    id="profile-progress-bar"
+                    class="bg-primary h-full rounded-full transition-all duration-1000"
+                    style="width: 5%"
+                  ></div>
+                </div>
+
+                <p
+                  id="profile-desc-display"
+                  class="text-[10px] text-text-muted font-medium leading-relaxed"
+                >
+                  "아직 아무것도 기록하지 않았지만, 생각을 남길 준비가 되었다."
+                </p>
+              </div>
+            </div>
+
+            <div class="p-2 space-y-1">
+              <button
+                onclick="editProfileName()"
+                class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-background-hover text-left transition-colors group"
+              >
+                <span
+                  class="material-symbols-outlined text-text-sub group-hover:text-primary text-[18px]"
+                  >edit</span
+                >
+                <span
+                  class="text-xs font-bold text-text-sub group-hover:text-text-main"
+                  >이름 변경</span
+                >
+              </button>
+
+              <button
+                onclick="editProfileImage()"
+                class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-background-hover text-left transition-colors group"
+              >
+                <span
+                  class="material-symbols-outlined text-text-sub group-hover:text-primary text-[18px]"
+                  >account_circle</span
+                >
+                <span
+                  class="text-xs font-bold text-text-sub group-hover:text-text-main"
+                  >프로필 사진 변경</span
+                >
+              </button>
+            </div>
+
+            <div class="h-px bg-border mx-2"></div>
+
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between">
+                <span
+                  class="text-xs font-bold text-text-sub flex items-center gap-1.5"
+                >
+                  <span class="material-symbols-outlined text-[16px]"
+                    >language</span
+                  >
+                  언어
+                </span>
+                <div class="flex bg-background-section p-1 rounded-lg">
+                  <button
+                    class="px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all"
+                  >
+                    KR
+                  </button>
+                  <button
+                    class="px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all"
+                  >
+                    EN
+                  </button>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span
+                  class="text-xs font-bold text-text-sub flex items-center gap-1.5"
+                >
+                  <span class="material-symbols-outlined text-[16px]"
+                    >dark_mode</span
+                  >
+                  테마
+                </span>
+                <div class="flex bg-background-section p-1 rounded-lg">
+                  <button
+                    class="px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all"
+                  >
+                    Light
+                  </button>
+                  <button
+                    class="px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all"
+                  >
+                    Dark
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </header>
 
     <main
@@ -794,46 +844,66 @@
       </div>
     </div>
 
-    <div id="name-modal" class="fixed inset-0 z-[130] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity backdrop-blur-sm"></div>
+    <div
+      id="name-modal"
+      class="fixed inset-0 z-[130] hidden"
+      aria-labelledby="modal-title"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity backdrop-blur-sm"
+      ></div>
 
-        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div class="flex min-h-full items-center justify-center p-4 text-center">
-                <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all w-full max-w-sm border border-border">
-                    
-                    <div class="bg-white px-5 py-5 sm:p-6">
-                        <h3 class="text-lg font-black leading-6 text-text-main mb-2">이름 변경</h3>
-                        <p class="text-xs text-text-sub mb-4">새로운 닉네임을 입력해주세요 (2~10자)</p>
-                        
-                        <input 
-                            type="text" 
-                            id="input-profile-name" 
-                            class="w-full rounded-xl border-border text-sm font-bold focus:border-primary focus:ring-primary py-3 text-center bg-background-section"
-                            placeholder="변경할 이름"
-                            maxlength="10" 
-                        >
-                        <p id="name-error-msg" class="text-[10px] text-red-500 font-bold mt-2 hidden text-center"></p>
-                    </div>
+      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div
+          class="flex min-h-full items-center justify-center p-4 text-center"
+        >
+          <div
+            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all w-full max-w-sm border border-border"
+          >
+            <div class="bg-white px-5 py-5 sm:p-6">
+              <h3 class="text-lg font-black leading-6 text-text-main mb-2">
+                이름 변경
+              </h3>
+              <p class="text-xs text-text-sub mb-4">
+                새로운 닉네임을 입력해주세요 (2~10자)
+              </p>
 
-                    <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-border">
-                        <button 
-                            type="button" 
-                            onclick="saveProfileName()" 
-                            class="inline-flex w-full justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-primary-dark sm:ml-3 sm:w-auto transition-all"
-                        >
-                            변경 완료
-                        </button>
-                        <button 
-                            type="button" 
-                            onclick="closeNameModal()" 
-                            class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-text-sub shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all"
-                        >
-                            취소
-                        </button>
-                    </div>
-                </div>
+              <input
+                type="text"
+                id="input-profile-name"
+                class="w-full rounded-xl border-border text-sm font-bold focus:border-primary focus:ring-primary py-3 text-center bg-background-section"
+                placeholder="변경할 이름"
+                maxlength="10"
+              />
+              <p
+                id="name-error-msg"
+                class="text-[10px] text-red-500 font-bold mt-2 hidden text-center"
+              ></p>
             </div>
+
+            <div
+              class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-border"
+            >
+              <button
+                type="button"
+                onclick="saveProfileName()"
+                class="inline-flex w-full justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-primary-dark sm:ml-3 sm:w-auto transition-all"
+              >
+                변경 완료
+              </button>
+              <button
+                type="button"
+                onclick="closeNameModal()"
+                class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-text-sub shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all"
+              >
+                취소
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <script src="script.js"></script>
