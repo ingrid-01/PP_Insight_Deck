@@ -154,17 +154,66 @@
           </div>
         </div>
 
-        <div
-          class="size-9 rounded-full bg-accent-fiction/20 border-2 border-white shadow-sm overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary transition-all"
-          title="Lisa님의 프로필"
-        >
-          <img
-            src="https://api.dicebear.com/7.x/initials/svg?seed=Lisa&backgroundColor=B38F64&textColor=ffffff"
-            alt="Profile"
-            class="w-full h-full object-cover"
-          />
+<div class="relative">
+            <button
+              id="profile-btn"
+              class="size-9 rounded-full bg-accent-fiction/20 border-2 border-white shadow-sm overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary transition-all focus:outline-none"
+              title="프로필 설정"
+            >
+              <img
+                id="profile-img"
+                src="https://api.dicebear.com/7.x/initials/svg?seed=Lisa&backgroundColor=B38F64&textColor=ffffff"
+                alt="Profile"
+                class="w-full h-full object-cover"
+              />
+            </button>
+
+            <div 
+                id="profile-dropdown" 
+                class="hidden absolute right-0 top-full mt-3 w-64 bg-white rounded-2xl shadow-xl border border-border z-[200] overflow-hidden origin-top-right transition-all"
+            >
+                <div class="px-5 py-4 border-b border-border bg-gray-50">
+                    <p id="profile-name-display" class="font-black text-sm text-text-main">Lisa</p>
+                    <p class="text-[10px] text-text-sub font-medium">Insight Traveler</p>
+                </div>
+
+                <div class="p-2 space-y-1">
+                    <button onclick="editProfileName()" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-background-hover text-left transition-colors group">
+                        <span class="material-symbols-outlined text-text-sub group-hover:text-primary text-[18px]">edit</span>
+                        <span class="text-xs font-bold text-text-sub group-hover:text-text-main">이름 변경</span>
+                    </button>
+                    
+                    <button onclick="editProfileImage()" class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-background-hover text-left transition-colors group">
+                        <span class="material-symbols-outlined text-text-sub group-hover:text-primary text-[18px]">account_circle</span>
+                        <span class="text-xs font-bold text-text-sub group-hover:text-text-main">프로필 사진 변경</span>
+                    </button>
+                </div>
+
+                <div class="h-px bg-border mx-2"></div>
+
+                <div class="p-4 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-text-sub flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">language</span> 언어
+                        </span>
+                        <div class="flex bg-background-section p-1 rounded-lg">
+                            <button class="px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all">KR</button>
+                            <button class="px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all">EN</button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-text-sub flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">dark_mode</span> 테마
+                        </span>
+                        <div class="flex bg-background-section p-1 rounded-lg">
+                            <button class="px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all">Light</button>
+                            <button class="px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all">Dark</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </header>
 
     <main
