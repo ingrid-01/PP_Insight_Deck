@@ -513,27 +513,37 @@ readAllBtn.addEventListener("click", (e) => {
 const profileBtn = document.getElementById("profile-btn");
 const profileDropdown = document.getElementById("profile-dropdown");
 
-// 드롭다운 토글
+// 드롭다운 토글 (알림 창 닫기 기능 추가)
 profileBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   const isHidden = profileDropdown.classList.contains("hidden");
 
   if (isHidden) {
+    // 프로필 메뉴 열기
     profileDropdown.classList.remove("hidden");
-    // 알림창이 열려있다면 닫기
-    document.getElementById("notification-dropdown").classList.add("hidden");
+
+    // [핵심] 알림 창이 열려있다면 강제로 닫기!
+    if (document.getElementById("notification-dropdown")) {
+      document.getElementById("notification-dropdown").classList.add("hidden");
+    }
   } else {
     profileDropdown.classList.add("hidden");
   }
 });
-
-// 외부 클릭 시 닫기
+// 외부 클릭 시 열려있는 모든 드롭다운 닫기
 document.addEventListener("click", (e) => {
-  if (!profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
-    profileDropdown.classList.add("hidden");
+  // 알림창 닫기
+  if (!notiBtn.contains(e.target) && !notiDropdown.contains(e.target)) {
+    notiDropdown.classList.add("hidden");
+  }
+  // 프로필창 닫기
+  if (profileBtn && profileDropdown) {
+    // 요소가 있을 때만 실행
+    if (!profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+      profileDropdown.classList.add("hidden");
+    }
   }
 });
-
 function editProfileName() {
   alert("다음 단계에서 '이름 변경 모달'을 띄울 예정입니다!");
 }
