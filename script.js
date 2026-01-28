@@ -508,21 +508,21 @@ readAllBtn.addEventListener("click", (e) => {
 // ▼▼▼▼ [여기!] 이 공간에 새 코드를 붙여넣으세요 ▼▼▼▼
 
 /* =========================================
-   8. 프로필 설정 드롭다운 (Step 1-1)
+   8. 프로필 설정 드롭다운 & 이름 변경
    ========================================= */
 const profileBtn = document.getElementById("profile-btn");
 const profileDropdown = document.getElementById("profile-dropdown");
+const nameModal = document.getElementById("name-modal");
+const nameInput = document.getElementById("input-profile-name");
+const nameError = document.getElementById("name-error-msg");
 
-// 드롭다운 토글 (알림 창 닫기 기능 추가)
+// 프로필 메뉴 토글
 profileBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   const isHidden = profileDropdown.classList.contains("hidden");
 
   if (isHidden) {
-    // 프로필 메뉴 열기
     profileDropdown.classList.remove("hidden");
-
-    // [핵심] 알림 창이 열려있다면 강제로 닫기!
     if (document.getElementById("notification-dropdown")) {
       document.getElementById("notification-dropdown").classList.add("hidden");
     }
@@ -530,28 +530,71 @@ profileBtn.addEventListener("click", (e) => {
     profileDropdown.classList.add("hidden");
   }
 });
-// 외부 클릭 시 열려있는 모든 드롭다운 닫기
-document.addEventListener("click", (e) => {
-  // 알림창 닫기
-  if (!notiBtn.contains(e.target) && !notiDropdown.contains(e.target)) {
-    notiDropdown.classList.add("hidden");
-  }
-  // 프로필창 닫기
-  if (profileBtn && profileDropdown) {
-    // 요소가 있을 때만 실행
-    if (!profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
-      profileDropdown.classList.add("hidden");
-    }
-  }
-});
+
+// 이름 변경 모달 열기
 function editProfileName() {
-  alert("다음 단계에서 '이름 변경 모달'을 띄울 예정입니다!");
+  // 1. 드롭다운 닫기
+  profileDropdown.classList.add("hidden");
+
+  // 2. 현재 이름 가져와서 입력창에 채우기
+  const currentName = document.getElementById("profile-name-display").innerText;
+  nameInput.value = currentName;
+  nameError.classList.add("hidden"); // 에러 메시지 초기화
+
+  // 3. 모달 열기
+  nameModal.classList.remove("hidden");
+  nameInput.focus();
+}
+
+// 이름 변경 모달 닫기
+function closeNameModal() {
+  nameModal.classList.add("hidden");
+}
+
+// 이름 저장 로직 (유효성 검사 포함)
+function saveProfileName() {
+  const newName = nameInput.value.trim();
+
+  // 유효성 검사: 2글자 미만일 때
+  if (newName.length < 2) {
+    nameError.innerText = "이름은 최소 2글자 이상이어야 합니다.";
+    nameError.classList.remove("hidden");
+    return;
+  }
+
+  // 유효성 검사: 10글자 초과 (HTML maxlength로 막았지만 더블 체크)
+  if (newName.length > 10) {
+    nameError.innerText = "이름은 10글자를 넘을 수 없습니다.";
+    nameError.classList.remove("hidden");
+    return;
+  }
+
+  // 성공: 이름 업데이트
+  document.getElementById("profile-name-display").innerText = newName;
+
+  // (선택사항) 로컬 스토리지에 저장해서 새로고침해도 유지되게 하기
+  localStorage.setItem("userName", newName);
+
+  alert(`이름이 '${newName}'(으)로 변경되었습니다! ✨`);
+  closeNameModal();
 }
 
 function editProfileImage() {
   alert("다음 단계에서 '사진 변경 기능'을 구현할 예정입니다!");
 }
 
+/* =========================================
+   9. 초기화 (저장된 이름 불러오기)
+   ========================================= */
+window.addEventListener("DOMContentLoaded", () => {
+  renderInsights();
+
+  // 저장된 이름이 있으면 불러오기
+  const savedName = localStorage.getItem("userName");
+  if (savedName) {
+    document.getElementById("profile-name-display").innerText = savedName;
+  }
+});
 // ▲▲▲▲ 여기까지 붙여넣으면 됩니다 ▲▲▲▲
 
 // 이 줄은 파일의 항상 맨 마지막에 유지하세요!
