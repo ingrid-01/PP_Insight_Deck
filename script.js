@@ -2,6 +2,7 @@
    1. 데이터 및 설정
    ========================================= */
 let currentLang = localStorage.getItem("userLang") || "ko";
+let currentTheme = localStorage.getItem("userTheme") || "light"; // 테마 기본값
 
 const translations = {
   ko: {
@@ -222,7 +223,7 @@ const styles = {
 };
 
 /* =========================================
-   2. 언어 및 필터 설정
+   2. 언어 및 테마 설정
    ========================================= */
 function setLanguage(lang) {
   currentLang = lang;
@@ -243,17 +244,48 @@ function setLanguage(lang) {
   updateLangButtons();
 }
 
-function updateLangButtons() {
-  document.getElementById("btn-lang-kr").className =
-    currentLang === "ko"
-      ? "px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all"
-      : "px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all";
-  document.getElementById("btn-lang-en").className =
-    currentLang === "en"
-      ? "px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all"
-      : "px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all";
+// [New] 테마 설정 함수
+function setTheme(theme) {
+  currentTheme = theme;
+  localStorage.setItem("userTheme", theme);
+
+  // HTML 태그에 'dark' 클래스 토글
+  if (theme === "dark") {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+  updateThemeButtons();
 }
 
+function updateLangButtons() {
+  const activeClass =
+    "px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all dark:bg-gray-600 dark:text-white";
+  const inactiveClass =
+    "px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all dark:text-gray-400 dark:hover:text-white";
+
+  document.getElementById("btn-lang-kr").className =
+    currentLang === "ko" ? activeClass : inactiveClass;
+  document.getElementById("btn-lang-en").className =
+    currentLang === "en" ? activeClass : inactiveClass;
+}
+
+// [New] 테마 버튼 스타일 업데이트
+function updateThemeButtons() {
+  const activeClass =
+    "px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all dark:bg-gray-600 dark:text-white";
+  const inactiveClass =
+    "px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all dark:text-gray-400 dark:hover:text-white";
+
+  document.getElementById("btn-theme-light").className =
+    currentTheme === "light" ? activeClass : inactiveClass;
+  document.getElementById("btn-theme-dark").className =
+    currentTheme === "dark" ? activeClass : inactiveClass;
+}
+
+/* =========================================
+   3. 필터링 및 렌더링
+   ========================================= */
 let currentFilter = "all";
 function setFilter(category) {
   currentFilter = category;
@@ -274,16 +306,16 @@ function updateFilterButtons() {
     const btn = document.getElementById(`filter-${type}`);
     if (!btn) return;
     btn.innerText = translations[currentLang].filters[type];
-    btn.className =
-      type === currentFilter
-        ? "px-3 py-1.5 rounded-full bg-primary text-white text-xs font-bold shadow-sm transition-all"
-        : "px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary hover:bg-background-hover";
+
+    const activeClass =
+      "px-3 py-1.5 rounded-full bg-primary text-white text-xs font-bold shadow-sm transition-all";
+    const inactiveClass =
+      "px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary hover:bg-background-hover dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light";
+
+    btn.className = type === currentFilter ? activeClass : inactiveClass;
   });
 }
 
-/* =========================================
-   3. 메인 렌더링 (그래프 업데이트 포함)
-   ========================================= */
 function renderInsights() {
   const zones = {
     ready: document.getElementById("zone-ready"),
@@ -309,18 +341,18 @@ function renderInsights() {
         : data.subCategory;
 
     const cardHTML = `
-      <article id="card-${data.id}" class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer group mt-5">
+      <article id="card-${data.id}" class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer group mt-5 dark:bg-gray-800 dark:border-gray-700">
           <div class="flex justify-between items-start mb-3">
               <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider"><span class="material-symbols-outlined !text-[14px]">${style.icon}</span>${subCatText}</div>
-              <span class="text-[10px] font-bold text-text-muted">${data.date}</span>
+              <span class="text-[10px] font-bold text-text-muted dark:text-gray-400">${data.date}</span>
           </div>
-          <h4 class="font-bold text-lg leading-snug mb-3 serif group-hover:text-primary transition-colors">${data.title}</h4>
-          <p class="text-sm text-text-sub font-medium leading-relaxed mb-4 line-clamp-3">"${data.content}"</p>
-          ${data.reflect ? `<div class="bg-background-section/50 p-4 rounded-xl mb-4"><h5 class="text-xs font-bold text-accent-dialogue mb-2 flex items-center gap-1.5 uppercase tracking-wider"><span class="material-symbols-outlined !text-[16px]">psychology_alt</span> ${translations[currentLang].logModal.reflect.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium line-clamp-3">${data.reflect}</p></div>` : ""}
-          ${data.action ? `<div class="bg-accent-action/10 p-4 rounded-xl mb-4"><h5 class="text-xs font-bold text-accent-action mb-2 flex items-center gap-1.5 uppercase tracking-wider"><span class="material-symbols-outlined !text-[16px]">bolt</span> ${translations[currentLang].logModal.action.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium">${data.action}</p></div>` : ""}
-          ${data.dialogue ? `<div class="bg-primary/5 p-4 rounded-xl mb-4 border border-primary/10"><h5 class="text-xs font-bold text-primary mb-2 flex items-center gap-1.5 uppercase tracking-wider"><span class="material-symbols-outlined !text-[16px]">forum</span> ${translations[currentLang].logModal.dialogue.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium italic">"${data.dialogue}"</p></div>` : ""}
-          ${data.discussionTopic ? `<div class="bg-accent-dialogue/10 p-3 rounded-xl mb-4 border border-accent-dialogue/20"><h5 class="text-[10px] font-bold text-accent-dialogue mb-1 uppercase">💬 ${translations[currentLang].logModal.topic.title}</h5><p class="text-xs text-text-main font-bold">"${data.discussionTopic}"</p></div>` : ""}
-          <button onclick="openLogModal(${data.id})" class="w-full py-2.5 rounded-xl border border-dashed border-border text-text-sub text-xs font-bold flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary-light hover:text-primary transition-all"><span class="material-symbols-outlined !text-[18px]">add</span> Log</button>
+          <h4 class="font-bold text-lg leading-snug mb-3 serif group-hover:text-primary transition-colors dark:text-white dark:group-hover:text-primary-light">${data.title}</h4>
+          <p class="text-sm text-text-sub font-medium leading-relaxed mb-4 line-clamp-3 dark:text-gray-300">"${data.content}"</p>
+          ${data.reflect ? `<div class="bg-background-section/50 p-4 rounded-xl mb-4 dark:bg-gray-700"><h5 class="text-xs font-bold text-accent-dialogue mb-2 flex items-center gap-1.5 uppercase tracking-wider"><span class="material-symbols-outlined !text-[16px]">psychology_alt</span> ${translations[currentLang].logModal.reflect.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium line-clamp-3 dark:text-gray-200">${data.reflect}</p></div>` : ""}
+          ${data.action ? `<div class="bg-accent-action/10 p-4 rounded-xl mb-4 dark:bg-green-900/20"><h5 class="text-xs font-bold text-accent-action mb-2 flex items-center gap-1.5 uppercase tracking-wider"><span class="material-symbols-outlined !text-[16px]">bolt</span> ${translations[currentLang].logModal.action.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium dark:text-gray-200">${data.action}</p></div>` : ""}
+          ${data.dialogue ? `<div class="bg-primary/5 p-4 rounded-xl mb-4 border border-primary/10 dark:bg-gray-700 dark:border-gray-600"><h5 class="text-xs font-bold text-primary mb-2 flex items-center gap-1.5 uppercase tracking-wider dark:text-primary-light"><span class="material-symbols-outlined !text-[16px]">forum</span> ${translations[currentLang].logModal.dialogue.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium italic dark:text-gray-200">"${data.dialogue}"</p></div>` : ""}
+          ${data.discussionTopic ? `<div class="bg-accent-dialogue/10 p-3 rounded-xl mb-4 border border-accent-dialogue/20 dark:bg-orange-900/20"><h5 class="text-[10px] font-bold text-accent-dialogue mb-1 uppercase">💬 ${translations[currentLang].logModal.topic.title}</h5><p class="text-xs text-text-main font-bold dark:text-gray-200">"${data.discussionTopic}"</p></div>` : ""}
+          <button onclick="openLogModal(${data.id})" class="w-full py-2.5 rounded-xl border border-dashed border-border text-text-sub text-xs font-bold flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary-light hover:text-primary transition-all dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-primary-light"><span class="material-symbols-outlined !text-[18px]">add</span> Log</button>
       </article>`;
     zones[data.status].insertAdjacentHTML("beforeend", cardHTML);
   });
@@ -346,14 +378,11 @@ function renderInsights() {
   document.querySelector("#zone-internalized h3").innerHTML =
     `<span class="size-2.5 rounded-full bg-accent-nonfiction"></span> ${translations[currentLang].zones.internalized}`;
 
-  // [중요] 그래프 업데이트 함수 호출
   updateMapStats();
-
   userStats.postCount = insights.length;
   updateProfileUI();
 }
 
-// [New] 그래프 및 퍼센트 자동 업데이트 로직
 function updateMapStats() {
   const total = insights.length;
   const counts = {
@@ -364,37 +393,26 @@ function updateMapStats() {
     art: 0,
     fiction: 0,
   };
-
-  // 카테고리별 개수 세기
   insights.forEach((item) => {
-    if (counts.hasOwnProperty(item.category)) {
-      counts[item.category]++;
-    }
+    if (counts.hasOwnProperty(item.category)) counts[item.category]++;
   });
 
-  // 그래프 및 텍스트 업데이트
   for (const [cat, count] of Object.entries(counts)) {
     const pct = total === 0 ? 0 : Math.round((count / total) * 100);
-
-    // 1. 그래프 너비 조정
     const bar = document.getElementById(`bar-${cat}`);
     if (bar) bar.style.width = `${pct}%`;
-
-    // 2. 퍼센트 텍스트 변경
     const txt = document.getElementById(`pct-${cat}`);
     if (txt) txt.innerText = `${pct}%`;
-
-    // 3. 0%면 흐리게 처리 (시각적 개선)
     if (txt)
       txt.className =
         pct === 0
-          ? "text-xs font-black text-text-muted transition-colors"
+          ? "text-xs font-black text-text-muted transition-colors dark:text-gray-600"
           : `text-xs font-black ${styles[cat].badgeText.replace("bg-", "text-")} transition-colors`;
   }
 }
 
 /* =========================================
-   4. 모달 관련 함수들 (글쓰기, 로그, 이름, 사진)
+   4. 모달 등 기타 로직
    ========================================= */
 const modal = document.getElementById("write-modal");
 const openBtn = document.getElementById("new-insight-btn");
@@ -506,7 +524,6 @@ function saveRichInput() {
   }
 }
 
-// 알림 및 프로필 UI 관련
 const notiBtn = document.getElementById("notification-btn");
 const notiDropdown = document.getElementById("notification-dropdown");
 const profileBtn = document.getElementById("profile-btn");
@@ -535,7 +552,6 @@ document.addEventListener("click", (e) => {
     profileDropdown.classList.add("hidden");
 });
 
-// 프로필 설정 함수들 (이름, 사진)
 const nameModal = document.getElementById("name-modal");
 const nameInput = document.getElementById("input-profile-name");
 const photoModal = document.getElementById("photo-modal");
@@ -636,9 +652,13 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-// 초기화
+/* =========================================
+   5. 초기화
+   ========================================= */
 window.addEventListener("DOMContentLoaded", () => {
   setLanguage(currentLang);
+  setTheme(currentTheme); // [New] 테마 초기화
+
   const savedName = localStorage.getItem("userName");
   if (savedName)
     document.getElementById("profile-name-display").innerText = savedName;
