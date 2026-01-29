@@ -747,19 +747,83 @@ function saveProfileName() {
   closeNameModal();
 }
 
+/* =========================================
+   10. 프로필 사진 변경 (Step 1.4.1 - 이니셜 모드)
+   ========================================= */
+const photoModal = document.getElementById("photo-modal");
+const previewImg = document.getElementById("preview-profile-img");
+
+// 현재 선택된 설정 임시 저장용
+let tempColor = "B38F64"; // 기본값
+
+// 모달 열기
 function editProfileImage() {
-  alert("다음 단계에서 '사진 변경 기능'을 구현할 예정입니다!");
+  profileDropdown.classList.add("hidden");
+  photoModal.classList.remove("hidden");
+
+  // 현재 이름 가져오기 (Lisa 등)
+  const currentName = document.getElementById("profile-name-display").innerText;
+
+  // 모달 열 때 현재 미리보기 생성 (기존 선택 색상 or 기본색)
+  updatePreview(currentName, tempColor);
+}
+
+// 모달 닫기
+function closePhotoModal() {
+  photoModal.classList.add("hidden");
+}
+
+// 색상 선택 시 실행
+function selectBgColor(color) {
+  tempColor = color; // 선택한 색상 기억
+  const currentName = document.getElementById("profile-name-display").innerText;
+  updatePreview(currentName, tempColor);
+}
+
+// 미리보기 이미지 업데이트 (DiceBear API 활용)
+function updatePreview(name, color) {
+  // DiceBear Initials 스타일 사용
+  // seed: 이름(첫 글자 자동 추출됨), backgroundColor: 선택한 헥사코드
+  const newUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${name}&backgroundColor=${color}&textColor=ffffff`;
+  previewImg.src = newUrl;
+}
+
+// [적용하기] 버튼 클릭 시
+function saveProfileImage() {
+  const currentName = document.getElementById("profile-name-display").innerText;
+  const finalUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${currentName}&backgroundColor=${tempColor}&textColor=ffffff`;
+
+  // 1. 헤더의 프로필 이미지 교체
+  document.getElementById("profile-img").src = finalUrl;
+
+  // 2. 로컬 스토리지에 저장 (새로고침 해도 유지)
+  localStorage.setItem("userProfileImg", finalUrl);
+  localStorage.setItem("userProfileColor", tempColor); // 색상도 기억해두면 좋음
+
+  alert("프로필 이미지가 변경되었습니다! 🎨");
+  closePhotoModal();
 }
 
 /* =========================================
-   9. 초기화 (Initialization)
+   9. 초기화 (수정됨)
    ========================================= */
 window.addEventListener("DOMContentLoaded", () => {
-  renderInsights(); // 렌더링 시 userStats 업데이트 및 profile UI 업데이트가 함께 실행됨
+  renderInsights();
 
-  // 저장된 이름 불러오기
+  // 1. 저장된 이름 불러오기
   const savedName = localStorage.getItem("userName");
   if (savedName) {
     document.getElementById("profile-name-display").innerText = savedName;
+  }
+
+  // 2. [New] 저장된 프로필 이미지 불러오기
+  const savedImg = localStorage.getItem("userProfileImg");
+  const savedColor = localStorage.getItem("userProfileColor");
+
+  if (savedImg) {
+    document.getElementById("profile-img").src = savedImg;
+  }
+  if (savedColor) {
+    tempColor = savedColor; // 다음에 모달 열 때 이 색상 기억
   }
 });
