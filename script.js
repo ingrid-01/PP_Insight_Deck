@@ -748,7 +748,7 @@ function saveProfileName() {
 }
 
 /* =========================================
-   10. 프로필 사진 변경 (Step 1.4.1 - 이니셜 모드)
+   10. 프로필 사진 변경 (Step 1.4.1 - 이니셜 모드 수정)
    ========================================= */
 const photoModal = document.getElementById("photo-modal");
 const previewImg = document.getElementById("preview-profile-img");
@@ -780,30 +780,27 @@ function selectBgColor(color) {
   updatePreview(currentName, tempColor);
 }
 
-// 미리보기 이미지 업데이트 (DiceBear API 활용)
+// [수정됨] chars=1 옵션 추가
 function updatePreview(name, color) {
-  // DiceBear Initials 스타일 사용
-  // seed: 이름(첫 글자 자동 추출됨), backgroundColor: 선택한 헥사코드
-  const newUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${name}&backgroundColor=${color}&textColor=ffffff`;
+  // &chars=1 : 한 글자만 출력하라
+  const newUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${name}&backgroundColor=${color}&textColor=ffffff&chars=1`;
   previewImg.src = newUrl;
 }
 
-// [적용하기] 버튼 클릭 시
+// [수정됨] chars=1 옵션 추가
 function saveProfileImage() {
   const currentName = document.getElementById("profile-name-display").innerText;
-  const finalUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${currentName}&backgroundColor=${tempColor}&textColor=ffffff`;
+  // &chars=1 : 한 글자만 출력하라
+  const finalUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${currentName}&backgroundColor=${tempColor}&textColor=ffffff&chars=1`;
 
-  // 1. 헤더의 프로필 이미지 교체
   document.getElementById("profile-img").src = finalUrl;
 
-  // 2. 로컬 스토리지에 저장 (새로고침 해도 유지)
   localStorage.setItem("userProfileImg", finalUrl);
-  localStorage.setItem("userProfileColor", tempColor); // 색상도 기억해두면 좋음
+  localStorage.setItem("userProfileColor", tempColor);
 
   alert("프로필 이미지가 변경되었습니다! 🎨");
   closePhotoModal();
 }
-
 /* =========================================
    9. 초기화 (수정됨)
    ========================================= */
