@@ -325,16 +325,113 @@
               >bubble_chart</span
             >
           </div>
+
           <div
             class="h-4 w-full rounded-full bg-background-section overflow-hidden flex mb-4"
           >
-            <div class="h-full bg-accent-nonfiction" style="width: 30%"></div>
-            <div class="h-full bg-accent-news" style="width: 20%"></div>
-            <div class="h-full bg-accent-movie" style="width: 20%"></div>
-            <div class="h-full bg-accent-media" style="width: 15%"></div>
-            <div class="h-full bg-accent-art" style="width: 15%"></div>
-            <div class="h-full bg-accent-fiction" style="width: 0%"></div>
+            <div
+              id="bar-nonfiction"
+              class="h-full bg-accent-nonfiction transition-all duration-1000"
+              style="width: 0%"
+            ></div>
+            <div
+              id="bar-news"
+              class="h-full bg-accent-news transition-all duration-1000"
+              style="width: 0%"
+            ></div>
+            <div
+              id="bar-movie"
+              class="h-full bg-accent-movie transition-all duration-1000"
+              style="width: 0%"
+            ></div>
+            <div
+              id="bar-media"
+              class="h-full bg-accent-media transition-all duration-1000"
+              style="width: 0%"
+            ></div>
+            <div
+              id="bar-art"
+              class="h-full bg-accent-art transition-all duration-1000"
+              style="width: 0%"
+            ></div>
+            <div
+              id="bar-fiction"
+              class="h-full bg-accent-fiction transition-all duration-1000"
+              style="width: 0%"
+            ></div>
           </div>
+
+          <div class="grid grid-cols-3 gap-y-4 gap-x-2 text-center mb-6">
+            <div class="flex flex-col items-center">
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="size-2 rounded-full bg-accent-nonfiction"></span>
+                <span class="text-[10px] font-bold text-text-sub uppercase"
+                  >Non-Fi</span
+                >
+              </div>
+              <span
+                id="pct-nonfiction"
+                class="text-xs font-black text-accent-nonfiction"
+                >0%</span
+              >
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="size-2 rounded-full bg-accent-news"></span>
+                <span class="text-[10px] font-bold text-text-sub uppercase"
+                  >News</span
+                >
+              </div>
+              <span id="pct-news" class="text-xs font-black text-accent-news"
+                >0%</span
+              >
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="size-2 rounded-full bg-accent-movie"></span>
+                <span class="text-[10px] font-bold text-text-sub uppercase"
+                  >Movie</span
+                >
+              </div>
+              <span id="pct-movie" class="text-xs font-black text-accent-movie"
+                >0%</span
+              >
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="size-2 rounded-full bg-accent-media"></span>
+                <span class="text-[10px] font-bold text-text-sub uppercase"
+                  >Media</span
+                >
+              </div>
+              <span id="pct-media" class="text-xs font-black text-accent-media"
+                >0%</span
+              >
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="size-2 rounded-full bg-accent-art"></span>
+                <span class="text-[10px] font-bold text-text-sub uppercase"
+                  >Art</span
+                >
+              </div>
+              <span id="pct-art" class="text-xs font-black text-accent-art"
+                >0%</span
+              >
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="size-2 rounded-full bg-accent-fiction"></span>
+                <span class="text-[10px] font-bold text-text-sub uppercase"
+                  >Fiction</span
+                >
+              </div>
+              <span id="pct-fiction" class="text-xs font-black text-text-muted"
+                >0%</span
+              >
+            </div>
+          </div>
+
           <div class="grid grid-cols-3 gap-4 border-t border-border pt-5">
             <div class="text-center">
               <span
