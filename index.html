@@ -989,14 +989,21 @@
                 </div>
               </div>
 
-              <div
-                class="border-t border-border pt-4 mt-4 opacity-50 pointer-events-none"
-              >
+              <div class="border-t border-border pt-4 mt-4">
                 <p class="text-xs font-bold text-text-sub mb-2">
-                  이미지 직접 업로드 (준비 중)
+                  이미지 직접 업로드
                 </p>
+
+                <input
+                  type="file"
+                  id="profile-upload-input"
+                  accept="image/*"
+                  class="hidden"
+                />
+
                 <button
-                  class="w-full py-2 border border-dashed border-border rounded-xl text-xs text-text-muted flex items-center justify-center gap-2"
+                  onclick="triggerFileUpload()"
+                  class="w-full py-2 border border-dashed border-border rounded-xl text-xs text-text-muted flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary hover:text-primary transition-all"
                 >
                   <span class="material-symbols-outlined text-[16px]"
                     >upload</span
