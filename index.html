@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="style.css" />
     <script>
       tailwind.config = {
+        darkMode: "class", // [중요] 다크모드 활성화 설정
         theme: {
           extend: {
             fontFamily: {
@@ -55,10 +56,29 @@
         },
       };
     </script>
+    <style>
+      /* 부드러운 테마 전환 효과 */
+      body,
+      div,
+      nav,
+      button,
+      input,
+      textarea,
+      header,
+      section,
+      article {
+        transition:
+          background-color 0.3s ease,
+          border-color 0.3s ease,
+          color 0.3s ease;
+      }
+    </style>
   </head>
-  <body class="font-sans text-text-main">
+  <body
+    class="font-sans text-text-main bg-background transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100"
+  >
     <header
-      class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-border px-6 lg:px-8 py-4 flex items-center justify-between shadow-sm"
+      class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-border px-6 lg:px-8 py-4 flex items-center justify-between shadow-sm dark:bg-gray-800/90 dark:border-gray-700"
     >
       <div class="flex items-center gap-4">
         <div
@@ -70,11 +90,13 @@
         </div>
         <div>
           <h1
-            class="font-black text-xl tracking-tight text-text-main leading-tight"
+            class="font-black text-xl tracking-tight text-text-main leading-tight dark:text-white"
           >
             Insight Deck
           </h1>
-          <p class="text-xs text-text-sub font-bold tracking-wider uppercase">
+          <p
+            class="text-xs text-text-sub font-bold tracking-wider uppercase dark:text-gray-400"
+          >
             위기지학(爲己之學)
           </p>
         </div>
@@ -84,19 +106,19 @@
         <a
           href="#"
           data-i18n="nav.hub"
-          class="text-primary relative after:absolute after:bottom-[-18px] after:left-0 after:w-full after:h-0.5 after:bg-primary"
+          class="text-primary relative after:absolute after:bottom-[-18px] after:left-0 after:w-full after:h-0.5 after:bg-primary dark:text-primary-light"
           >Conversation Hub</a
         >
         <a
           href="#"
           data-i18n="nav.archive"
-          class="text-text-sub hover:text-primary transition-colors"
+          class="text-text-sub hover:text-primary transition-colors dark:text-gray-400 dark:hover:text-primary-light"
           >Archive</a
         >
         <a
           href="#"
           data-i18n="nav.stats"
-          class="text-text-sub hover:text-primary transition-colors"
+          class="text-text-sub hover:text-primary transition-colors dark:text-gray-400 dark:hover:text-primary-light"
           >Statistics</a
         >
       </nav>
@@ -111,9 +133,10 @@
             type="text"
             data-i18n="searchPlaceholder"
             placeholder="통찰, 주제, 질문 검색..."
-            class="w-full pl-10 pr-4 py-2.5 bg-background-section border border-transparent rounded-full text-sm font-medium focus:outline-none focus:bg-white focus:border-primary-light transition-all placeholder:text-text-muted"
+            class="w-full pl-10 pr-4 py-2.5 bg-background-section border border-transparent rounded-full text-sm font-medium focus:outline-none focus:bg-white focus:border-primary-light transition-all placeholder:text-text-muted dark:bg-gray-700 dark:text-white dark:focus:bg-gray-600 dark:placeholder-gray-400"
           />
         </div>
+
         <button
           id="new-insight-btn"
           class="btn-primary flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-primary-dark transition-all shadow-sm active:scale-[0.98]"
@@ -125,27 +148,30 @@
         <div class="relative">
           <button
             id="notification-btn"
-            class="relative size-9 rounded-full bg-background-section flex items-center justify-center text-text-sub hover:bg-border transition-all focus:outline-none"
+            class="relative size-9 rounded-full bg-background-section flex items-center justify-center text-text-sub hover:bg-border transition-all focus:outline-none dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
           >
             <span class="material-symbols-outlined !text-[20px]"
               >notifications</span
             >
             <span
               id="notification-badge"
-              class="hidden absolute top-0 right-0 size-2.5 bg-red-500 rounded-full border-2 border-white"
+              class="hidden absolute top-0 right-0 size-2.5 bg-red-500 rounded-full border-2 border-white dark:border-gray-800"
             ></span>
           </button>
+
           <div
             id="notification-dropdown"
-            class="hidden absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-border z-[200] overflow-hidden origin-top-right transition-all"
+            class="hidden absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-border z-[200] overflow-hidden origin-top-right transition-all dark:bg-gray-800 dark:border-gray-700"
           >
             <div
-              class="px-5 py-4 border-b border-border bg-gray-50 flex justify-between items-center"
+              class="px-5 py-4 border-b border-border bg-gray-50 flex justify-between items-center dark:bg-gray-700 dark:border-gray-600"
             >
-              <h3 class="font-bold text-sm text-text-main">Notifications</h3>
+              <h3 class="font-bold text-sm text-text-main dark:text-white">
+                Notifications
+              </h3>
               <span
                 id="btn-read-all"
-                class="text-[10px] font-bold text-primary cursor-pointer hover:underline"
+                class="text-[10px] font-bold text-primary cursor-pointer hover:underline dark:text-primary-light"
                 >Read All</span
               >
             </div>
@@ -156,12 +182,12 @@
         <div class="relative">
           <button
             id="profile-btn"
-            class="size-9 rounded-full bg-accent-fiction/20 border-2 border-white shadow-sm overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary transition-all focus:outline-none"
+            class="size-9 rounded-full bg-accent-fiction/20 border-2 border-white shadow-sm overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary transition-all focus:outline-none dark:border-gray-600"
             title="프로필 설정"
           >
             <img
               id="profile-img"
-              src="https://api.dicebear.com/7.x/initials/svg?seed=Lisa&backgroundColor=B38F64&textColor=ffffff&chars=1"
+              src=""
               alt="Profile"
               class="w-full h-full object-cover"
             />
@@ -169,10 +195,10 @@
 
           <div
             id="profile-dropdown"
-            class="hidden absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-border z-[200] overflow-hidden origin-top-right transition-all"
+            class="hidden absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-border z-[200] overflow-hidden origin-top-right transition-all dark:bg-gray-800 dark:border-gray-700"
           >
             <div
-              class="px-5 py-5 border-b border-border bg-gradient-to-br from-[#F5F3F0] to-white relative overflow-hidden"
+              class="px-5 py-5 border-b border-border bg-gradient-to-br from-[#F5F3F0] to-white relative overflow-hidden dark:from-gray-700 dark:to-gray-800 dark:border-gray-600"
             >
               <div class="absolute top-0 right-0 p-4 opacity-10">
                 <span class="material-symbols-outlined text-[60px] text-primary"
@@ -183,30 +209,30 @@
                 <div class="flex justify-between items-end mb-1">
                   <p
                     id="profile-level-badge"
-                    class="text-xs font-black text-primary bg-primary/10 px-2 py-0.5 rounded text-center"
+                    class="text-xs font-black text-primary bg-primary/10 px-2 py-0.5 rounded text-center dark:bg-primary/20 dark:text-primary-light"
                   >
                     Lv.0
                   </p>
                   <span
                     id="profile-next-goal"
-                    class="text-[10px] text-text-muted font-bold"
+                    class="text-[10px] text-text-muted font-bold dark:text-gray-400"
                     >다음: 기록 1개</span
                   >
                 </div>
                 <h3
                   id="profile-name-display"
-                  class="font-black text-lg text-text-main leading-tight"
+                  class="font-black text-lg text-text-main leading-tight dark:text-white"
                 >
                   Lisa
                 </h3>
                 <p
                   id="profile-title-display"
-                  class="text-xs font-bold text-text-sub mb-3"
+                  class="text-xs font-bold text-text-sub mb-3 dark:text-gray-300"
                 >
                   Insight Newbie
                 </p>
                 <div
-                  class="w-full bg-border/50 h-2 rounded-full overflow-hidden mb-2"
+                  class="w-full bg-border/50 h-2 rounded-full overflow-hidden mb-2 dark:bg-gray-600"
                 >
                   <div
                     id="profile-progress-bar"
@@ -216,7 +242,7 @@
                 </div>
                 <p
                   id="profile-desc-display"
-                  class="text-[10px] text-text-muted font-medium leading-relaxed"
+                  class="text-[10px] text-text-muted font-medium leading-relaxed dark:text-gray-400"
                 >
                   ...
                 </p>
@@ -226,56 +252,58 @@
             <div class="p-2 space-y-1">
               <button
                 onclick="editProfileName()"
-                class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-background-hover text-left transition-colors group"
+                class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-background-hover text-left transition-colors group dark:hover:bg-gray-700"
               >
                 <span
-                  class="material-symbols-outlined text-text-sub group-hover:text-primary text-[18px]"
+                  class="material-symbols-outlined text-text-sub group-hover:text-primary text-[18px] dark:text-gray-400 dark:group-hover:text-primary-light"
                   >edit</span
                 >
                 <span
                   data-i18n="profile.editName"
-                  class="text-xs font-bold text-text-sub group-hover:text-text-main"
+                  class="text-xs font-bold text-text-sub group-hover:text-text-main dark:text-gray-300 dark:group-hover:text-white"
                   >이름 변경</span
                 >
               </button>
               <button
                 onclick="editProfileImage()"
-                class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-background-hover text-left transition-colors group"
+                class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-background-hover text-left transition-colors group dark:hover:bg-gray-700"
               >
                 <span
-                  class="material-symbols-outlined text-text-sub group-hover:text-primary text-[18px]"
+                  class="material-symbols-outlined text-text-sub group-hover:text-primary text-[18px] dark:text-gray-400 dark:group-hover:text-primary-light"
                   >account_circle</span
                 >
                 <span
                   data-i18n="profile.editPhoto"
-                  class="text-xs font-bold text-text-sub group-hover:text-text-main"
+                  class="text-xs font-bold text-text-sub group-hover:text-text-main dark:text-gray-300 dark:group-hover:text-white"
                   >프로필 사진 변경</span
                 >
               </button>
             </div>
-            <div class="h-px bg-border mx-2"></div>
+            <div class="h-px bg-border mx-2 dark:bg-gray-700"></div>
             <div class="p-4 space-y-4">
               <div class="flex items-center justify-between">
                 <span
-                  class="text-xs font-bold text-text-sub flex items-center gap-1.5"
+                  class="text-xs font-bold text-text-sub flex items-center gap-1.5 dark:text-gray-400"
                 >
                   <span class="material-symbols-outlined text-[16px]"
                     >language</span
                   >
                   <span data-i18n="profile.lang">언어</span>
                 </span>
-                <div class="flex bg-background-section p-1 rounded-lg">
+                <div
+                  class="flex bg-background-section p-1 rounded-lg dark:bg-gray-700"
+                >
                   <button
                     id="btn-lang-kr"
                     onclick="setLanguage('ko')"
-                    class="px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all"
+                    class="px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all dark:bg-gray-600 dark:text-white"
                   >
                     KR
                   </button>
                   <button
                     id="btn-lang-en"
                     onclick="setLanguage('en')"
-                    class="px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all"
+                    class="px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all dark:text-gray-400 dark:hover:text-white"
                   >
                     EN
                   </button>
@@ -283,20 +311,26 @@
               </div>
               <div class="flex items-center justify-between">
                 <span
-                  class="text-xs font-bold text-text-sub flex items-center gap-1.5"
+                  class="text-xs font-bold text-text-sub flex items-center gap-1.5 dark:text-gray-400"
                 >
                   <span class="material-symbols-outlined text-[16px]"
                     >dark_mode</span
                   >
                   <span data-i18n="profile.theme">테마</span>
                 </span>
-                <div class="flex bg-background-section p-1 rounded-lg">
+                <div
+                  class="flex bg-background-section p-1 rounded-lg dark:bg-gray-700"
+                >
                   <button
+                    id="btn-theme-light"
+                    onclick="setTheme('light')"
                     class="px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all"
                   >
                     Light
                   </button>
                   <button
+                    id="btn-theme-dark"
+                    onclick="setTheme('dark')"
                     class="px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all"
                   >
                     Dark
@@ -314,10 +348,13 @@
     >
       <aside class="lg:col-span-3 space-y-8">
         <section
-          class="bg-white rounded-3xl p-6 border border-border shadow-sm"
+          class="bg-white rounded-3xl p-6 border border-border shadow-sm dark:bg-gray-800 dark:border-gray-700"
         >
           <div class="flex items-center justify-between mb-5">
-            <h2 data-i18n="sidebar.map" class="font-black text-lg">
+            <h2
+              data-i18n="sidebar.map"
+              class="font-black text-lg dark:text-white"
+            >
               나의 지식 지도
             </h2>
             <span
@@ -327,7 +364,7 @@
           </div>
 
           <div
-            class="h-4 w-full rounded-full bg-background-section overflow-hidden flex mb-4"
+            class="h-4 w-full rounded-full bg-background-section overflow-hidden flex mb-4 dark:bg-gray-700"
           >
             <div
               id="bar-nonfiction"
@@ -364,8 +401,9 @@
           <div class="grid grid-cols-3 gap-y-4 gap-x-2 text-center mb-6">
             <div class="flex flex-col items-center">
               <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-nonfiction"></span>
-                <span class="text-[10px] font-bold text-text-sub uppercase"
+                <span class="size-2 rounded-full bg-accent-nonfiction"></span
+                ><span
+                  class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
                   >Non-Fi</span
                 >
               </div>
@@ -377,8 +415,9 @@
             </div>
             <div class="flex flex-col items-center">
               <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-news"></span>
-                <span class="text-[10px] font-bold text-text-sub uppercase"
+                <span class="size-2 rounded-full bg-accent-news"></span
+                ><span
+                  class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
                   >News</span
                 >
               </div>
@@ -388,8 +427,9 @@
             </div>
             <div class="flex flex-col items-center">
               <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-movie"></span>
-                <span class="text-[10px] font-bold text-text-sub uppercase"
+                <span class="size-2 rounded-full bg-accent-movie"></span
+                ><span
+                  class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
                   >Movie</span
                 >
               </div>
@@ -399,8 +439,9 @@
             </div>
             <div class="flex flex-col items-center">
               <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-media"></span>
-                <span class="text-[10px] font-bold text-text-sub uppercase"
+                <span class="size-2 rounded-full bg-accent-media"></span
+                ><span
+                  class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
                   >Media</span
                 >
               </div>
@@ -410,8 +451,9 @@
             </div>
             <div class="flex flex-col items-center">
               <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-art"></span>
-                <span class="text-[10px] font-bold text-text-sub uppercase"
+                <span class="size-2 rounded-full bg-accent-art"></span
+                ><span
+                  class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
                   >Art</span
                 >
               </div>
@@ -421,8 +463,9 @@
             </div>
             <div class="flex flex-col items-center">
               <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-fiction"></span>
-                <span class="text-[10px] font-bold text-text-sub uppercase"
+                <span class="size-2 rounded-full bg-accent-fiction"></span
+                ><span
+                  class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
                   >Fiction</span
                 >
               </div>
@@ -432,16 +475,18 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-3 gap-4 border-t border-border pt-5">
+          <div
+            class="grid grid-cols-3 gap-4 border-t border-border pt-5 dark:border-gray-700"
+          >
             <div class="text-center">
               <span
                 id="stat-month"
-                class="block font-black text-2xl text-primary leading-tight"
+                class="block font-black text-2xl text-primary leading-tight dark:text-primary-light"
                 >3</span
               >
               <span
                 data-i18n="sidebar.thisMonth"
-                class="text-[10px] font-bold text-text-muted uppercase tracking-wider"
+                class="text-[10px] font-bold text-text-muted uppercase tracking-wider dark:text-gray-500"
                 >This Month</span
               >
             </div>
@@ -453,19 +498,19 @@
               >
               <span
                 data-i18n="sidebar.hub"
-                class="text-[10px] font-bold text-text-muted uppercase tracking-wider"
+                class="text-[10px] font-bold text-text-muted uppercase tracking-wider dark:text-gray-500"
                 >Hub</span
               >
             </div>
             <div class="text-center">
               <span
                 id="stat-total"
-                class="block font-black text-2xl text-text-main leading-tight"
+                class="block font-black text-2xl text-text-main leading-tight dark:text-white"
                 >3</span
               >
               <span
                 data-i18n="sidebar.total"
-                class="text-[10px] font-bold text-text-muted uppercase tracking-wider"
+                class="text-[10px] font-bold text-text-muted uppercase tracking-wider dark:text-gray-500"
                 >Total</span
               >
             </div>
@@ -474,7 +519,7 @@
 
         <section>
           <h3
-            class="font-bold text-sm text-text-sub mb-4 uppercase tracking-wider flex items-center gap-2"
+            class="font-bold text-sm text-text-sub mb-4 uppercase tracking-wider flex items-center gap-2 dark:text-gray-400"
           >
             <span class="material-symbols-outlined !text-[18px]"
               >filter_list</span
@@ -492,42 +537,42 @@
             <button
               id="filter-nonfiction"
               onclick="setFilter('nonfiction')"
-              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary"
+              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
             >
               Non-fiction
             </button>
             <button
               id="filter-fiction"
               onclick="setFilter('fiction')"
-              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary"
+              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
             >
               Fiction
             </button>
             <button
               id="filter-news"
               onclick="setFilter('news')"
-              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary"
+              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
             >
               News
             </button>
             <button
               id="filter-movie"
               onclick="setFilter('movie')"
-              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary"
+              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
             >
               Movie
             </button>
             <button
               id="filter-art"
               onclick="setFilter('art')"
-              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary"
+              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
             >
               Art
             </button>
             <button
               id="filter-media"
               onclick="setFilter('media')"
-              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary"
+              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
             >
               Media
             </button>
@@ -540,38 +585,44 @@
       >
         <section id="zone-ready" class="space-y-5">
           <div class="flex items-center justify-between">
-            <h3 class="font-black text-lg flex items-center gap-2">
+            <h3
+              class="font-black text-lg flex items-center gap-2 dark:text-white"
+            >
               <span class="size-2.5 rounded-full bg-accent-dialogue"></span>
               Ready
             </h3>
             <span
               id="count-ready"
-              class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full"
+              class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full dark:bg-gray-700 dark:text-gray-400"
               >0</span
             >
           </div>
         </section>
         <section id="zone-logged" class="space-y-5">
           <div class="flex items-center justify-between">
-            <h3 class="font-black text-lg flex items-center gap-2">
+            <h3
+              class="font-black text-lg flex items-center gap-2 dark:text-white"
+            >
               <span class="size-2.5 rounded-full bg-primary"></span> Logged
             </h3>
             <span
               id="count-logged"
-              class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full"
+              class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full dark:bg-gray-700 dark:text-gray-400"
               >0</span
             >
           </div>
         </section>
         <section id="zone-internalized" class="space-y-5">
           <div class="flex items-center justify-between">
-            <h3 class="font-black text-lg flex items-center gap-2">
+            <h3
+              class="font-black text-lg flex items-center gap-2 dark:text-white"
+            >
               <span class="size-2.5 rounded-full bg-accent-nonfiction"></span>
               Internalized
             </h3>
             <span
               id="count-internalized"
-              class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full"
+              class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full dark:bg-gray-700 dark:text-gray-400"
               >0</span
             >
           </div>
@@ -594,7 +645,7 @@
           class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
         >
           <div
-            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
+            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg dark:bg-gray-800"
           >
             <div
               class="bg-primary px-4 py-3 sm:px-6 flex justify-between items-center"
@@ -618,12 +669,12 @@
                 <div>
                   <label
                     data-i18n="modal.cat"
-                    class="block text-xs font-bold text-text-sub mb-1"
+                    class="block text-xs font-bold text-text-sub mb-1 dark:text-gray-400"
                     >Category</label
                   >
                   <select
                     id="input-category"
-                    class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary bg-background-section"
+                    class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary bg-background-section dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   >
                     <option value="nonfiction">Non-fiction</option>
                     <option value="fiction">Fiction</option>
@@ -636,41 +687,41 @@
                 <div>
                   <label
                     data-i18n="modal.date"
-                    class="block text-xs font-bold text-text-sub mb-1"
+                    class="block text-xs font-bold text-text-sub mb-1 dark:text-gray-400"
                     >Date</label
                   >
                   <input
                     type="text"
                     id="input-date"
                     placeholder="Ex) Jan 2026"
-                    class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary"
+                    class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
               </div>
               <div>
                 <label
                   data-i18n="modal.titleLabel"
-                  class="block text-xs font-bold text-text-sub mb-1"
+                  class="block text-xs font-bold text-text-sub mb-1 dark:text-gray-400"
                   >Title</label
                 >
                 <input
                   type="text"
                   id="input-title"
                   required
-                  class="w-full rounded-lg border-border text-sm font-bold focus:border-primary focus:ring-primary"
+                  class="w-full rounded-lg border-border text-sm font-bold focus:border-primary focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
               <div>
                 <label
                   data-i18n="modal.msgLabel"
-                  class="block text-xs font-bold text-text-sub mb-1"
+                  class="block text-xs font-bold text-text-sub mb-1 dark:text-gray-400"
                   >Core Message</label
                 >
                 <textarea
                   id="input-content"
                   rows="3"
                   required
-                  class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary resize-none"
+                  class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary resize-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 ></textarea>
               </div>
               <div class="pt-2">
@@ -703,19 +754,21 @@
           class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
         >
           <div
-            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm"
+            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm dark:bg-gray-800"
           >
-            <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+            <div
+              class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 dark:bg-gray-800"
+            >
               <h3
                 data-i18n="logModal.title"
-                class="text-lg font-black leading-6 text-text-main mb-4"
+                class="text-lg font-black leading-6 text-text-main mb-4 dark:text-white"
               >
                 Add Log
               </h3>
               <div class="space-y-3">
                 <button
                   onclick="selectLogType('reflect')"
-                  class="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-accent-dialogue/10 hover:border-accent-dialogue transition-all group"
+                  class="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-accent-dialogue/10 hover:border-accent-dialogue transition-all group dark:border-gray-600 dark:hover:bg-gray-700"
                 >
                   <span
                     class="material-symbols-outlined text-accent-dialogue group-hover:scale-110 transition-transform"
@@ -724,13 +777,13 @@
                   <div class="text-left">
                     <p
                       data-i18n="logModal.reflect.title"
-                      class="text-sm font-bold text-text-main"
+                      class="text-sm font-bold text-text-main dark:text-gray-200"
                     >
                       Self-Reflection
                     </p>
                     <p
                       data-i18n="logModal.reflect.sub"
-                      class="text-[10px] text-text-sub"
+                      class="text-[10px] text-text-sub dark:text-gray-400"
                     >
                       Reflect
                     </p>
@@ -738,7 +791,7 @@
                 </button>
                 <button
                   onclick="selectLogType('action')"
-                  class="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-accent-action/10 hover:border-accent-action transition-all group"
+                  class="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-accent-action/10 hover:border-accent-action transition-all group dark:border-gray-600 dark:hover:bg-gray-700"
                 >
                   <span
                     class="material-symbols-outlined text-accent-action group-hover:scale-110 transition-transform"
@@ -747,13 +800,13 @@
                   <div class="text-left">
                     <p
                       data-i18n="logModal.action.title"
-                      class="text-sm font-bold text-text-main"
+                      class="text-sm font-bold text-text-main dark:text-gray-200"
                     >
                       Action Item
                     </p>
                     <p
                       data-i18n="logModal.action.sub"
-                      class="text-[10px] text-text-sub"
+                      class="text-[10px] text-text-sub dark:text-gray-400"
                     >
                       Action
                     </p>
@@ -761,7 +814,7 @@
                 </button>
                 <button
                   onclick="selectLogType('dialogue')"
-                  class="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-primary/10 hover:border-primary transition-all group"
+                  class="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-primary/10 hover:border-primary transition-all group dark:border-gray-600 dark:hover:bg-gray-700"
                 >
                   <span
                     class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform"
@@ -770,13 +823,13 @@
                   <div class="text-left">
                     <p
                       data-i18n="logModal.dialogue.title"
-                      class="text-sm font-bold text-text-main"
+                      class="text-sm font-bold text-text-main dark:text-gray-200"
                     >
                       Dialogue Log
                     </p>
                     <p
                       data-i18n="logModal.dialogue.sub"
-                      class="text-[10px] text-text-sub"
+                      class="text-[10px] text-text-sub dark:text-gray-400"
                     >
                       Dialogue
                     </p>
@@ -784,7 +837,7 @@
                 </button>
                 <button
                   onclick="selectLogType('topic')"
-                  class="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-accent-news/10 hover:border-accent-news transition-all group"
+                  class="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-accent-news/10 hover:border-accent-news transition-all group dark:border-gray-600 dark:hover:bg-gray-700"
                 >
                   <span
                     class="material-symbols-outlined text-accent-news group-hover:scale-110 transition-transform"
@@ -793,13 +846,13 @@
                   <div class="text-left">
                     <p
                       data-i18n="logModal.topic.title"
-                      class="text-sm font-bold text-text-main"
+                      class="text-sm font-bold text-text-main dark:text-gray-200"
                     >
                       Discussion Topic
                     </p>
                     <p
                       data-i18n="logModal.topic.sub"
-                      class="text-[10px] text-text-sub"
+                      class="text-[10px] text-text-sub dark:text-gray-400"
                     >
                       Topic
                     </p>
@@ -827,38 +880,38 @@
           class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
         >
           <div
-            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-border"
+            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-border dark:bg-gray-800 dark:border-gray-700"
           >
             <div
-              class="bg-white px-4 py-4 sm:px-6 border-b border-border flex justify-between items-center"
+              class="bg-white px-4 py-4 sm:px-6 border-b border-border flex justify-between items-center dark:bg-gray-800 dark:border-gray-700"
             >
               <div>
                 <h3
-                  class="text-lg font-black leading-6 text-text-main flex items-center gap-2"
+                  class="text-lg font-black leading-6 text-text-main flex items-center gap-2 dark:text-white"
                   id="rich-modal-title"
                 ></h3>
               </div>
               <button
                 type="button"
                 onclick="closeRichInputModal()"
-                class="text-text-sub hover:text-text-main transition-colors"
+                class="text-text-sub hover:text-text-main transition-colors dark:text-gray-400 dark:hover:text-white"
               >
                 <span class="material-symbols-outlined">close</span>
               </button>
             </div>
-            <div class="px-6 py-6 bg-[#F9FAFB]">
+            <div class="px-6 py-6 bg-[#F9FAFB] dark:bg-gray-900">
               <p
                 id="rich-modal-desc"
-                class="text-sm text-text-sub mb-4 font-medium"
+                class="text-sm text-text-sub mb-4 font-medium dark:text-gray-400"
               ></p>
               <div
                 id="input-container"
-                class="flex flex-col gap-4 rounded-xl bg-white border border-[#d1d5db] p-1 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary shadow-sm transition-all"
+                class="flex flex-col gap-4 rounded-xl bg-white border border-[#d1d5db] p-1 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary shadow-sm transition-all dark:bg-gray-800 dark:border-gray-600"
               >
                 <textarea
                   id="rich-input-field"
                   data-i18n="richModal.placeholder"
-                  class="w-full min-h-[140px] resize-none border-none bg-transparent p-4 text-text-main placeholder:text-[#9ca3af] focus:ring-0 text-base leading-relaxed"
+                  class="w-full min-h-[140px] resize-none border-none bg-transparent p-4 text-text-main placeholder:text-[#9ca3af] focus:ring-0 text-base leading-relaxed dark:text-white dark:placeholder-gray-500"
                   placeholder="Type here..."
                 ></textarea>
               </div>
@@ -871,12 +924,12 @@
                   type="text"
                   data-i18n="richModal.tagPlaceholder"
                   placeholder="Tags"
-                  class="w-full bg-transparent border-none text-sm text-text-main placeholder:text-[#9ca3af] focus:ring-0 p-0"
+                  class="w-full bg-transparent border-none text-sm text-text-main placeholder:text-[#9ca3af] focus:ring-0 p-0 dark:text-gray-300"
                 />
               </div>
             </div>
             <div
-              class="bg-white px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6 border-t border-border"
+              class="bg-white px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6 border-t border-border dark:bg-gray-800 dark:border-gray-700"
             >
               <button
                 type="button"
@@ -889,7 +942,7 @@
               <button
                 type="button"
                 onclick="closeRichInputModal()"
-                class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-3 text-sm font-bold text-text-sub shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all"
+                class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-3 text-sm font-bold text-text-sub shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all dark:bg-gray-700 dark:text-gray-300 dark:ring-gray-600 dark:hover:bg-gray-600"
               >
                 <span data-i18n="richModal.cancel">Cancel</span>
               </button>
@@ -914,23 +967,26 @@
           class="flex min-h-full items-center justify-center p-4 text-center"
         >
           <div
-            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all w-full max-w-sm border border-border"
+            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all w-full max-w-sm border border-border dark:bg-gray-800 dark:border-gray-700"
           >
-            <div class="bg-white px-5 py-5 sm:p-6">
+            <div class="bg-white px-5 py-5 sm:p-6 dark:bg-gray-800">
               <h3
                 data-i18n="nameModal.title"
-                class="text-lg font-black leading-6 text-text-main mb-2"
+                class="text-lg font-black leading-6 text-text-main mb-2 dark:text-white"
               >
                 Change Name
               </h3>
-              <p data-i18n="nameModal.desc" class="text-xs text-text-sub mb-4">
+              <p
+                data-i18n="nameModal.desc"
+                class="text-xs text-text-sub mb-4 dark:text-gray-400"
+              >
                 Enter new nickname
               </p>
               <input
                 type="text"
                 id="input-profile-name"
                 data-i18n="nameModal.placeholder"
-                class="w-full rounded-xl border-border text-sm font-bold focus:border-primary focus:ring-primary py-3 text-center bg-background-section"
+                class="w-full rounded-xl border-border text-sm font-bold focus:border-primary focus:ring-primary py-3 text-center bg-background-section dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 placeholder="Name"
                 maxlength="10"
               />
@@ -940,7 +996,7 @@
               ></p>
             </div>
             <div
-              class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-border"
+              class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-border dark:bg-gray-800 dark:border-gray-700"
             >
               <button
                 type="button"
@@ -954,7 +1010,7 @@
                 type="button"
                 onclick="closeNameModal()"
                 data-i18n="nameModal.cancelBtn"
-                class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-text-sub shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all"
+                class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-text-sub shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all dark:bg-gray-700 dark:text-gray-300 dark:ring-gray-600 dark:hover:bg-gray-600"
               >
                 Cancel
               </button>
@@ -979,18 +1035,18 @@
           class="flex min-h-full items-center justify-center p-4 text-center"
         >
           <div
-            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all w-full max-w-sm border border-border"
+            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all w-full max-w-sm border border-border dark:bg-gray-800 dark:border-gray-700"
           >
-            <div class="bg-white px-5 py-5 sm:p-6">
+            <div class="bg-white px-5 py-5 sm:p-6 dark:bg-gray-800">
               <h3
                 data-i18n="photoModal.title"
-                class="text-lg font-black leading-6 text-text-main mb-4"
+                class="text-lg font-black leading-6 text-text-main mb-4 dark:text-white"
               >
                 Profile Settings
               </h3>
               <div class="flex justify-center mb-6">
                 <div
-                  class="size-24 rounded-full border-4 border-white shadow-lg overflow-hidden ring-1 ring-border"
+                  class="size-24 rounded-full border-4 border-white shadow-lg overflow-hidden ring-1 ring-border dark:border-gray-700 dark:ring-gray-600"
                 >
                   <img
                     id="preview-profile-img"
@@ -1003,7 +1059,7 @@
               <div class="mb-4">
                 <p
                   data-i18n="photoModal.colorLabel"
-                  class="text-xs font-bold text-text-sub mb-3"
+                  class="text-xs font-bold text-text-sub mb-3 dark:text-gray-400"
                 >
                   Background Color
                 </p>
@@ -1050,10 +1106,12 @@
                   ></button>
                 </div>
               </div>
-              <div class="border-t border-border pt-4 mt-4">
+              <div
+                class="border-t border-border pt-4 mt-4 dark:border-gray-700"
+              >
                 <p
                   data-i18n="photoModal.uploadLabel"
-                  class="text-xs font-bold text-text-sub mb-2"
+                  class="text-xs font-bold text-text-sub mb-2 dark:text-gray-400"
                 >
                   Upload Image
                 </p>
@@ -1065,7 +1123,7 @@
                 />
                 <button
                   onclick="triggerFileUpload()"
-                  class="w-full py-2 border border-dashed border-border rounded-xl text-xs text-text-muted flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary hover:text-primary transition-all"
+                  class="w-full py-2 border border-dashed border-border rounded-xl text-xs text-text-muted flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary hover:text-primary transition-all dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   <span class="material-symbols-outlined text-[16px]"
                     >upload</span
@@ -1075,7 +1133,7 @@
               </div>
             </div>
             <div
-              class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-border"
+              class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-border dark:bg-gray-800 dark:border-gray-700"
             >
               <button
                 type="button"
@@ -1089,7 +1147,7 @@
                 type="button"
                 onclick="closePhotoModal()"
                 data-i18n="photoModal.cancelBtn"
-                class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-text-sub shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all"
+                class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-text-sub shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all dark:bg-gray-700 dark:text-gray-300 dark:ring-gray-600 dark:hover:bg-gray-600"
               >
                 Cancel
               </button>
