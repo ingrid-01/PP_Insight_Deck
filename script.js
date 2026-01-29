@@ -772,68 +772,115 @@ function saveProfileName() {
   closeNameModal();
 }
 /* =========================================
-   10. 프로필 사진 변경 (Step 1.4.1 - 이니셜 모드 수정)
+   10. 프로필 사진 변경 (Step 1.4.2 - 이미지 업로드 포함)
    ========================================= */
 const photoModal = document.getElementById("photo-modal");
 const previewImg = document.getElementById("preview-profile-img");
+const fileInput = document.getElementById("profile-upload-input");
 
-// 현재 선택된 설정 임시 저장용
-let tempColor = "B38F64"; // 기본값
+// 현재 미리보기 중인 이미지 URL (색상모드 or 업로드모드)
+let currentPreviewUrl = "";
+let tempColor = "B38F64"; // 색상 선택 기억용
 
 // 모달 열기
 function editProfileImage() {
   profileDropdown.classList.add("hidden");
   photoModal.classList.remove("hidden");
 
-  // 현재 이름 가져오기 (Lisa 등)
-  const currentName = document.getElementById("profile-name-display").innerText;
-
-  // 모달 열 때 현재 미리보기 생성 (기존 선택 색상 or 기본색)
-  updatePreview(currentName, tempColor);
+  // 현재 설정된 이미지로 시작
+  const currentImgSrc = document.getElementById("profile-img").src;
+  currentPreviewUrl = currentImgSrc;
+  previewImg.src = currentImgSrc;
 }
 
 // 모달 닫기
 function closePhotoModal() {
   photoModal.classList.add("hidden");
+  fileInput.value = ""; // 파일 입력 초기화
 }
 
-// 색상 선택 시 실행
+// [모드 1] 배경색 선택 (이니셜 모드)
 function selectBgColor(color) {
-  tempColor = color; // 선택한 색상 기억
+  tempColor = color;
   const currentName = document.getElementById("profile-name-display").innerText;
-  updatePreview(currentName, tempColor);
+  // 이니셜 URL 생성
+  currentPreviewUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${currentName}&backgroundColor=${color}&textColor=ffffff&chars=1`;
+  previewImg.src = currentPreviewUrl;
 }
 
-// [수정됨] chars=1 옵션 추가
-function updatePreview(name, color) {
-  // &chars=1 : 한 글자만 출력하라
-  const newUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${name}&backgroundColor=${color}&textColor=ffffff&chars=1`;
-  previewImg.src = newUrl;
+// [모드 2] 파일 업로드 트리거
+function triggerFileUpload() {
+  fileInput.click();
 }
 
-// [수정됨] chars=1 옵션 추가
+// 파일 선택 시 실행 (압축 로직 포함)
+fileInput.addEventListener("change", function (e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (event) {
+    const img = new Image();
+    img.onload = function () {
+      // 캔버스를 생성하여 이미지 리사이징 (최대 200x200px)
+      // 이유: 원본 사진은 용량이 너무 커서 로컬스토리지에 저장 불가
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      const maxSize = 200;
+      let width = img.width;
+      let height = img.height;
+
+      // 비율 유지하며 크기 조정
+      if (width > height) {
+        if (width > maxSize) {
+          height *= maxSize / width;
+          width = maxSize;
+        }
+      } else {
+        if (height > maxSize) {
+          width *= maxSize / height;
+          height = maxSize;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // 압축된 데이터 URL 얻기 (JPEG, 품질 0.8)
+      currentPreviewUrl = canvas.toDataURL("image/jpeg", 0.8);
+      previewImg.src = currentPreviewUrl;
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+// [최종 저장] 적용하기 버튼
 function saveProfileImage() {
-  const currentName = document.getElementById("profile-name-display").innerText;
-  // &chars=1 : 한 글자만 출력하라
-  const finalUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${currentName}&backgroundColor=${tempColor}&textColor=ffffff&chars=1`;
+  // 1. 헤더 이미지 교체
+  document.getElementById("profile-img").src = currentPreviewUrl;
 
-  document.getElementById("profile-img").src = finalUrl;
+  // 2. 저장 (데이터가 Base64이든 URL이든 상관없이 저장)
+  localStorage.setItem("userProfileImg", currentPreviewUrl);
 
-  localStorage.setItem("userProfileImg", finalUrl);
-  localStorage.setItem("userProfileColor", tempColor);
+  // 색상 모드였을 경우를 대비해 색상도 저장 (다음에 이니셜 모드 쓸 때 참고용)
+  if (currentPreviewUrl.includes("dicebear")) {
+    localStorage.setItem("userProfileColor", tempColor);
+  }
 
-  alert("프로필 이미지가 변경되었습니다! 🎨");
+  alert("프로필 이미지가 변경되었습니다! 📸");
   closePhotoModal();
 }
+
+// Enter 키 이벤트 (사진 변경 모달용)
 document.addEventListener("keydown", (e) => {
-  // 1. Enter 키가 눌렸고
   if (e.key === "Enter") {
     const photoModal = document.getElementById("photo-modal");
-
-    // 2. 사진 변경 모달이 '열려 있는(hidden이 없는)' 상태라면
     if (!photoModal.classList.contains("hidden")) {
       e.preventDefault();
-      saveProfileImage(); // 저장 함수 실행
+      saveProfileImage();
     }
   }
 });
