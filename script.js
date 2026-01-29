@@ -729,8 +729,11 @@ function closeNameModal() {
   nameModal.classList.add("hidden");
 }
 
+// 이름 저장 로직 (이름 변경 시 프로필 사진도 자동 업데이트)
 function saveProfileName() {
   const newName = nameInput.value.trim();
+
+  // 유효성 검사
   if (newName.length < 2) {
     nameError.innerText = "이름은 최소 2글자 이상이어야 합니다.";
     nameError.classList.remove("hidden");
@@ -741,12 +744,26 @@ function saveProfileName() {
     nameError.classList.remove("hidden");
     return;
   }
+
+  // 1. 이름 업데이트
   document.getElementById("profile-name-display").innerText = newName;
   localStorage.setItem("userName", newName);
+
+  // ▼▼▼ [추가된 부분] 2. 프로필 사진 자동 업데이트 ▼▼▼
+  // 현재 저장된 배경색을 가져옵니다 (없으면 기본값 B38F64)
+  const savedColor = localStorage.getItem("userProfileColor") || "B38F64";
+
+  // 바뀐 이름(newName)으로 새 이미지 URL 생성
+  const newImgUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${newName}&backgroundColor=${savedColor}&textColor=ffffff&chars=1`;
+
+  // 이미지 교체 및 저장
+  document.getElementById("profile-img").src = newImgUrl;
+  localStorage.setItem("userProfileImg", newImgUrl);
+  // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
   alert(`이름이 '${newName}'(으)로 변경되었습니다! ✨`);
   closeNameModal();
 }
-
 /* =========================================
    10. 프로필 사진 변경 (Step 1.4.1 - 이니셜 모드 수정)
    ========================================= */
