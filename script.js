@@ -825,6 +825,18 @@ function saveProfileImage() {
   alert("프로필 이미지가 변경되었습니다! 🎨");
   closePhotoModal();
 }
+document.addEventListener("keydown", (e) => {
+  // 1. Enter 키가 눌렸고
+  if (e.key === "Enter") {
+    const photoModal = document.getElementById("photo-modal");
+
+    // 2. 사진 변경 모달이 '열려 있는(hidden이 없는)' 상태라면
+    if (!photoModal.classList.contains("hidden")) {
+      e.preventDefault();
+      saveProfileImage(); // 저장 함수 실행
+    }
+  }
+});
 /* =========================================
    9. 초기화 (수정됨)
    ========================================= */
