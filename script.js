@@ -519,6 +519,13 @@ const nameModal = document.getElementById("name-modal");
 const nameInput = document.getElementById("input-profile-name");
 const nameError = document.getElementById("name-error-msg");
 
+nameInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault(); // 엔터 시 줄바꿈 등 기본 동작 방지
+    saveProfileName();
+  }
+});
+
 // 레벨 데이터 시스템 (0~20)
 const levelSystem = [
   {
