@@ -1,10 +1,8 @@
 /* =========================================
-   1. 데이터 및 설정 (Data & Config)
+   1. 데이터 및 설정
    ========================================= */
-// 초기 언어 설정 (저장된 게 없으면 'ko')
 let currentLang = localStorage.getItem("userLang") || "ko";
 
-// [핵심] 번역 사전 (Dictionary)
 const translations = {
   ko: {
     nav: { hub: "Conversation Hub", archive: "Archive", stats: "Statistics" },
@@ -156,8 +154,7 @@ const insights = [
     subCategory: { ko: "신문기사 - 심리학", en: "News - Psychology" },
     date: "Sep 2025",
     title: "친애하는 나의 결함에게",
-    content:
-      "누구나 결함을 가지고 있다. 이를 어떻게 생각하고 어떻게 사용하는지에 따라 삶이 달라진다.",
+    content: "누구나 결함을 가지고 있다...",
     reflect: "나는 결함을 없애야 할 적으로만 여겼다...",
     action: null,
     discussionTopic: "당신의 결핍은 무엇인가?",
@@ -170,10 +167,10 @@ const insights = [
     subCategory: { ko: "비문학 - IT", en: "Non-fiction - IT" },
     date: "Oct 2025",
     title: "Moral AI",
-    content: "AI의 도덕적 한계는 결국 인간의 도덕적 미성숙함에서 비롯된다.",
+    content: "AI의 도덕적 한계는...",
     reflect: null,
     action: "AI에게 질문하기 전...",
-    discussionTopic: "우리는 점점 AI에게 의존하는 사회가 되고 있다...",
+    discussionTopic: "우리는 점점 AI에게 의존하는...",
     dialogue: null,
   },
   {
@@ -183,7 +180,7 @@ const insights = [
     subCategory: { ko: "영화 - SF/드라마", en: "Movie - SF/Drama" },
     date: "Jan 2026",
     title: "Her",
-    content: "사랑은 사회적으로 용인된 미친 짓이다...",
+    content: "사랑은 사회적으로...",
     reflect: "AI와의 사랑을 다루지만...",
     action: null,
     discussionTopic: "기술이 발전하여...",
@@ -225,66 +222,44 @@ const styles = {
 };
 
 /* =========================================
-   2. 언어 변경 로직 (Language Switcher)
+   2. 언어 및 필터 설정
    ========================================= */
 function setLanguage(lang) {
   currentLang = lang;
   localStorage.setItem("userLang", lang);
-
-  // 1. data-i18n 태그가 붙은 모든 요소 텍스트 변경
   document.querySelectorAll("[data-i18n]").forEach((el) => {
-    const key = el.getAttribute("data-i18n");
-    // key가 'sidebar.map' 처럼 점(.)으로 구분된 경우 탐색
-    const keys = key.split(".");
+    const keys = el.getAttribute("data-i18n").split(".");
     let text = translations[lang];
-    keys.forEach((k) => {
-      text = text ? text[k] : null;
-    });
-
+    keys.forEach((k) => (text = text ? text[k] : null));
     if (text) {
-      if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
-        el.placeholder = text;
-      } else {
-        el.innerText = text;
-      }
+      el.tagName === "INPUT" || el.tagName === "TEXTAREA"
+        ? (el.placeholder = text)
+        : (el.innerText = text);
     }
   });
-
-  // 2. 동적 콘텐츠 재렌더링
   renderInsights();
   updateFilterButtons();
-  updateProfileUI(); // 프로필(레벨 등) 텍스트 갱신
-  updateLangButtons(); // 버튼 스타일 갱신
+  updateProfileUI();
+  updateLangButtons();
 }
 
 function updateLangButtons() {
-  const btnKR = document.getElementById("btn-lang-kr");
-  const btnEN = document.getElementById("btn-lang-en");
-
-  if (currentLang === "ko") {
-    btnKR.className =
-      "px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all";
-    btnEN.className =
-      "px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all";
-  } else {
-    btnEN.className =
-      "px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all";
-    btnKR.className =
-      "px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all";
-  }
+  document.getElementById("btn-lang-kr").className =
+    currentLang === "ko"
+      ? "px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all"
+      : "px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all";
+  document.getElementById("btn-lang-en").className =
+    currentLang === "en"
+      ? "px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all"
+      : "px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all";
 }
 
-/* =========================================
-   3. 필터링 로직
-   ========================================= */
 let currentFilter = "all";
-
 function setFilter(category) {
   currentFilter = category;
   renderInsights();
   updateFilterButtons();
 }
-
 function updateFilterButtons() {
   const filters = [
     "all",
@@ -298,22 +273,16 @@ function updateFilterButtons() {
   filters.forEach((type) => {
     const btn = document.getElementById(`filter-${type}`);
     if (!btn) return;
-
-    // 버튼 텍스트도 언어에 맞게 변경
     btn.innerText = translations[currentLang].filters[type];
-
-    if (type === currentFilter) {
-      btn.className =
-        "px-3 py-1.5 rounded-full bg-primary text-white text-xs font-bold shadow-sm transition-all";
-    } else {
-      btn.className =
-        "px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary hover:bg-background-hover";
-    }
+    btn.className =
+      type === currentFilter
+        ? "px-3 py-1.5 rounded-full bg-primary text-white text-xs font-bold shadow-sm transition-all"
+        : "px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary hover:bg-background-hover";
   });
 }
 
 /* =========================================
-   4. 화면 렌더링 (Render Main)
+   3. 메인 렌더링 (그래프 업데이트 포함)
    ========================================= */
 function renderInsights() {
   const zones = {
@@ -333,10 +302,7 @@ function renderInsights() {
   filteredData.forEach((data) => {
     counts[data.status]++;
     if (!zones[data.status]) return;
-
     const style = styles[data.category] || styles.nonfiction;
-
-    // [다국어] 서브카테고리는 데이터 객체에서 언어에 맞게 선택
     const subCatText =
       typeof data.subCategory === "object"
         ? data.subCategory[currentLang]
@@ -345,74 +311,20 @@ function renderInsights() {
     const cardHTML = `
       <article id="card-${data.id}" class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer group mt-5">
           <div class="flex justify-between items-start mb-3">
-              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider">
-                  <span class="material-symbols-outlined !text-[14px]">${style.icon}</span>
-                  ${subCatText}
-              </div>
+              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider"><span class="material-symbols-outlined !text-[14px]">${style.icon}</span>${subCatText}</div>
               <span class="text-[10px] font-bold text-text-muted">${data.date}</span>
           </div>
           <h4 class="font-bold text-lg leading-snug mb-3 serif group-hover:text-primary transition-colors">${data.title}</h4>
-          <p class="text-sm text-text-sub font-medium leading-relaxed mb-4 line-clamp-3">
-              "${data.content}"
-          </p>
-          
-          ${
-            data.reflect
-              ? `
-          <div class="bg-background-section/50 p-4 rounded-xl mb-4">
-               <h5 class="text-xs font-bold text-accent-dialogue mb-2 flex items-center gap-1.5 uppercase tracking-wider">
-                  <span class="material-symbols-outlined !text-[16px]">psychology_alt</span> ${translations[currentLang].logModal.reflect.title}
-              </h5>
-              <p class="text-xs text-text-main leading-relaxed font-medium line-clamp-3">${data.reflect}</p>
-          </div>`
-              : ""
-          }
-
-          ${
-            data.action
-              ? `
-          <div class="bg-accent-action/10 p-4 rounded-xl mb-4">
-              <h5 class="text-xs font-bold text-accent-action mb-2 flex items-center gap-1.5 uppercase tracking-wider">
-                 <span class="material-symbols-outlined !text-[16px]">bolt</span> ${translations[currentLang].logModal.action.title}
-             </h5>
-             <p class="text-xs text-text-main leading-relaxed font-medium">${data.action}</p>
-         </div>`
-              : ""
-          }
-
-         ${
-           data.dialogue
-             ? `
-         <div class="bg-primary/5 p-4 rounded-xl mb-4 border border-primary/10">
-             <h5 class="text-xs font-bold text-primary mb-2 flex items-center gap-1.5 uppercase tracking-wider">
-                <span class="material-symbols-outlined !text-[16px]">forum</span> ${translations[currentLang].logModal.dialogue.title}
-            </h5>
-            <p class="text-xs text-text-main leading-relaxed font-medium italic">"${data.dialogue}"</p>
-        </div>`
-             : ""
-         }
-
-         ${
-           data.discussionTopic
-             ? `
-         <div class="bg-accent-dialogue/10 p-3 rounded-xl mb-4 border border-accent-dialogue/20">
-              <h5 class="text-[10px] font-bold text-accent-dialogue mb-1 uppercase">💬 ${translations[currentLang].logModal.topic.title}</h5>
-              <p class="text-xs text-text-main font-bold">"${data.discussionTopic}"</p>
-          </div>`
-             : ""
-         }
-
-          <button onclick="openLogModal(${data.id})" class="w-full py-2.5 rounded-xl border border-dashed border-border text-text-sub text-xs font-bold flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary-light hover:text-primary transition-all">
-              <span class="material-symbols-outlined !text-[18px]">add</span>
-              Log
-          </button>
-      </article>
-    `;
-
+          <p class="text-sm text-text-sub font-medium leading-relaxed mb-4 line-clamp-3">"${data.content}"</p>
+          ${data.reflect ? `<div class="bg-background-section/50 p-4 rounded-xl mb-4"><h5 class="text-xs font-bold text-accent-dialogue mb-2 flex items-center gap-1.5 uppercase tracking-wider"><span class="material-symbols-outlined !text-[16px]">psychology_alt</span> ${translations[currentLang].logModal.reflect.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium line-clamp-3">${data.reflect}</p></div>` : ""}
+          ${data.action ? `<div class="bg-accent-action/10 p-4 rounded-xl mb-4"><h5 class="text-xs font-bold text-accent-action mb-2 flex items-center gap-1.5 uppercase tracking-wider"><span class="material-symbols-outlined !text-[16px]">bolt</span> ${translations[currentLang].logModal.action.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium">${data.action}</p></div>` : ""}
+          ${data.dialogue ? `<div class="bg-primary/5 p-4 rounded-xl mb-4 border border-primary/10"><h5 class="text-xs font-bold text-primary mb-2 flex items-center gap-1.5 uppercase tracking-wider"><span class="material-symbols-outlined !text-[16px]">forum</span> ${translations[currentLang].logModal.dialogue.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium italic">"${data.dialogue}"</p></div>` : ""}
+          ${data.discussionTopic ? `<div class="bg-accent-dialogue/10 p-3 rounded-xl mb-4 border border-accent-dialogue/20"><h5 class="text-[10px] font-bold text-accent-dialogue mb-1 uppercase">💬 ${translations[currentLang].logModal.topic.title}</h5><p class="text-xs text-text-main font-bold">"${data.discussionTopic}"</p></div>` : ""}
+          <button onclick="openLogModal(${data.id})" class="w-full py-2.5 rounded-xl border border-dashed border-border text-text-sub text-xs font-bold flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary-light hover:text-primary transition-all"><span class="material-symbols-outlined !text-[18px]">add</span> Log</button>
+      </article>`;
     zones[data.status].insertAdjacentHTML("beforeend", cardHTML);
   });
 
-  // 카운트 & 통계 업데이트
   if (document.getElementById("count-ready"))
     document.getElementById("count-ready").innerText = counts.ready;
   if (document.getElementById("count-logged"))
@@ -420,7 +332,6 @@ function renderInsights() {
   if (document.getElementById("count-internalized"))
     document.getElementById("count-internalized").innerText =
       counts.internalized;
-
   if (document.getElementById("stat-month"))
     document.getElementById("stat-month").innerText = insights.length;
   if (document.getElementById("stat-hub"))
@@ -428,7 +339,6 @@ function renderInsights() {
   if (document.getElementById("stat-total"))
     document.getElementById("stat-total").innerText = insights.length;
 
-  // 섹션 제목 업데이트
   document.querySelector("#zone-ready h3").innerHTML =
     `<span class="size-2.5 rounded-full bg-accent-dialogue"></span> ${translations[currentLang].zones.ready}`;
   document.querySelector("#zone-logged h3").innerHTML =
@@ -436,28 +346,67 @@ function renderInsights() {
   document.querySelector("#zone-internalized h3").innerHTML =
     `<span class="size-2.5 rounded-full bg-accent-nonfiction"></span> ${translations[currentLang].zones.internalized}`;
 
+  // [중요] 그래프 업데이트 함수 호출
+  updateMapStats();
+
   userStats.postCount = insights.length;
   updateProfileUI();
 }
 
+// [New] 그래프 및 퍼센트 자동 업데이트 로직
+function updateMapStats() {
+  const total = insights.length;
+  const counts = {
+    nonfiction: 0,
+    news: 0,
+    movie: 0,
+    media: 0,
+    art: 0,
+    fiction: 0,
+  };
+
+  // 카테고리별 개수 세기
+  insights.forEach((item) => {
+    if (counts.hasOwnProperty(item.category)) {
+      counts[item.category]++;
+    }
+  });
+
+  // 그래프 및 텍스트 업데이트
+  for (const [cat, count] of Object.entries(counts)) {
+    const pct = total === 0 ? 0 : Math.round((count / total) * 100);
+
+    // 1. 그래프 너비 조정
+    const bar = document.getElementById(`bar-${cat}`);
+    if (bar) bar.style.width = `${pct}%`;
+
+    // 2. 퍼센트 텍스트 변경
+    const txt = document.getElementById(`pct-${cat}`);
+    if (txt) txt.innerText = `${pct}%`;
+
+    // 3. 0%면 흐리게 처리 (시각적 개선)
+    if (txt)
+      txt.className =
+        pct === 0
+          ? "text-xs font-black text-text-muted transition-colors"
+          : `text-xs font-black ${styles[cat].badgeText.replace("bg-", "text-")} transition-colors`;
+  }
+}
+
 /* =========================================
-   5. New Insight (새 글 쓰기) 모달
+   4. 모달 관련 함수들 (글쓰기, 로그, 이름, 사진)
    ========================================= */
 const modal = document.getElementById("write-modal");
 const openBtn = document.getElementById("new-insight-btn");
 const closeBtn = document.getElementById("close-modal-btn");
 const form = document.getElementById("insight-form");
-
 openBtn.addEventListener("click", () => modal.classList.remove("hidden"));
 closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
-
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const category = document.getElementById("input-category").value;
-
-  // 서브카테고리 다국어 객체 생성
-  let subCatKo = "기타";
-  let subCatEn = "Other";
+  let subCatKo = "기타",
+    subCatEn = "Other";
   const catMap = {
     news: ["신문기사", "News"],
     fiction: ["문학", "Fiction"],
@@ -466,12 +415,10 @@ form.addEventListener("submit", (e) => {
     art: ["전시/관람", "Exhibition"],
     media: ["영상/미디어", "Media"],
   };
-
   if (catMap[category]) {
     subCatKo = catMap[category][0];
     subCatEn = catMap[category][1];
   }
-
   const newInsight = {
     id: Date.now(),
     status: "ready",
@@ -485,21 +432,16 @@ form.addEventListener("submit", (e) => {
     discussionTopic: null,
     dialogue: null,
   };
-
   insights.unshift(newInsight);
   renderInsights();
   modal.classList.add("hidden");
   form.reset();
 });
 
-/* =========================================
-   6. 로그 추가 모달 & 상세 입력 모달
-   ========================================= */
 const logModal = document.getElementById("log-type-modal");
 const richInputModal = document.getElementById("rich-input-modal");
 let currentCardId = null;
 let currentLogType = null;
-
 function openLogModal(cardId) {
   currentCardId = cardId;
   logModal.classList.remove("hidden");
@@ -513,65 +455,35 @@ function closeRichInputModal() {
   currentLogType = null;
   document.getElementById("rich-input-field").value = "";
 }
-
 function selectLogType(type) {
   if (!currentCardId) return;
   currentLogType = type;
   closeLogModal();
   openRichInputModal(type);
 }
-
 function openRichInputModal(type) {
-  const titleEl = document.getElementById("rich-modal-title");
-  const descEl = document.getElementById("rich-modal-desc");
-  const inputContainer = document.getElementById("input-container");
-  const inputField = document.getElementById("rich-input-field");
-
-  // 언어에 맞는 텍스트 가져오기
   const txt = translations[currentLang].logModal[type];
-
-  inputContainer.className =
-    "flex flex-col gap-4 rounded-xl bg-white border border-[#d1d5db] p-1 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary shadow-sm transition-all";
-
-  if (type === "reflect") {
-    titleEl.innerHTML = `<span class="material-symbols-outlined text-accent-dialogue text-[24px]">psychology_alt</span> ${txt.title}`;
-    descEl.innerText =
-      currentLang === "ko"
+  document.getElementById("rich-modal-title").innerHTML =
+    `<span class="material-symbols-outlined ${type === "reflect" ? "text-accent-dialogue" : type === "action" ? "text-accent-action" : type === "dialogue" ? "text-primary" : "text-accent-news"} text-[24px]"></span> ${txt.title}`;
+  document.getElementById("rich-modal-desc").innerText =
+    type === "reflect"
+      ? currentLang === "ko"
         ? "이 내용이 현재 나의 상황이나 경험과 어떻게 연결되나요?"
-        : "How does this relate to your current situation or experience?";
-    inputContainer.classList.add(
-      "bg-accent-dialogue/5",
-      "border-accent-dialogue/20",
-    );
-  } else if (type === "action") {
-    titleEl.innerHTML = `<span class="material-symbols-outlined text-accent-action text-[24px]">bolt</span> ${txt.title}`;
-    descEl.innerText =
-      currentLang === "ko"
-        ? "이 통찰을 삶에 적용하기 위해 당장 실천할 수 있는 행동은 무엇인가요?"
-        : "What immediate action can you take to apply this insight?";
-    inputContainer.classList.add(
-      "bg-accent-action/5",
-      "border-accent-action/20",
-    );
-  } else if (type === "dialogue") {
-    titleEl.innerHTML = `<span class="material-symbols-outlined text-primary text-[24px]">forum</span> ${txt.title}`;
-    descEl.innerText =
-      currentLang === "ko"
-        ? "가족, 친구와 나눈 대화 중 기억하고 싶은 핵심 내용을 기록하세요."
-        : "Record key points from conversations with family or friends.";
-    inputContainer.classList.add("bg-primary/5", "border-primary/20");
-  } else if (type === "topic") {
-    titleEl.innerHTML = `<span class="material-symbols-outlined text-accent-news text-[24px]">chat_bubble</span> ${txt.title}`;
-    descEl.innerText =
-      currentLang === "ko"
-        ? "이 인사이트를 바탕으로 타인과 논의해보고 싶은 질문을 던져보세요."
-        : "Pose a question you'd like to discuss with others based on this insight.";
-  }
-
+        : "How does this relate to your current situation?"
+      : type === "action"
+        ? currentLang === "ko"
+          ? "이 통찰을 삶에 적용하기 위해 당장 실천할 수 있는 행동은?"
+          : "What immediate action can you take?"
+        : type === "dialogue"
+          ? currentLang === "ko"
+            ? "기억하고 싶은 대화 내용을 기록하세요."
+            : "Record key points from conversations."
+          : currentLang === "ko"
+            ? "논의해보고 싶은 질문을 던져보세요."
+            : "Pose a question to discuss.";
+  document.getElementById("rich-input-field").focus();
   richInputModal.classList.remove("hidden");
-  inputField.focus();
 }
-
 function saveRichInput() {
   const inputVal = document.getElementById("rich-input-field").value;
   if (!inputVal.trim()) {
@@ -580,7 +492,6 @@ function saveRichInput() {
     );
     return;
   }
-
   const card = insights.find((c) => c.id === currentCardId);
   if (card) {
     if (currentLogType === "reflect") card.reflect = inputVal;
@@ -590,210 +501,48 @@ function saveRichInput() {
       card.status = "logged";
     }
     if (currentLogType === "topic") card.discussionTopic = inputVal;
-
     renderInsights();
     closeRichInputModal();
   }
 }
 
-/* =========================================
-   7. 알림(Notification) 시스템
-   ========================================= */
+// 알림 및 프로필 UI 관련
 const notiBtn = document.getElementById("notification-btn");
-const notiBadge = document.getElementById("notification-badge");
 const notiDropdown = document.getElementById("notification-dropdown");
-const notiList = document.getElementById("notification-list");
-const readAllBtn = document.getElementById("btn-read-all");
-
-function renderNotifications() {
-  notiList.innerHTML = "";
-  const targetCard = insights.find((c) => c.id === 1);
-  if (targetCard) {
-    const msg =
-      currentLang === "ko"
-        ? `'${targetCard.title}' 글을 작성한 지 1년이 지났습니다.`
-        : `It's been a year since you wrote '${targetCard.title}'.`;
-    const time =
-      currentLang === "ko" ? "방금 전 • 리마인드" : "Just now • Reminder";
-
-    const notiHTML = `
-            <li onclick="scrollToCard(${targetCard.id}, this)" class="px-5 py-4 border-b border-border hover:bg-background-hover cursor-pointer transition-colors flex gap-3 items-start">
-                <div class="noti-dot mt-1 min-w-[8px] size-2 rounded-full bg-primary"></div>
-                <div>
-                    <p class="text-xs font-bold text-text-main mb-1 line-clamp-2">${msg}</p>
-                    <span class="text-[10px] text-text-sub font-medium">${time}</span>
-                </div>
-            </li>
-        `;
-    notiList.insertAdjacentHTML("beforeend", notiHTML);
-  }
-}
-// 알림 초기화
-setTimeout(() => {
-  renderNotifications();
-  const isRead = localStorage.getItem("isNotiRead");
-  if (isRead !== "true") notiBadge.classList.remove("hidden");
-}, 2000);
-
-notiBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  const isHidden = notiDropdown.classList.contains("hidden");
-  if (isHidden) {
-    notiDropdown.classList.remove("hidden");
-    notiBadge.classList.add("hidden");
-    localStorage.setItem("isNotiRead", "true");
-    if (document.getElementById("profile-dropdown"))
-      document.getElementById("profile-dropdown").classList.add("hidden");
-  } else {
-    notiDropdown.classList.add("hidden");
-  }
-});
-
-document.addEventListener("click", (e) => {
-  if (!notiBtn.contains(e.target) && !notiDropdown.contains(e.target))
-    notiDropdown.classList.add("hidden");
-  if (profileBtn && profileDropdown) {
-    if (!profileBtn.contains(e.target) && !profileDropdown.contains(e.target))
-      profileDropdown.classList.add("hidden");
-  }
-});
-
-function markItemAsRead(liElement) {
-  if (!liElement) return;
-  liElement.classList.add("opacity-50");
-  liElement
-    .querySelector(".noti-dot")
-    ?.classList.replace("bg-primary", "bg-transparent");
-}
-
-function scrollToCard(cardId, element) {
-  markItemAsRead(element);
-  setFilter("all");
-  notiDropdown.classList.add("hidden");
-  const targetCard = document.getElementById(`card-${cardId}`);
-  if (targetCard) {
-    targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
-    targetCard.classList.add(
-      "ring-4",
-      "ring-primary/50",
-      "transition-all",
-      "duration-500",
-    );
-    setTimeout(
-      () => targetCard.classList.remove("ring-4", "ring-primary/50"),
-      2000,
-    );
-  }
-}
-
-readAllBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  document
-    .querySelectorAll("#notification-list li")
-    .forEach((item) => markItemAsRead(item));
-});
-
-/* =========================================
-   8. 프로필 설정 & Gamification & Photo
-   ========================================= */
 const profileBtn = document.getElementById("profile-btn");
 const profileDropdown = document.getElementById("profile-dropdown");
-const nameModal = document.getElementById("name-modal");
-const nameInput = document.getElementById("input-profile-name");
-const nameError = document.getElementById("name-error-msg");
-const photoModal = document.getElementById("photo-modal");
-const previewImg = document.getElementById("preview-profile-img");
-const fileInput = document.getElementById("profile-upload-input");
-
-// 레벨 데이터
-const levelSystem = [
-  {
-    lv: 0,
-    en: "Insight Newbie",
-    ko: "통찰 새싹",
-    desc_ko: "아직 아무것도 기록하지 않았지만...",
-    desc_en: "Ready to record insights...",
-    next_ko: "첫 기록 1개",
-    next_en: "1st Insight",
-  },
-  {
-    lv: 1,
-    en: "Insight Starter",
-    ko: "통찰 입문자",
-    desc_ko: "경험을 처음으로 붙잡았다.",
-    desc_en: "Captured the first experience.",
-    next_ko: "기록 5개",
-    next_en: "5 Insights",
-  },
-  {
-    lv: 2,
-    en: "Insight Explorer",
-    ko: "통찰 탐색자",
-    desc_ko: "다양한 경험을 탐색 중.",
-    desc_en: "Exploring various interests.",
-    next_ko: "기록 10개",
-    next_en: "10 Insights",
-  },
-  // (이하 레벨 생략 - 실제로는 20까지 필요 시 추가)
-  {
-    lv: 3,
-    en: "Insight Adventurer",
-    ko: "통찰 모험가",
-    desc_ko: "기록이 일회성이 아님을 깨닫다.",
-    desc_en: "Realizing insights are continuous.",
-    next_ko: "기록 15개",
-    next_en: "15 Insights",
-  },
-];
-
-let userStats = { currentLevel: 1, postCount: 3, nextLevelGoal: 5 };
-let tempColor = "B38F64";
-let currentPreviewUrl = "";
-
-function updateProfileUI() {
-  if (userStats.currentLevel >= levelSystem.length)
-    userStats.currentLevel = levelSystem.length - 1;
-  const lvData = levelSystem[userStats.currentLevel];
-
-  // 언어에 따른 텍스트 표시
-  const title =
-    currentLang === "ko" ? `${lvData.en} (${lvData.ko})` : lvData.en;
-  const desc = currentLang === "ko" ? lvData.desc_ko : lvData.desc_en;
-  const next =
-    currentLang === "ko"
-      ? `다음: ${lvData.next_ko}`
-      : `Next: ${lvData.next_en}`;
-
-  document.getElementById("profile-level-badge").innerText = `Lv.${lvData.lv}`;
-  document.getElementById("profile-title-display").innerText = title;
-  document.getElementById("profile-desc-display").innerText = `"${desc}"`;
-  document.getElementById("profile-next-goal").innerText = next;
-
-  let progress = Math.min(
-    (userStats.postCount / userStats.nextLevelGoal) * 100,
-    100,
-  );
-  document.getElementById("profile-progress-bar").style.width = `${progress}%`;
-}
-
+notiBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  notiDropdown.classList.toggle("hidden");
+  document.getElementById("notification-badge").classList.add("hidden");
+  localStorage.setItem("isNotiRead", "true");
+  profileDropdown.classList.add("hidden");
+});
 profileBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   if (profileDropdown.classList.contains("hidden")) {
     updateProfileUI();
     profileDropdown.classList.remove("hidden");
-    if (document.getElementById("notification-dropdown"))
-      document.getElementById("notification-dropdown").classList.add("hidden");
+    notiDropdown.classList.add("hidden");
   } else {
     profileDropdown.classList.add("hidden");
   }
 });
+document.addEventListener("click", (e) => {
+  if (!notiBtn.contains(e.target) && !notiDropdown.contains(e.target))
+    notiDropdown.classList.add("hidden");
+  if (!profileBtn.contains(e.target) && !profileDropdown.contains(e.target))
+    profileDropdown.classList.add("hidden");
+});
 
-// 이름 변경 관련
+// 프로필 설정 함수들 (이름, 사진)
+const nameModal = document.getElementById("name-modal");
+const nameInput = document.getElementById("input-profile-name");
+const photoModal = document.getElementById("photo-modal");
+const fileInput = document.getElementById("profile-upload-input");
 function editProfileName() {
   profileDropdown.classList.add("hidden");
-  const currentName = document.getElementById("profile-name-display").innerText;
-  nameInput.value = currentName;
-  nameError.classList.add("hidden");
+  nameInput.value = document.getElementById("profile-name-display").innerText;
   nameModal.classList.remove("hidden");
   nameInput.focus();
 }
@@ -802,24 +551,13 @@ function closeNameModal() {
 }
 function saveProfileName() {
   const newName = nameInput.value.trim();
-  if (newName.length < 2 || newName.length > 10) {
-    nameError.innerText =
-      currentLang === "ko"
-        ? "2~10글자로 입력해주세요."
-        : "Must be 2-10 characters.";
-    nameError.classList.remove("hidden");
-    return;
-  }
+  if (newName.length < 2 || newName.length > 10) return;
   document.getElementById("profile-name-display").innerText = newName;
   localStorage.setItem("userName", newName);
-
-  // 사진 자동 업데이트
   const savedColor = localStorage.getItem("userProfileColor") || "B38F64";
   const newImgUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${newName}&backgroundColor=${savedColor}&textColor=ffffff&chars=1`;
   document.getElementById("profile-img").src = newImgUrl;
   localStorage.setItem("userProfileImg", newImgUrl);
-
-  alert(currentLang === "ko" ? "이름이 변경되었습니다!" : "Name changed!");
   closeNameModal();
 }
 nameInput.addEventListener("keydown", (e) => {
@@ -829,13 +567,14 @@ nameInput.addEventListener("keydown", (e) => {
   }
 });
 
-// 사진 변경 관련
+let tempColor = "B38F64";
+let currentPreviewUrl = "";
 function editProfileImage() {
   profileDropdown.classList.add("hidden");
   photoModal.classList.remove("hidden");
-  const currentImgSrc = document.getElementById("profile-img").src;
-  currentPreviewUrl = currentImgSrc;
-  previewImg.src = currentImgSrc;
+  const src = document.getElementById("profile-img").src;
+  document.getElementById("preview-profile-img").src = src;
+  currentPreviewUrl = src;
 }
 function closePhotoModal() {
   photoModal.classList.add("hidden");
@@ -843,9 +582,9 @@ function closePhotoModal() {
 }
 function selectBgColor(color) {
   tempColor = color;
-  const currentName = document.getElementById("profile-name-display").innerText;
-  currentPreviewUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${currentName}&backgroundColor=${color}&textColor=ffffff&chars=1`;
-  previewImg.src = currentPreviewUrl;
+  const name = document.getElementById("profile-name-display").innerText;
+  currentPreviewUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${name}&backgroundColor=${color}&textColor=ffffff&chars=1`;
+  document.getElementById("preview-profile-img").src = currentPreviewUrl;
 }
 function triggerFileUpload() {
   fileInput.click();
@@ -854,32 +593,32 @@ fileInput.addEventListener("change", function (e) {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = function (event) {
+  reader.onload = function (evt) {
     const img = new Image();
     img.onload = function () {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
-      const maxSize = 200;
-      let w = img.width;
-      let h = img.height;
+      const max = 200;
+      let w = img.width,
+        h = img.height;
       if (w > h) {
-        if (w > maxSize) {
-          h *= maxSize / w;
-          w = maxSize;
+        if (w > max) {
+          h *= max / w;
+          w = max;
         }
       } else {
-        if (h > maxSize) {
-          w *= maxSize / h;
-          h = maxSize;
+        if (h > max) {
+          w *= max / h;
+          h = max;
         }
       }
       canvas.width = w;
       canvas.height = h;
       ctx.drawImage(img, 0, 0, w, h);
       currentPreviewUrl = canvas.toDataURL("image/jpeg", 0.8);
-      previewImg.src = currentPreviewUrl;
+      document.getElementById("preview-profile-img").src = currentPreviewUrl;
     };
-    img.src = event.target.result;
+    img.src = evt.target.result;
   };
   reader.readAsDataURL(file);
 });
@@ -888,7 +627,6 @@ function saveProfileImage() {
   localStorage.setItem("userProfileImg", currentPreviewUrl);
   if (currentPreviewUrl.includes("dicebear"))
     localStorage.setItem("userProfileColor", tempColor);
-  alert(currentLang === "ko" ? "사진이 변경되었습니다!" : "Photo updated!");
   closePhotoModal();
 }
 document.addEventListener("keydown", (e) => {
@@ -898,18 +636,12 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-/* =========================================
-   9. 초기화
-   ========================================= */
+// 초기화
 window.addEventListener("DOMContentLoaded", () => {
-  // 1. 저장된 언어 설정 적용 (HTML 텍스트 교체)
   setLanguage(currentLang);
-
-  // 2. 저장된 사용자 이름/사진 적용
   const savedName = localStorage.getItem("userName");
   if (savedName)
     document.getElementById("profile-name-display").innerText = savedName;
-
   const savedImg = localStorage.getItem("userProfileImg");
   if (savedImg) document.getElementById("profile-img").src = savedImg;
   const savedColor = localStorage.getItem("userProfileColor");
