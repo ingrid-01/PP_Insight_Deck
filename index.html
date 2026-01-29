@@ -18,7 +18,6 @@
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="stylesheet" href="style.css" />
-
     <script>
       tailwind.config = {
         theme: {
@@ -49,11 +48,7 @@
                 hover: "#F9F8F6",
                 section: "#EFECE8",
               },
-              text: {
-                main: "#333333",
-                sub: "#666666",
-                muted: "#999999",
-              },
+              text: { main: "#333333", sub: "#666666", muted: "#999999" },
               border: "#E0DCD5",
             },
           },
@@ -77,10 +72,10 @@
           <h1
             class="font-black text-xl tracking-tight text-text-main leading-tight"
           >
-            인사이트 덱 (Insight Deck)
+            Insight Deck
           </h1>
           <p class="text-xs text-text-sub font-bold tracking-wider uppercase">
-            위기지학(爲己之學): 나를 위한 공부
+            위기지학(爲己之學)
           </p>
         </div>
       </div>
@@ -88,13 +83,20 @@
       <nav class="hidden md:flex items-center gap-8 text-sm font-semibold">
         <a
           href="#"
+          data-i18n="nav.hub"
           class="text-primary relative after:absolute after:bottom-[-18px] after:left-0 after:w-full after:h-0.5 after:bg-primary"
           >Conversation Hub</a
         >
-        <a href="#" class="text-text-sub hover:text-primary transition-colors"
+        <a
+          href="#"
+          data-i18n="nav.archive"
+          class="text-text-sub hover:text-primary transition-colors"
           >Archive</a
         >
-        <a href="#" class="text-text-sub hover:text-primary transition-colors"
+        <a
+          href="#"
+          data-i18n="nav.stats"
+          class="text-text-sub hover:text-primary transition-colors"
           >Statistics</a
         >
       </nav>
@@ -107,6 +109,7 @@
           >
           <input
             type="text"
+            data-i18n="searchPlaceholder"
             placeholder="통찰, 주제, 질문 검색..."
             class="w-full pl-10 pr-4 py-2.5 bg-background-section border border-transparent rounded-full text-sm font-medium focus:outline-none focus:bg-white focus:border-primary-light transition-all placeholder:text-text-muted"
           />
@@ -116,7 +119,7 @@
           class="btn-primary flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-primary-dark transition-all shadow-sm active:scale-[0.98]"
         >
           <span class="material-symbols-outlined !text-[20px]">add_circle</span>
-          New Insight
+          <span data-i18n="newInsightBtn">New Insight</span>
         </button>
 
         <div class="relative">
@@ -132,7 +135,6 @@
               class="hidden absolute top-0 right-0 size-2.5 bg-red-500 rounded-full border-2 border-white"
             ></span>
           </button>
-
           <div
             id="notification-dropdown"
             class="hidden absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-border z-[200] overflow-hidden origin-top-right transition-all"
@@ -140,13 +142,11 @@
             <div
               class="px-5 py-4 border-b border-border bg-gray-50 flex justify-between items-center"
             >
-              <h3 class="font-bold text-sm text-text-main">
-                알림 (Notifications)
-              </h3>
+              <h3 class="font-bold text-sm text-text-main">Notifications</h3>
               <span
                 id="btn-read-all"
                 class="text-[10px] font-bold text-primary cursor-pointer hover:underline"
-                >모두 읽음</span
+                >Read All</span
               >
             </div>
             <ul id="notification-list" class="max-h-64 overflow-y-auto"></ul>
@@ -161,7 +161,7 @@
           >
             <img
               id="profile-img"
-              src="https://api.dicebear.com/7.x/initials/svg?seed=Lisa&backgroundColor=B38F64&textColor=ffffff"
+              src="https://api.dicebear.com/7.x/initials/svg?seed=Lisa&backgroundColor=B38F64&textColor=ffffff&chars=1"
               alt="Profile"
               class="w-full h-full object-cover"
             />
@@ -179,7 +179,6 @@
                   >military_tech</span
                 >
               </div>
-
               <div class="relative z-10">
                 <div class="flex justify-between items-end mb-1">
                   <p
@@ -191,10 +190,9 @@
                   <span
                     id="profile-next-goal"
                     class="text-[10px] text-text-muted font-bold"
-                    >다음 레벨까지: 기록 1개</span
+                    >다음: 기록 1개</span
                   >
                 </div>
-
                 <h3
                   id="profile-name-display"
                   class="font-black text-lg text-text-main leading-tight"
@@ -205,9 +203,8 @@
                   id="profile-title-display"
                   class="text-xs font-bold text-text-sub mb-3"
                 >
-                  Insight Newbie (통찰 새싹)
+                  Insight Newbie
                 </p>
-
                 <div
                   class="w-full bg-border/50 h-2 rounded-full overflow-hidden mb-2"
                 >
@@ -217,12 +214,11 @@
                     style="width: 5%"
                   ></div>
                 </div>
-
                 <p
                   id="profile-desc-display"
                   class="text-[10px] text-text-muted font-medium leading-relaxed"
                 >
-                  "아직 아무것도 기록하지 않았지만, 생각을 남길 준비가 되었다."
+                  ...
                 </p>
               </div>
             </div>
@@ -237,11 +233,11 @@
                   >edit</span
                 >
                 <span
+                  data-i18n="profile.editName"
                   class="text-xs font-bold text-text-sub group-hover:text-text-main"
                   >이름 변경</span
                 >
               </button>
-
               <button
                 onclick="editProfileImage()"
                 class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-background-hover text-left transition-colors group"
@@ -251,14 +247,13 @@
                   >account_circle</span
                 >
                 <span
+                  data-i18n="profile.editPhoto"
                   class="text-xs font-bold text-text-sub group-hover:text-text-main"
                   >프로필 사진 변경</span
                 >
               </button>
             </div>
-
             <div class="h-px bg-border mx-2"></div>
-
             <div class="p-4 space-y-4">
               <div class="flex items-center justify-between">
                 <span
@@ -267,22 +262,25 @@
                   <span class="material-symbols-outlined text-[16px]"
                     >language</span
                   >
-                  언어
+                  <span data-i18n="profile.lang">언어</span>
                 </span>
                 <div class="flex bg-background-section p-1 rounded-lg">
                   <button
+                    id="btn-lang-kr"
+                    onclick="setLanguage('ko')"
                     class="px-2 py-0.5 text-[10px] font-bold rounded bg-white shadow-sm text-primary transition-all"
                   >
                     KR
                   </button>
                   <button
+                    id="btn-lang-en"
+                    onclick="setLanguage('en')"
                     class="px-2 py-0.5 text-[10px] font-bold rounded text-text-muted hover:text-text-main transition-all"
                   >
                     EN
                   </button>
                 </div>
               </div>
-
               <div class="flex items-center justify-between">
                 <span
                   class="text-xs font-bold text-text-sub flex items-center gap-1.5"
@@ -290,7 +288,7 @@
                   <span class="material-symbols-outlined text-[16px]"
                     >dark_mode</span
                   >
-                  테마
+                  <span data-i18n="profile.theme">테마</span>
                 </span>
                 <div class="flex bg-background-section p-1 rounded-lg">
                   <button
@@ -319,105 +317,24 @@
           class="bg-white rounded-3xl p-6 border border-border shadow-sm"
         >
           <div class="flex items-center justify-between mb-5">
-            <h2 class="font-black text-lg">나의 지식 지도 (Map)</h2>
+            <h2 data-i18n="sidebar.map" class="font-black text-lg">
+              나의 지식 지도
+            </h2>
             <span
               class="material-symbols-outlined text-text-muted cursor-pointer hover:text-primary"
               >bubble_chart</span
             >
           </div>
-
           <div
             class="h-4 w-full rounded-full bg-background-section overflow-hidden flex mb-4"
           >
-            <div
-              class="h-full bg-accent-nonfiction"
-              style="width: 30%"
-              title="비문학"
-            ></div>
-            <div
-              class="h-full bg-accent-news"
-              style="width: 20%"
-              title="신문기사"
-            ></div>
-            <div
-              class="h-full bg-accent-movie"
-              style="width: 20%"
-              title="영화"
-            ></div>
-            <div
-              class="h-full bg-accent-media"
-              style="width: 15%"
-              title="미디어"
-            ></div>
-            <div
-              class="h-full bg-accent-art"
-              style="width: 15%"
-              title="전시"
-            ></div>
-            <div
-              class="h-full bg-accent-fiction"
-              style="width: 0%"
-              title="문학"
-            ></div>
+            <div class="h-full bg-accent-nonfiction" style="width: 30%"></div>
+            <div class="h-full bg-accent-news" style="width: 20%"></div>
+            <div class="h-full bg-accent-movie" style="width: 20%"></div>
+            <div class="h-full bg-accent-media" style="width: 15%"></div>
+            <div class="h-full bg-accent-art" style="width: 15%"></div>
+            <div class="h-full bg-accent-fiction" style="width: 0%"></div>
           </div>
-
-          <div class="grid grid-cols-3 gap-y-4 gap-x-2 text-center mb-6">
-            <div class="flex flex-col items-center">
-              <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-nonfiction"></span>
-                <span class="text-[10px] font-bold text-text-sub uppercase"
-                  >Non-Fi</span
-                >
-              </div>
-              <span class="text-xs font-black text-accent-nonfiction">30%</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-news"></span>
-                <span class="text-[10px] font-bold text-text-sub uppercase"
-                  >News</span
-                >
-              </div>
-              <span class="text-xs font-black text-accent-news">20%</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-movie"></span>
-                <span class="text-[10px] font-bold text-text-sub uppercase"
-                  >Movie</span
-                >
-              </div>
-              <span class="text-xs font-black text-accent-movie">20%</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-media"></span>
-                <span class="text-[10px] font-bold text-text-sub uppercase"
-                  >Media</span
-                >
-              </div>
-              <span class="text-xs font-black text-accent-media">15%</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-art"></span>
-                <span class="text-[10px] font-bold text-text-sub uppercase"
-                  >Art</span
-                >
-              </div>
-              <span class="text-xs font-black text-accent-art">15%</span>
-            </div>
-            <div class="flex flex-col items-center opacity-50">
-              <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-fiction"></span>
-                <span class="text-[10px] font-bold text-text-sub uppercase"
-                  >Fiction</span
-                >
-              </div>
-              <span class="text-xs font-black text-text-muted">0%</span>
-            </div>
-          </div>
-
           <div class="grid grid-cols-3 gap-4 border-t border-border pt-5">
             <div class="text-center">
               <span
@@ -426,6 +343,7 @@
                 >3</span
               >
               <span
+                data-i18n="sidebar.thisMonth"
                 class="text-[10px] font-bold text-text-muted uppercase tracking-wider"
                 >This Month</span
               >
@@ -437,6 +355,7 @@
                 >0</span
               >
               <span
+                data-i18n="sidebar.hub"
                 class="text-[10px] font-bold text-text-muted uppercase tracking-wider"
                 >Hub</span
               >
@@ -448,6 +367,7 @@
                 >3</span
               >
               <span
+                data-i18n="sidebar.total"
                 class="text-[10px] font-bold text-text-muted uppercase tracking-wider"
                 >Total</span
               >
@@ -462,7 +382,7 @@
             <span class="material-symbols-outlined !text-[18px]"
               >filter_list</span
             >
-            Filters
+            <span data-i18n="sidebar.filter">Filters</span>
           </h3>
           <div class="flex flex-wrap gap-2">
             <button
@@ -477,42 +397,42 @@
               onclick="setFilter('nonfiction')"
               class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary"
             >
-              비문학
+              Non-fiction
             </button>
             <button
               id="filter-fiction"
               onclick="setFilter('fiction')"
               class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary"
             >
-              문학
+              Fiction
             </button>
             <button
               id="filter-news"
               onclick="setFilter('news')"
               class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary"
             >
-              신문기사
+              News
             </button>
             <button
               id="filter-movie"
               onclick="setFilter('movie')"
               class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary"
             >
-              영화
+              Movie
             </button>
             <button
               id="filter-art"
               onclick="setFilter('art')"
               class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary"
             >
-              전시/관람
+              Art
             </button>
             <button
               id="filter-media"
               onclick="setFilter('media')"
               class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary"
             >
-              미디어
+              Media
             </button>
           </div>
         </section>
@@ -525,7 +445,7 @@
           <div class="flex items-center justify-between">
             <h3 class="font-black text-lg flex items-center gap-2">
               <span class="size-2.5 rounded-full bg-accent-dialogue"></span>
-              Ready for Discussion
+              Ready
             </h3>
             <span
               id="count-ready"
@@ -534,12 +454,10 @@
             >
           </div>
         </section>
-
         <section id="zone-logged" class="space-y-5">
           <div class="flex items-center justify-between">
             <h3 class="font-black text-lg flex items-center gap-2">
-              <span class="size-2.5 rounded-full bg-primary"></span>
-              Discussion Logged
+              <span class="size-2.5 rounded-full bg-primary"></span> Logged
             </h3>
             <span
               id="count-logged"
@@ -548,7 +466,6 @@
             >
           </div>
         </section>
-
         <section id="zone-internalized" class="space-y-5">
           <div class="flex items-center justify-between">
             <h3 class="font-black text-lg flex items-center gap-2">
@@ -564,22 +481,6 @@
         </section>
       </div>
     </main>
-
-    <footer
-      class="bg-white/50 border-t border-border py-8 px-6 lg:px-8 text-center md:text-left"
-    >
-      <div
-        class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4"
-      >
-        <div class="flex items-center gap-2 text-text-sub">
-          <span class="material-symbols-outlined !text-[20px]">menu_book</span>
-          <span class="font-black text-sm tracking-tight">Insight Deck</span>
-        </div>
-        <p class="text-xs text-text-muted font-medium">
-          © 2026 Insight Deck. 위기지학의 실천.
-        </p>
-      </div>
-    </footer>
 
     <div
       id="write-modal"
@@ -601,8 +502,11 @@
             <div
               class="bg-primary px-4 py-3 sm:px-6 flex justify-between items-center"
             >
-              <h3 class="text-base font-bold leading-6 text-white">
-                New Insight 기록하기
+              <h3
+                data-i18n="modal.title"
+                class="text-base font-bold leading-6 text-white"
+              >
+                New Insight
               </h3>
               <button
                 type="button"
@@ -615,23 +519,27 @@
             <form id="insight-form" class="px-4 py-5 sm:p-6 space-y-4">
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-xs font-bold text-text-sub mb-1"
+                  <label
+                    data-i18n="modal.cat"
+                    class="block text-xs font-bold text-text-sub mb-1"
                     >Category</label
                   >
                   <select
                     id="input-category"
                     class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary bg-background-section"
                   >
-                    <option value="nonfiction">비문학 (Non-fiction)</option>
-                    <option value="fiction">문학 (Fiction)</option>
-                    <option value="news">신문기사 (News)</option>
-                    <option value="movie">영화 (Movie)</option>
-                    <option value="art">전시/관람 (Art)</option>
-                    <option value="media">영상/미디어 (YouTube/TED)</option>
+                    <option value="nonfiction">Non-fiction</option>
+                    <option value="fiction">Fiction</option>
+                    <option value="news">News</option>
+                    <option value="movie">Movie</option>
+                    <option value="art">Art</option>
+                    <option value="media">Media</option>
                   </select>
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-text-sub mb-1"
+                  <label
+                    data-i18n="modal.date"
+                    class="block text-xs font-bold text-text-sub mb-1"
                     >Date</label
                   >
                   <input
@@ -643,7 +551,9 @@
                 </div>
               </div>
               <div>
-                <label class="block text-xs font-bold text-text-sub mb-1"
+                <label
+                  data-i18n="modal.titleLabel"
+                  class="block text-xs font-bold text-text-sub mb-1"
                   >Title</label
                 >
                 <input
@@ -654,8 +564,10 @@
                 />
               </div>
               <div>
-                <label class="block text-xs font-bold text-text-sub mb-1"
-                  >Core Message (Fact)</label
+                <label
+                  data-i18n="modal.msgLabel"
+                  class="block text-xs font-bold text-text-sub mb-1"
+                  >Core Message</label
                 >
                 <textarea
                   id="input-content"
@@ -667,9 +579,10 @@
               <div class="pt-2">
                 <button
                   type="submit"
+                  data-i18n="modal.saveBtn"
                   class="w-full rounded-full bg-primary px-3 py-3 text-sm font-bold text-white hover:bg-primary-dark transition-all"
                 >
-                  기록 저장하기
+                  Save Insight
                 </button>
               </div>
             </form>
@@ -696,8 +609,11 @@
             class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm"
           >
             <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-              <h3 class="text-lg font-black leading-6 text-text-main mb-4">
-                어떤 로그를 추가할까요?
+              <h3
+                data-i18n="logModal.title"
+                class="text-lg font-black leading-6 text-text-main mb-4"
+              >
+                Add Log
               </h3>
               <div class="space-y-3">
                 <button
@@ -709,8 +625,18 @@
                     >psychology_alt</span
                   >
                   <div class="text-left">
-                    <p class="text-sm font-bold text-text-main">자기 투영</p>
-                    <p class="text-[10px] text-text-sub">Reflect</p>
+                    <p
+                      data-i18n="logModal.reflect.title"
+                      class="text-sm font-bold text-text-main"
+                    >
+                      Self-Reflection
+                    </p>
+                    <p
+                      data-i18n="logModal.reflect.sub"
+                      class="text-[10px] text-text-sub"
+                    >
+                      Reflect
+                    </p>
                   </div>
                 </button>
                 <button
@@ -722,8 +648,18 @@
                     >bolt</span
                   >
                   <div class="text-left">
-                    <p class="text-sm font-bold text-text-main">실천 과제</p>
-                    <p class="text-[10px] text-text-sub">Action Item</p>
+                    <p
+                      data-i18n="logModal.action.title"
+                      class="text-sm font-bold text-text-main"
+                    >
+                      Action Item
+                    </p>
+                    <p
+                      data-i18n="logModal.action.sub"
+                      class="text-[10px] text-text-sub"
+                    >
+                      Action
+                    </p>
                   </div>
                 </button>
                 <button
@@ -735,8 +671,18 @@
                     >forum</span
                   >
                   <div class="text-left">
-                    <p class="text-sm font-bold text-text-main">대화 로그</p>
-                    <p class="text-[10px] text-text-sub">Dialogue Log</p>
+                    <p
+                      data-i18n="logModal.dialogue.title"
+                      class="text-sm font-bold text-text-main"
+                    >
+                      Dialogue Log
+                    </p>
+                    <p
+                      data-i18n="logModal.dialogue.sub"
+                      class="text-[10px] text-text-sub"
+                    >
+                      Dialogue
+                    </p>
                   </div>
                 </button>
                 <button
@@ -748,8 +694,18 @@
                     >chat_bubble</span
                   >
                   <div class="text-left">
-                    <p class="text-sm font-bold text-text-main">토론 주제</p>
-                    <p class="text-[10px] text-text-sub">Discussion Topic</p>
+                    <p
+                      data-i18n="logModal.topic.title"
+                      class="text-sm font-bold text-text-main"
+                    >
+                      Discussion Topic
+                    </p>
+                    <p
+                      data-i18n="logModal.topic.sub"
+                      class="text-[10px] text-text-sub"
+                    >
+                      Topic
+                    </p>
                   </div>
                 </button>
               </div>
@@ -804,8 +760,9 @@
               >
                 <textarea
                   id="rich-input-field"
+                  data-i18n="richModal.placeholder"
                   class="w-full min-h-[140px] resize-none border-none bg-transparent p-4 text-text-main placeholder:text-[#9ca3af] focus:ring-0 text-base leading-relaxed"
-                  placeholder="내용을 입력하세요..."
+                  placeholder="Type here..."
                 ></textarea>
               </div>
               <div class="mt-4 flex items-center gap-2">
@@ -815,7 +772,8 @@
                 >
                 <input
                   type="text"
-                  placeholder="관련 태그 추가 (쉼표로 구분)"
+                  data-i18n="richModal.tagPlaceholder"
+                  placeholder="Tags"
                   class="w-full bg-transparent border-none text-sm text-text-main placeholder:text-[#9ca3af] focus:ring-0 p-0"
                 />
               </div>
@@ -829,14 +787,14 @@
                 class="inline-flex w-full justify-center rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-primary-light sm:ml-3 sm:w-auto transition-all flex items-center gap-2"
               >
                 <span class="material-symbols-outlined text-[18px]">save</span>
-                기록 저장
+                <span data-i18n="richModal.save">Save</span>
               </button>
               <button
                 type="button"
                 onclick="closeRichInputModal()"
                 class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-3 text-sm font-bold text-text-sub shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all"
               >
-                취소
+                <span data-i18n="richModal.cancel">Cancel</span>
               </button>
             </div>
           </div>
@@ -854,7 +812,6 @@
       <div
         class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity backdrop-blur-sm"
       ></div>
-
       <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
         <div
           class="flex min-h-full items-center justify-center p-4 text-center"
@@ -863,18 +820,21 @@
             class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all w-full max-w-sm border border-border"
           >
             <div class="bg-white px-5 py-5 sm:p-6">
-              <h3 class="text-lg font-black leading-6 text-text-main mb-2">
-                이름 변경
+              <h3
+                data-i18n="nameModal.title"
+                class="text-lg font-black leading-6 text-text-main mb-2"
+              >
+                Change Name
               </h3>
-              <p class="text-xs text-text-sub mb-4">
-                새로운 닉네임을 입력해주세요 (2~10자)
+              <p data-i18n="nameModal.desc" class="text-xs text-text-sub mb-4">
+                Enter new nickname
               </p>
-
               <input
                 type="text"
                 id="input-profile-name"
+                data-i18n="nameModal.placeholder"
                 class="w-full rounded-xl border-border text-sm font-bold focus:border-primary focus:ring-primary py-3 text-center bg-background-section"
-                placeholder="변경할 이름"
+                placeholder="Name"
                 maxlength="10"
               />
               <p
@@ -882,29 +842,31 @@
                 class="text-[10px] text-red-500 font-bold mt-2 hidden text-center"
               ></p>
             </div>
-
             <div
               class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-border"
             >
               <button
                 type="button"
                 onclick="saveProfileName()"
+                data-i18n="nameModal.applyBtn"
                 class="inline-flex w-full justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-primary-dark sm:ml-3 sm:w-auto transition-all"
               >
-                변경 완료
+                Apply
               </button>
               <button
                 type="button"
                 onclick="closeNameModal()"
+                data-i18n="nameModal.cancelBtn"
                 class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-text-sub shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all"
               >
-                취소
+                Cancel
               </button>
             </div>
           </div>
         </div>
       </div>
     </div>
+
     <div
       id="photo-modal"
       class="fixed inset-0 z-[140] hidden"
@@ -915,7 +877,6 @@
       <div
         class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity backdrop-blur-sm"
       ></div>
-
       <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
         <div
           class="flex min-h-full items-center justify-center p-4 text-center"
@@ -924,10 +885,12 @@
             class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all w-full max-w-sm border border-border"
           >
             <div class="bg-white px-5 py-5 sm:p-6">
-              <h3 class="text-lg font-black leading-6 text-text-main mb-4">
-                프로필 스타일 설정
+              <h3
+                data-i18n="photoModal.title"
+                class="text-lg font-black leading-6 text-text-main mb-4"
+              >
+                Profile Settings
               </h3>
-
               <div class="flex justify-center mb-6">
                 <div
                   class="size-24 rounded-full border-4 border-white shadow-lg overflow-hidden ring-1 ring-border"
@@ -940,10 +903,12 @@
                   />
                 </div>
               </div>
-
               <div class="mb-4">
-                <p class="text-xs font-bold text-text-sub mb-3">
-                  배경 컬러 선택 (이니셜 모드)
+                <p
+                  data-i18n="photoModal.colorLabel"
+                  class="text-xs font-bold text-text-sub mb-3"
+                >
+                  Background Color
                 </p>
                 <div class="grid grid-cols-5 gap-3 justify-items-center">
                   <button
@@ -988,19 +953,19 @@
                   ></button>
                 </div>
               </div>
-
               <div class="border-t border-border pt-4 mt-4">
-                <p class="text-xs font-bold text-text-sub mb-2">
-                  이미지 직접 업로드
+                <p
+                  data-i18n="photoModal.uploadLabel"
+                  class="text-xs font-bold text-text-sub mb-2"
+                >
+                  Upload Image
                 </p>
-
                 <input
                   type="file"
                   id="profile-upload-input"
                   accept="image/*"
                   class="hidden"
                 />
-
                 <button
                   onclick="triggerFileUpload()"
                   class="w-full py-2 border border-dashed border-border rounded-xl text-xs text-text-muted flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary hover:text-primary transition-all"
@@ -1008,27 +973,28 @@
                   <span class="material-symbols-outlined text-[16px]"
                     >upload</span
                   >
-                  내 컴퓨터에서 파일 찾기
+                  <span data-i18n="photoModal.uploadBtn">Choose File</span>
                 </button>
               </div>
             </div>
-
             <div
               class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-border"
             >
               <button
                 type="button"
                 onclick="saveProfileImage()"
+                data-i18n="photoModal.applyBtn"
                 class="inline-flex w-full justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-primary-dark sm:ml-3 sm:w-auto transition-all"
               >
-                적용하기
+                Apply
               </button>
               <button
                 type="button"
                 onclick="closePhotoModal()"
+                data-i18n="photoModal.cancelBtn"
                 class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-text-sub shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-all"
               >
-                취소
+                Cancel
               </button>
             </div>
           </div>
