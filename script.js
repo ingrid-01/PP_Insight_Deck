@@ -24,9 +24,8 @@ const translations = {
       total: "전체",
       filter: "필터",
       graph: {
-        // [New] 그래프 인덱스 한글화
         nonfiction: "비문학",
-        news: "뉴스",
+        news: "신문기사", // [수정됨] 뉴스 -> 신문기사
         movie: "영화",
         media: "미디어",
         art: "공연",
@@ -103,7 +102,6 @@ const translations = {
       total: "Total",
       filter: "Filters",
       graph: {
-        // [New] 그래프 인덱스 영어
         nonfiction: "Non-Fi",
         news: "News",
         movie: "Movie",
@@ -639,7 +637,7 @@ function openRichInputModal(type) {
     type === "reflect"
       ? currentLang === "ko"
         ? "이 내용이 현재 나의 상황이나 경험과 어떻게 연결되나요?"
-        : "How does this relate to your current situation?"
+        : "How does this relate to your current situation or experience?"
       : type === "action"
         ? currentLang === "ko"
           ? "이 통찰을 삶에 적용하기 위해 당장 실천할 수 있는 행동은?"
