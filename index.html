@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="style.css" />
     <script>
       tailwind.config = {
-        darkMode: "class", // [중요] 다크모드 활성화 설정
+        darkMode: "class",
         theme: {
           extend: {
             fontFamily: {
@@ -57,7 +57,6 @@
       };
     </script>
     <style>
-      /* 부드러운 테마 전환 효과 */
       body,
       div,
       nav,
@@ -139,7 +138,7 @@
 
         <button
           id="new-insight-btn"
-          class="btn-primary flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-primary-dark transition-all shadow-sm active:scale-[0.98]"
+          class="btn-primary flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-primary-dark transition-all shadow-sm active:scale-[0.98] whitespace-nowrap shrink-0"
         >
           <span class="material-symbols-outlined !text-[20px]">add_circle</span>
           <span data-i18n="newInsightBtn">New Insight</span>
@@ -403,6 +402,7 @@
               <div class="flex items-center gap-1.5 mb-1">
                 <span class="size-2 rounded-full bg-accent-nonfiction"></span
                 ><span
+                  data-i18n="sidebar.graph.nonfiction"
                   class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
                   >Non-Fi</span
                 >
@@ -417,6 +417,7 @@
               <div class="flex items-center gap-1.5 mb-1">
                 <span class="size-2 rounded-full bg-accent-news"></span
                 ><span
+                  data-i18n="sidebar.graph.news"
                   class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
                   >News</span
                 >
@@ -429,6 +430,7 @@
               <div class="flex items-center gap-1.5 mb-1">
                 <span class="size-2 rounded-full bg-accent-movie"></span
                 ><span
+                  data-i18n="sidebar.graph.movie"
                   class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
                   >Movie</span
                 >
@@ -441,6 +443,7 @@
               <div class="flex items-center gap-1.5 mb-1">
                 <span class="size-2 rounded-full bg-accent-media"></span
                 ><span
+                  data-i18n="sidebar.graph.media"
                   class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
                   >Media</span
                 >
@@ -453,6 +456,7 @@
               <div class="flex items-center gap-1.5 mb-1">
                 <span class="size-2 rounded-full bg-accent-art"></span
                 ><span
+                  data-i18n="sidebar.graph.art"
                   class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
                   >Art</span
                 >
@@ -465,6 +469,7 @@
               <div class="flex items-center gap-1.5 mb-1">
                 <span class="size-2 rounded-full bg-accent-fiction"></span
                 ><span
+                  data-i18n="sidebar.graph.fiction"
                   class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
                   >Fiction</span
                 >
