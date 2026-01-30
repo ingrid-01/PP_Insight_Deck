@@ -14,36 +14,45 @@ let userStats = { currentLevel: 1, postCount: 3, nextLevelGoal: 5 };
 
 const translations = {
   ko: {
-    nav: { hub: "Conversation Hub", archive: "Archive", stats: "Statistics" },
+    nav: { hub: "대화 허브", archive: "아카이브", stats: "통계" },
     searchPlaceholder: "통찰, 주제, 질문 검색...",
-    newInsightBtn: "New Insight",
+    newInsightBtn: "새로운 통찰",
     sidebar: {
       map: "나의 지식 지도 (Map)",
       thisMonth: "이번 달",
-      hub: "Hub",
-      total: "Total",
-      filter: "Filters",
+      hub: "허브",
+      total: "전체",
+      filter: "필터",
+      graph: {
+        // [New] 그래프 인덱스 한글화
+        nonfiction: "비문학",
+        news: "뉴스",
+        movie: "영화",
+        media: "미디어",
+        art: "공연",
+        fiction: "문학",
+      },
     },
     filters: {
-      all: "All",
+      all: "전체",
       nonfiction: "비문학",
       fiction: "문학",
       news: "신문기사",
       movie: "영화",
-      art: "전시/관람",
+      art: "공연",
       media: "미디어",
     },
     zones: {
-      ready: "Ready for Discussion",
-      logged: "Discussion Logged",
-      internalized: "Internalized",
+      ready: "토론 대기",
+      logged: "토론 기록됨",
+      internalized: "내재화됨",
     },
     modal: {
-      title: "New Insight 기록하기",
-      cat: "Category",
-      date: "Date",
-      titleLabel: "Title",
-      msgLabel: "Core Message (Fact)",
+      title: "새로운 통찰 기록하기",
+      cat: "카테고리",
+      date: "날짜",
+      titleLabel: "제목",
+      msgLabel: "핵심 메시지 (Fact)",
       saveBtn: "기록 저장하기",
       cancelBtn: "취소",
     },
@@ -93,6 +102,15 @@ const translations = {
       hub: "Hub",
       total: "Total",
       filter: "Filters",
+      graph: {
+        // [New] 그래프 인덱스 영어
+        nonfiction: "Non-Fi",
+        news: "News",
+        movie: "Movie",
+        media: "Media",
+        art: "Art",
+        fiction: "Fiction",
+      },
     },
     filters: {
       all: "All",
@@ -100,7 +118,7 @@ const translations = {
       fiction: "Fiction",
       news: "News",
       movie: "Movie",
-      art: "Exhibition",
+      art: "Exhibition/Performance",
       media: "Media",
     },
     zones: {
@@ -270,7 +288,7 @@ const levelSystem = [
 ];
 
 /* =========================================
-   2. DOM 요소 선택 (중복 선언 방지)
+   2. DOM 요소 선택
    ========================================= */
 const profileBtn = document.getElementById("profile-btn");
 const profileDropdown = document.getElementById("profile-dropdown");
@@ -492,9 +510,9 @@ function updateProfileUI() {
 }
 
 /* =========================================
-   4. 이벤트 리스너 (Event Listeners)
+   4. 이벤트 리스너
    ========================================= */
-// 모달 (글쓰기)
+// 글쓰기 모달
 writeOpenBtn.addEventListener("click", () =>
   writeModal.classList.remove("hidden"),
 );
@@ -504,6 +522,7 @@ writeCloseBtn.addEventListener("click", () =>
 writeForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const category = document.getElementById("input-category").value;
+  // [수정] 공연(art) 한영 변환 로직 적용
   let subCatKo = "기타",
     subCatEn = "Other";
   const catMap = {
@@ -511,13 +530,14 @@ writeForm.addEventListener("submit", (e) => {
     fiction: ["문학", "Fiction"],
     nonfiction: ["비문학", "Non-fiction"],
     movie: ["영화", "Movie"],
-    art: ["전시/관람", "Exhibition"],
+    art: ["공연", "Performance"],
     media: ["영상/미디어", "Media"],
   };
   if (catMap[category]) {
     subCatKo = catMap[category][0];
     subCatEn = catMap[category][1];
   }
+
   const newInsight = {
     id: Date.now(),
     status: "ready",
@@ -584,7 +604,6 @@ profileBtn.addEventListener("click", (e) => {
   }
 });
 
-// 외부 클릭 닫기 통합
 document.addEventListener("click", (e) => {
   if (!notiBtn.contains(e.target) && !notiDropdown.contains(e.target))
     notiDropdown.classList.add("hidden");
@@ -592,7 +611,7 @@ document.addEventListener("click", (e) => {
     profileDropdown.classList.add("hidden");
 });
 
-// 로그 모달 함수들
+// 로그 모달
 function openLogModal(cardId) {
   currentCardId = cardId;
   logModal.classList.remove("hidden");
@@ -657,7 +676,7 @@ function saveRichInput() {
   }
 }
 
-// 기타 헬퍼 함수
+// 헬퍼 함수
 function markItemAsRead(liElement) {
   if (!liElement) return;
   liElement.classList.add("opacity-50");
@@ -685,7 +704,7 @@ function scrollToCard(cardId, element) {
   }
 }
 
-// 이름 변경 관련
+// 이름/사진 변경
 function editProfileName() {
   profileDropdown.classList.add("hidden");
   nameInput.value = document.getElementById("profile-name-display").innerText;
@@ -713,7 +732,6 @@ nameInput.addEventListener("keydown", (e) => {
   }
 });
 
-// 사진 변경 관련
 function editProfileImage() {
   profileDropdown.classList.add("hidden");
   photoModal.classList.remove("hidden");
@@ -782,30 +800,22 @@ document.addEventListener("keydown", (e) => {
 });
 
 /* =========================================
-   5. 초기화 (Initialization)
+   5. 초기화
    ========================================= */
 window.addEventListener("DOMContentLoaded", () => {
-  // 1. 테마 적용
   setTheme(currentTheme);
-  // 2. 언어 적용 (렌더링 포함)
   setLanguage(currentLang);
-
-  // 3. 사용자 이름 복원
   const savedName = localStorage.getItem("userName");
   if (savedName)
     document.getElementById("profile-name-display").innerText = savedName;
-
-  // 4. 프로필 사진 복원 (없으면 기본값 설정)
   const savedImg = localStorage.getItem("userProfileImg");
   if (savedImg) {
     document.getElementById("profile-img").src = savedImg;
   } else {
-    // [Fix] 초기 이미지가 깨지지 않도록 기본값 설정
     const defaultName = savedName || "Lisa";
     const defaultUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${defaultName}&backgroundColor=B38F64&textColor=ffffff&chars=1`;
     document.getElementById("profile-img").src = defaultUrl;
   }
-
   const savedColor = localStorage.getItem("userProfileColor");
   if (savedColor) tempColor = savedColor;
 });
