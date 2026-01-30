@@ -17,6 +17,7 @@ const translations = {
     nav: { hub: "대화 허브", archive: "아카이브", stats: "통계" },
     searchPlaceholder: "통찰, 주제, 질문 검색...",
     newInsightBtn: "새로운 통찰",
+    logBtn: "로그", // [New] 로그 버튼 텍스트
     sidebar: {
       map: "나의 지식 지도 (Map)",
       thisMonth: "이번 달",
@@ -25,7 +26,7 @@ const translations = {
       filter: "필터",
       graph: {
         nonfiction: "비문학",
-        news: "신문기사", // [수정됨] 뉴스 -> 신문기사
+        news: "신문기사",
         movie: "영화",
         media: "미디어",
         art: "공연",
@@ -50,6 +51,7 @@ const translations = {
       title: "새로운 통찰 기록하기",
       cat: "카테고리",
       date: "날짜",
+      datePlaceholder: "예) 2026년 1월", // [New] 날짜 예시 수정
       titleLabel: "제목",
       msgLabel: "핵심 메시지 (Fact)",
       saveBtn: "기록 저장하기",
@@ -57,10 +59,10 @@ const translations = {
     },
     logModal: {
       title: "어떤 로그를 추가할까요?",
-      reflect: { title: "자기 투영", sub: "Reflect" },
-      action: { title: "실천 과제", sub: "Action Item" },
-      dialogue: { title: "대화 로그", sub: "Dialogue Log" },
-      topic: { title: "토론 주제", sub: "Discussion Topic" },
+      reflect: { title: "자기 투영", sub: "" },
+      action: { title: "실천 과제", sub: "" },
+      dialogue: { title: "대화 로그", sub: "" },
+      topic: { title: "토론 주제", sub: "" },
     },
     richModal: {
       save: "기록 저장",
@@ -95,6 +97,7 @@ const translations = {
     nav: { hub: "Conversation Hub", archive: "Archive", stats: "Statistics" },
     searchPlaceholder: "Search insights, topics...",
     newInsightBtn: "New Insight",
+    logBtn: "Log", // [New]
     sidebar: {
       map: "My Knowledge Map",
       thisMonth: "This Month",
@@ -128,6 +131,7 @@ const translations = {
       title: "New Insight",
       cat: "Category",
       date: "Date",
+      datePlaceholder: "Ex) Jan 2026", // [New]
       titleLabel: "Title",
       msgLabel: "Core Message (Fact)",
       saveBtn: "Save Insight",
@@ -135,10 +139,10 @@ const translations = {
     },
     logModal: {
       title: "Add New Log",
-      reflect: { title: "Self-Reflection", sub: "Reflect" },
-      action: { title: "Action Item", sub: "Action Item" },
-      dialogue: { title: "Dialogue Log", sub: "Dialogue Log" },
-      topic: { title: "Discussion Topic", sub: "Discussion Topic" },
+      reflect: { title: "Self-Reflection", sub: "" },
+      action: { title: "Action Item", sub: "" },
+      dialogue: { title: "Dialogue Log", sub: "" },
+      topic: { title: "Discussion Topic", sub: "" },
     },
     richModal: {
       save: "Save Log",
@@ -328,10 +332,59 @@ function setLanguage(lang) {
         : (el.innerText = text);
     }
   });
+
+  // [New] 카테고리 드롭다운 옵션 한글화 업데이트
+  updateFormCategoryOptions(lang);
+
   renderInsights();
   updateFilterButtons();
   updateProfileUI();
   updateLangButtons();
+}
+
+// [New] 카테고리 셀렉트 옵션 업데이트 함수
+function updateFormCategoryOptions(lang) {
+  const select = document.getElementById("input-category");
+  const options = select.options;
+  // filters 객체에서 번역된 값을 가져와 적용
+  for (let i = 0; i < options.length; i++) {
+    const key = options[i].value; // nonfiction, news 등
+    if (translations[lang].filters[key]) {
+      options[i].text = translations[lang].filters[key];
+    }
+  }
+}
+
+// [New] 날짜 포맷팅 함수 (Sep 2025 -> 2025년 9월)
+function formatDate(dateStr) {
+  if (currentLang === "en") return dateStr; // 영어면 그대로
+
+  // "Sep 2025" 형식 파싱
+  const parts = dateStr.split(" ");
+  if (parts.length !== 2) return dateStr; // 형식이 다르면 그대로 반환
+
+  const monthMap = {
+    Jan: "1월",
+    Feb: "2월",
+    Mar: "3월",
+    Apr: "4월",
+    May: "5월",
+    Jun: "6월",
+    Jul: "7월",
+    Aug: "8월",
+    Sep: "9월",
+    Oct: "10월",
+    Nov: "11월",
+    Dec: "12월",
+  };
+
+  const mon = monthMap[parts[0]];
+  const year = parts[1];
+
+  if (mon && year) {
+    return `${year}년 ${mon}`;
+  }
+  return dateStr;
 }
 
 function setTheme(theme) {
@@ -414,11 +467,14 @@ function renderInsights() {
         ? data.subCategory[currentLang]
         : data.subCategory;
 
+    // [수정] 날짜 포맷 적용
+    const displayDate = formatDate(data.date);
+
     const cardHTML = `
           <article id="card-${data.id}" class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer group mt-5 dark:bg-gray-800 dark:border-gray-700">
               <div class="flex justify-between items-start mb-3">
                   <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider"><span class="material-symbols-outlined !text-[14px]">${style.icon}</span>${subCatText}</div>
-                  <span class="text-[10px] font-bold text-text-muted dark:text-gray-400">${data.date}</span>
+                  <span class="text-[10px] font-bold text-text-muted dark:text-gray-400">${displayDate}</span>
               </div>
               <h4 class="font-bold text-lg leading-snug mb-3 serif group-hover:text-primary transition-colors dark:text-white dark:group-hover:text-primary-light">${data.title}</h4>
               <p class="text-sm text-text-sub font-medium leading-relaxed mb-4 line-clamp-3 dark:text-gray-300">"${data.content}"</p>
@@ -426,7 +482,10 @@ function renderInsights() {
               ${data.action ? `<div class="bg-accent-action/10 p-4 rounded-xl mb-4 dark:bg-green-900/20"><h5 class="text-xs font-bold text-accent-action mb-2 flex items-center gap-1.5 uppercase tracking-wider"><span class="material-symbols-outlined !text-[16px]">bolt</span> ${translations[currentLang].logModal.action.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium dark:text-gray-200">${data.action}</p></div>` : ""}
               ${data.dialogue ? `<div class="bg-primary/5 p-4 rounded-xl mb-4 border border-primary/10 dark:bg-gray-700 dark:border-gray-600"><h5 class="text-xs font-bold text-primary mb-2 flex items-center gap-1.5 uppercase tracking-wider dark:text-primary-light"><span class="material-symbols-outlined !text-[16px]">forum</span> ${translations[currentLang].logModal.dialogue.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium italic dark:text-gray-200">"${data.dialogue}"</p></div>` : ""}
               ${data.discussionTopic ? `<div class="bg-accent-dialogue/10 p-3 rounded-xl mb-4 border border-accent-dialogue/20 dark:bg-orange-900/20"><h5 class="text-[10px] font-bold text-accent-dialogue mb-1 uppercase">💬 ${translations[currentLang].logModal.topic.title}</h5><p class="text-xs text-text-main font-bold dark:text-gray-200">"${data.discussionTopic}"</p></div>` : ""}
-              <button onclick="openLogModal(${data.id})" class="w-full py-2.5 rounded-xl border border-dashed border-border text-text-sub text-xs font-bold flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary-light hover:text-primary transition-all dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-primary-light"><span class="material-symbols-outlined !text-[18px]">add</span> Log</button>
+              <button onclick="openLogModal(${data.id})" class="w-full py-2.5 rounded-xl border border-dashed border-border text-text-sub text-xs font-bold flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary-light hover:text-primary transition-all dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-primary-light">
+                <span class="material-symbols-outlined !text-[18px]">add</span>
+                ${translations[currentLang].logBtn}
+              </button>
           </article>`;
     zones[data.status].insertAdjacentHTML("beforeend", cardHTML);
   });
@@ -520,7 +579,7 @@ writeCloseBtn.addEventListener("click", () =>
 writeForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const category = document.getElementById("input-category").value;
-  // [수정] 공연(art) 한영 변환 로직 적용
+
   let subCatKo = "기타",
     subCatEn = "Other";
   const catMap = {
@@ -536,12 +595,16 @@ writeForm.addEventListener("submit", (e) => {
     subCatEn = catMap[category][1];
   }
 
+  // [수정] 날짜 저장 시, 한국어 모드라도 데이터는 'Jan 2026' 같은 영어 포맷으로 저장 권장
+  // (표시할 때만 한국어로 바꾸는 게 관리가 편함)
+  const rawDate = document.getElementById("input-date").value || "Just Now";
+
   const newInsight = {
     id: Date.now(),
     status: "ready",
     category: category,
     subCategory: { ko: subCatKo, en: subCatEn },
-    date: document.getElementById("input-date").value || "Just Now",
+    date: rawDate,
     title: document.getElementById("input-title").value,
     content: document.getElementById("input-content").value,
     reflect: null,
