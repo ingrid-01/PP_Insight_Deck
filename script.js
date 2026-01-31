@@ -1,5 +1,5 @@
 /* =========================================
-   1. 전역 변수 및 데이터 설정
+   1. 전역 변수 및 데이터
    ========================================= */
 let currentLang = localStorage.getItem("userLang") || "ko";
 let currentTheme = localStorage.getItem("userTheme") || "light";
@@ -8,9 +8,65 @@ let currentCardId = null;
 let currentLogType = null;
 let tempColor = "B38F64";
 let currentPreviewUrl = "";
+let currentView = localStorage.getItem("lastView") || "hub";
 
-// 유저 스탯 (임시)
-let userStats = { currentLevel: 1, postCount: 3, nextLevelGoal: 5 };
+// 레벨 시스템 데이터
+const levelSystem = [
+  { lv: 0, en: "Insight Newbie", ko: "통찰 새싹", max: 1 },
+  { lv: 1, en: "Insight Starter", ko: "통찰 입문자", max: 5 },
+  { lv: 2, en: "Insight Explorer", ko: "통찰 탐색자", max: 10 },
+  { lv: 3, en: "Insight Adventurer", ko: "통찰 모험가", max: 20 },
+  { lv: 4, en: "Insight Master", ko: "통찰 마스터", max: 50 },
+];
+
+// 배지 시스템 데이터
+const badgeSystem = [
+  {
+    id: "first_step",
+    icon: "flag",
+    ko: "첫걸음",
+    en: "First Step",
+    desc_ko: "첫 번째 통찰 기록",
+    desc_en: "Recorded first insight",
+    condition: (n) => n >= 1,
+  },
+  {
+    id: "steady",
+    icon: "shutter_speed",
+    ko: "꾸준함",
+    en: "Steady",
+    desc_ko: "3일 연속 기록",
+    desc_en: "3 days streak",
+    condition: (n, streak) => streak >= 3,
+  },
+  {
+    id: "collector",
+    icon: "library_books",
+    ko: "수집가",
+    en: "Collector",
+    desc_ko: "통찰 10개 달성",
+    desc_en: "Reached 10 insights",
+    condition: (n) => n >= 10,
+  },
+  {
+    id: "writer",
+    icon: "edit_note",
+    ko: "기록광",
+    en: "Writer",
+    desc_ko: "통찰 30개 달성",
+    desc_en: "Reached 30 insights",
+    condition: (n) => n >= 30,
+  },
+  {
+    id: "thinker",
+    icon: "psychology",
+    ko: "사색가",
+    en: "Thinker",
+    desc_ko: "비문학 5개 기록",
+    desc_en: "5 Non-fiction logs",
+    condition: (n, s, cats) => cats["nonfiction"] >= 5,
+  },
+];
 
 const translations = {
   ko: {
@@ -20,21 +76,24 @@ const translations = {
       total: "총 기록된 통찰",
       streak: "연속 기록일",
       month: "이번 달 달성",
-      heatmapTitle: "연간 활동 로그 (Activity Heatmap)",
+      heatmapTitle: "연간 활동 로그",
       less: "적음",
       more: "많음",
       catAnalysis: "관심 분야 분석",
       suggestion: "인사이트 코치",
+      graphTitle: "지식 연결 그래프 (Mind Map)",
+      badgeTitle: "명예의 전당",
       coachDefault:
         "아직 데이터가 충분하지 않습니다. 다양한 분야의 경험을 기록해보세요!",
       coachBias:
         "최근 '{best}' 분야에 집중하고 계시네요. 균형을 위해 '{worst}' 분야의 경험도 넓혀보는 건 어떨까요?",
+      streakUnit: "일",
     },
     searchPlaceholder: "통찰, 주제, 질문 검색...",
     newInsightBtn: "새로운 통찰",
-    logBtn: "로그", // [New] 로그 버튼 텍스트
+    logBtn: "로그",
     sidebar: {
-      map: "나의 지식 지도 (Map)",
+      map: "나의 지식 지도",
       thisMonth: "이번 달",
       hub: "허브",
       total: "전체",
@@ -66,7 +125,7 @@ const translations = {
       title: "새로운 통찰 기록하기",
       cat: "카테고리",
       date: "날짜",
-      datePlaceholder: "예) 2026년 1월", // [New] 날짜 예시 수정
+      datePlaceholder: "예) 2026년 1월",
       titleLabel: "제목",
       msgLabel: "핵심 메시지 (Fact)",
       saveBtn: "기록 저장하기",
@@ -94,15 +153,15 @@ const translations = {
     },
     photoModal: {
       title: "프로필 스타일 설정",
-      colorLabel: "배경 컬러 선택 (이니셜 모드)",
-      uploadLabel: "이미지 직접 업로드",
-      uploadBtn: "내 컴퓨터에서 파일 찾기",
+      colorLabel: "배경 컬러 선택",
+      uploadLabel: "이미지 업로드",
+      uploadBtn: "파일 찾기",
       applyBtn: "적용하기",
       cancelBtn: "취소",
     },
     nameModal: {
       title: "이름 변경",
-      desc: "새로운 닉네임을 입력해주세요 (2~10자)",
+      desc: "새 닉네임 입력 (2~10자)",
       placeholder: "변경할 이름",
       applyBtn: "변경 완료",
       cancelBtn: "취소",
@@ -115,19 +174,22 @@ const translations = {
       total: "Total Insights",
       streak: "Current Streak",
       month: "This Month",
-      heatmapTitle: "Activity Log (1 Year)",
+      heatmapTitle: "Activity Log",
       less: "Less",
       more: "More",
       catAnalysis: "Category Analysis",
       suggestion: "Insight Coach",
+      graphTitle: "Knowledge Graph (Mind Map)",
+      badgeTitle: "Hall of Fame",
       coachDefault:
         "Not enough data yet. Try recording experiences from various fields!",
       coachBias:
         "You're focused on '{best}' lately. How about exploring '{worst}' to balance your perspective?",
+      streakUnit: " days",
     },
     searchPlaceholder: "Search insights, topics...",
     newInsightBtn: "New Insight",
-    logBtn: "Log", // [New]
+    logBtn: "Log",
     sidebar: {
       map: "My Knowledge Map",
       thisMonth: "This Month",
@@ -149,7 +211,7 @@ const translations = {
       fiction: "Fiction",
       news: "News",
       movie: "Movie",
-      art: "Exhibition/Performance",
+      art: "Art",
       media: "Media",
     },
     zones: {
@@ -161,9 +223,9 @@ const translations = {
       title: "New Insight",
       cat: "Category",
       date: "Date",
-      datePlaceholder: "Ex) Jan 2026", // [New]
+      datePlaceholder: "Ex) Jan 2026",
       titleLabel: "Title",
-      msgLabel: "Core Message (Fact)",
+      msgLabel: "Core Message",
       saveBtn: "Save Insight",
       cancelBtn: "Cancel",
     },
@@ -177,7 +239,7 @@ const translations = {
     richModal: {
       save: "Save Log",
       cancel: "Cancel",
-      placeholder: "Type your content here...",
+      placeholder: "Type content...",
       tagPlaceholder: "Add tags (comma separated)",
     },
     profile: {
@@ -189,7 +251,7 @@ const translations = {
     },
     photoModal: {
       title: "Profile Settings",
-      colorLabel: "Background Color (Initials)",
+      colorLabel: "Background Color",
       uploadLabel: "Upload Image",
       uploadBtn: "Choose File",
       applyBtn: "Apply",
@@ -197,7 +259,7 @@ const translations = {
     },
     nameModal: {
       title: "Change Name",
-      desc: "Enter new nickname (2-10 chars)",
+      desc: "Enter new nickname",
       placeholder: "New Name",
       applyBtn: "Done",
       cancelBtn: "Cancel",
@@ -207,42 +269,45 @@ const translations = {
 
 const insights = [
   {
-    id: 1,
+    id: 1735689600000,
     status: "ready",
     category: "news",
     subCategory: { ko: "신문기사 - 심리학", en: "News - Psychology" },
     date: "Sep 2025",
     title: "친애하는 나의 결함에게",
     content: "누구나 결함을 가지고 있다...",
-    reflect: "나는 결함을 없애야 할 적으로만 여겼다...",
+    tags: ["심리학", "자아", "결핍"],
+    reflect: "내 결함을...",
     action: null,
-    discussionTopic: "당신의 결핍은 무엇인가?",
+    discussionTopic: null,
     dialogue: null,
   },
   {
-    id: 2,
+    id: 1738281600000,
     status: "ready",
     category: "nonfiction",
     subCategory: { ko: "비문학 - IT", en: "Non-fiction - IT" },
     date: "Oct 2025",
     title: "Moral AI",
     content: "AI의 도덕적 한계는...",
+    tags: ["AI", "윤리", "미래"],
     reflect: null,
-    action: "AI에게 질문하기 전...",
-    discussionTopic: "우리는 점점 AI에게 의존하는...",
+    action: "질문하기 전...",
+    discussionTopic: null,
     dialogue: null,
   },
   {
-    id: 3,
+    id: 1738368000000,
     status: "ready",
     category: "movie",
     subCategory: { ko: "영화 - SF/드라마", en: "Movie - SF/Drama" },
     date: "Jan 2026",
     title: "Her",
     content: "사랑은 사회적으로...",
-    reflect: "AI와의 사랑을 다루지만...",
+    tags: ["AI", "사랑", "고독"],
+    reflect: "AI와의 사랑...",
     action: null,
-    discussionTopic: "기술이 발전하여...",
+    discussionTopic: null,
     dialogue: null,
   },
 ];
@@ -280,47 +345,8 @@ const styles = {
   },
 };
 
-const levelSystem = [
-  {
-    lv: 0,
-    en: "Insight Newbie",
-    ko: "통찰 새싹",
-    desc_ko: "아직 아무것도 기록하지 않았지만...",
-    desc_en: "Ready to record insights...",
-    next_ko: "첫 기록 1개",
-    next_en: "1st Insight",
-  },
-  {
-    lv: 1,
-    en: "Insight Starter",
-    ko: "통찰 입문자",
-    desc_ko: "경험을 처음으로 붙잡았다.",
-    desc_en: "Captured the first experience.",
-    next_ko: "기록 5개",
-    next_en: "5 Insights",
-  },
-  {
-    lv: 2,
-    en: "Insight Explorer",
-    ko: "통찰 탐색자",
-    desc_ko: "다양한 경험을 탐색 중.",
-    desc_en: "Exploring various interests.",
-    next_ko: "기록 10개",
-    next_en: "10 Insights",
-  },
-  {
-    lv: 3,
-    en: "Insight Adventurer",
-    ko: "통찰 모험가",
-    desc_ko: "기록이 일회성이 아님을 깨닫다.",
-    desc_en: "Realizing insights are continuous.",
-    next_ko: "기록 15개",
-    next_en: "15 Insights",
-  },
-];
-
 /* =========================================
-   2. DOM 요소 선택
+   2. DOM & 초기화
    ========================================= */
 const profileBtn = document.getElementById("profile-btn");
 const profileDropdown = document.getElementById("profile-dropdown");
@@ -340,15 +366,9 @@ const richModal = document.getElementById("rich-input-modal");
 
 const nameModal = document.getElementById("name-modal");
 const nameInput = document.getElementById("input-profile-name");
-const nameError = document.getElementById("name-error-msg");
-
 const photoModal = document.getElementById("photo-modal");
-const previewImg = document.getElementById("preview-profile-img");
 const fileInput = document.getElementById("profile-upload-input");
 
-/* =========================================
-   3. 핵심 로직: 언어, 테마, 필터, 렌더링
-   ========================================= */
 function setLanguage(lang) {
   currentLang = lang;
   localStorage.setItem("userLang", lang);
@@ -363,36 +383,36 @@ function setLanguage(lang) {
     }
   });
 
-  // [New] 카테고리 드롭다운 옵션 한글화 업데이트
-  updateFormCategoryOptions(lang);
+  document.querySelectorAll("[data-i18n-title]").forEach((el) => {
+    const keys = el.getAttribute("data-i18n-title").split(".");
+    let text = translations[lang];
+    keys.forEach((k) => (text = text ? text[k] : null));
+    if (text) el.title = text;
+  });
 
+  updateFormCategoryOptions(lang);
   renderInsights();
   updateFilterButtons();
   updateProfileUI();
   updateLangButtons();
+
+  if (currentView === "stats") renderStatistics();
 }
 
-// [New] 카테고리 셀렉트 옵션 업데이트 함수
 function updateFormCategoryOptions(lang) {
   const select = document.getElementById("input-category");
   const options = select.options;
-  // filters 객체에서 번역된 값을 가져와 적용
   for (let i = 0; i < options.length; i++) {
-    const key = options[i].value; // nonfiction, news 등
-    if (translations[lang].filters[key]) {
+    const key = options[i].value;
+    if (translations[lang].filters[key])
       options[i].text = translations[lang].filters[key];
-    }
   }
 }
 
-// [New] 날짜 포맷팅 함수 (Sep 2025 -> 2025년 9월)
 function formatDate(dateStr) {
-  if (currentLang === "en") return dateStr; // 영어면 그대로
-
-  // "Sep 2025" 형식 파싱
+  if (currentLang === "en") return dateStr;
   const parts = dateStr.split(" ");
-  if (parts.length !== 2) return dateStr; // 형식이 다르면 그대로 반환
-
+  if (parts.length !== 2) return dateStr;
   const monthMap = {
     Jan: "1월",
     Feb: "2월",
@@ -407,14 +427,9 @@ function formatDate(dateStr) {
     Nov: "11월",
     Dec: "12월",
   };
-
   const mon = monthMap[parts[0]];
   const year = parts[1];
-
-  if (mon && year) {
-    return `${year}년 ${mon}`;
-  }
-  return dateStr;
+  return mon && year ? `${year}년 ${mon}` : dateStr;
 }
 
 function setTheme(theme) {
@@ -423,6 +438,7 @@ function setTheme(theme) {
   if (theme === "dark") document.documentElement.classList.add("dark");
   else document.documentElement.classList.remove("dark");
   updateThemeButtons();
+  if (currentView === "stats") renderGraph();
 }
 
 function updateLangButtons() {
@@ -496,27 +512,24 @@ function renderInsights() {
       typeof data.subCategory === "object"
         ? data.subCategory[currentLang]
         : data.subCategory;
-
-    // [수정] 날짜 포맷 적용
     const displayDate = formatDate(data.date);
 
     const cardHTML = `
-          <article id="card-${data.id}" class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer group mt-5 dark:bg-gray-800 dark:border-gray-700">
-              <div class="flex justify-between items-start mb-3">
-                  <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider"><span class="material-symbols-outlined !text-[14px]">${style.icon}</span>${subCatText}</div>
-                  <span class="text-[10px] font-bold text-text-muted dark:text-gray-400">${displayDate}</span>
-              </div>
-              <h4 class="font-bold text-lg leading-snug mb-3 serif group-hover:text-primary transition-colors dark:text-white dark:group-hover:text-primary-light">${data.title}</h4>
-              <p class="text-sm text-text-sub font-medium leading-relaxed mb-4 line-clamp-3 dark:text-gray-300">"${data.content}"</p>
-              ${data.reflect ? `<div class="bg-background-section/50 p-4 rounded-xl mb-4 dark:bg-gray-700"><h5 class="text-xs font-bold text-accent-dialogue mb-2 flex items-center gap-1.5 uppercase tracking-wider"><span class="material-symbols-outlined !text-[16px]">psychology_alt</span> ${translations[currentLang].logModal.reflect.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium line-clamp-3 dark:text-gray-200">${data.reflect}</p></div>` : ""}
-              ${data.action ? `<div class="bg-accent-action/10 p-4 rounded-xl mb-4 dark:bg-green-900/20"><h5 class="text-xs font-bold text-accent-action mb-2 flex items-center gap-1.5 uppercase tracking-wider"><span class="material-symbols-outlined !text-[16px]">bolt</span> ${translations[currentLang].logModal.action.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium dark:text-gray-200">${data.action}</p></div>` : ""}
-              ${data.dialogue ? `<div class="bg-primary/5 p-4 rounded-xl mb-4 border border-primary/10 dark:bg-gray-700 dark:border-gray-600"><h5 class="text-xs font-bold text-primary mb-2 flex items-center gap-1.5 uppercase tracking-wider dark:text-primary-light"><span class="material-symbols-outlined !text-[16px]">forum</span> ${translations[currentLang].logModal.dialogue.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium italic dark:text-gray-200">"${data.dialogue}"</p></div>` : ""}
-              ${data.discussionTopic ? `<div class="bg-accent-dialogue/10 p-3 rounded-xl mb-4 border border-accent-dialogue/20 dark:bg-orange-900/20"><h5 class="text-[10px] font-bold text-accent-dialogue mb-1 uppercase">💬 ${translations[currentLang].logModal.topic.title}</h5><p class="text-xs text-text-main font-bold dark:text-gray-200">"${data.discussionTopic}"</p></div>` : ""}
-              <button onclick="openLogModal(${data.id})" class="w-full py-2.5 rounded-xl border border-dashed border-border text-text-sub text-xs font-bold flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary-light hover:text-primary transition-all dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-primary-light">
-                <span class="material-symbols-outlined !text-[18px]">add</span>
-                ${translations[currentLang].logBtn}
-              </button>
-          </article>`;
+      <article id="card-${data.id}" class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer group mt-5 dark:bg-gray-800 dark:border-gray-700">
+          <div class="flex justify-between items-start mb-3">
+              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider"><span class="material-symbols-outlined !text-[14px]">${style.icon}</span>${subCatText}</div>
+              <span class="text-[10px] font-bold text-text-muted dark:text-gray-400">${displayDate}</span>
+          </div>
+          <h4 class="font-bold text-lg leading-snug mb-3 serif group-hover:text-primary transition-colors dark:text-white dark:group-hover:text-primary-light">${data.title}</h4>
+          <p class="text-sm text-text-sub font-medium leading-relaxed mb-4 line-clamp-3 dark:text-gray-300">"${data.content}"</p>
+          ${data.reflect ? `<div class="bg-background-section/50 p-4 rounded-xl mb-4 dark:bg-gray-700"><h5 class="text-xs font-bold text-accent-dialogue mb-2 flex items-center gap-1.5 uppercase tracking-wider"><span class="material-symbols-outlined !text-[16px]">psychology_alt</span> ${translations[currentLang].logModal.reflect.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium line-clamp-3 dark:text-gray-200">${data.reflect}</p></div>` : ""}
+          ${data.action ? `<div class="bg-accent-action/10 p-4 rounded-xl mb-4 dark:bg-green-900/20"><h5 class="text-xs font-bold text-accent-action mb-2 flex items-center gap-1.5 uppercase tracking-wider"><span class="material-symbols-outlined !text-[16px]">bolt</span> ${translations[currentLang].logModal.action.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium dark:text-gray-200">${data.action}</p></div>` : ""}
+          ${data.dialogue ? `<div class="bg-primary/5 p-4 rounded-xl mb-4 border border-primary/10 dark:bg-gray-700 dark:border-gray-600"><h5 class="text-xs font-bold text-primary mb-2 flex items-center gap-1.5 uppercase tracking-wider dark:text-primary-light"><span class="material-symbols-outlined !text-[16px]">forum</span> ${translations[currentLang].logModal.dialogue.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium italic dark:text-gray-200">"${data.dialogue}"</p></div>` : ""}
+          ${data.discussionTopic ? `<div class="bg-accent-dialogue/10 p-3 rounded-xl mb-4 border border-accent-dialogue/20 dark:bg-orange-900/20"><h5 class="text-[10px] font-bold text-accent-dialogue mb-1 uppercase">💬 ${translations[currentLang].logModal.topic.title}</h5><p class="text-xs text-text-main font-bold dark:text-gray-200">"${data.discussionTopic}"</p></div>` : ""}
+          <button onclick="openLogModal(${data.id})" class="w-full py-2.5 rounded-xl border border-dashed border-border text-text-sub text-xs font-bold flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary-light hover:text-primary transition-all dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-primary-light">
+            <span class="material-symbols-outlined !text-[18px]">add</span> ${translations[currentLang].logBtn}
+          </button>
+      </article>`;
     zones[data.status].insertAdjacentHTML("beforeend", cardHTML);
   });
 
@@ -542,7 +555,6 @@ function renderInsights() {
     `<span class="size-2.5 rounded-full bg-accent-nonfiction"></span> ${translations[currentLang].zones.internalized}`;
 
   updateMapStats();
-  userStats.postCount = insights.length;
   updateProfileUI();
 }
 
@@ -574,32 +586,48 @@ function updateMapStats() {
 }
 
 function updateProfileUI() {
-  if (userStats.currentLevel >= levelSystem.length)
-    userStats.currentLevel = levelSystem.length - 1;
-  const lvData = levelSystem[userStats.currentLevel];
+  const totalInsights = insights.length;
+  let currentLvlObj = levelSystem[0];
+
+  for (let i = 0; i < levelSystem.length; i++) {
+    if (totalInsights >= levelSystem[i].max) {
+      /* keep going */
+    } else {
+      currentLvlObj = levelSystem[i];
+      break;
+    }
+    if (i === levelSystem.length - 1) currentLvlObj = levelSystem[i];
+  }
+
   const title =
-    currentLang === "ko" ? `${lvData.en} (${lvData.ko})` : lvData.en;
-  const desc = currentLang === "ko" ? lvData.desc_ko : lvData.desc_en;
+    currentLang === "ko"
+      ? `${currentLvlObj.en} (${currentLvlObj.ko})`
+      : currentLvlObj.en;
   const next =
     currentLang === "ko"
-      ? `다음: ${lvData.next_ko}`
-      : `Next: ${lvData.next_en}`;
+      ? `다음: 기록 ${currentLvlObj.max}개`
+      : `Next: ${currentLvlObj.max} Insights`;
 
-  document.getElementById("profile-level-badge").innerText = `Lv.${lvData.lv}`;
+  document.getElementById("profile-level-badge").innerText =
+    `Lv.${currentLvlObj.lv}`;
   document.getElementById("profile-title-display").innerText = title;
-  document.getElementById("profile-desc-display").innerText = `"${desc}"`;
-  document.getElementById("profile-next-goal").innerText = next;
-  let progress = Math.min(
-    (userStats.postCount / userStats.nextLevelGoal) * 100,
-    100,
-  );
+
+  let prevMax =
+    currentLvlObj.lv === 0 ? 0 : levelSystem[currentLvlObj.lv - 1].max;
+  let range = currentLvlObj.max - prevMax;
+  let currentInRange = totalInsights - prevMax;
+  let progress = Math.min((currentInRange / range) * 100, 100);
+  if (
+    currentLvlObj.lv === levelSystem.length - 1 &&
+    totalInsights >= currentLvlObj.max
+  )
+    progress = 100;
+
   document.getElementById("profile-progress-bar").style.width = `${progress}%`;
+  document.getElementById("profile-next-goal").innerText = next;
 }
 
-/* =========================================
-   4. 이벤트 리스너
-   ========================================= */
-// 글쓰기 모달
+// 이벤트 리스너
 writeOpenBtn.addEventListener("click", () =>
   writeModal.classList.remove("hidden"),
 );
@@ -609,7 +637,6 @@ writeCloseBtn.addEventListener("click", () =>
 writeForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const category = document.getElementById("input-category").value;
-
   let subCatKo = "기타",
     subCatEn = "Other";
   const catMap = {
@@ -625,9 +652,7 @@ writeForm.addEventListener("submit", (e) => {
     subCatEn = catMap[category][1];
   }
 
-  // [수정] 날짜 저장 시, 한국어 모드라도 데이터는 'Jan 2026' 같은 영어 포맷으로 저장 권장
-  // (표시할 때만 한국어로 바꾸는 게 관리가 편함)
-  const rawDate = document.getElementById("input-date").value || "Just Now";
+  const rawDate = document.getElementById("input-date").value || "Jan 2026";
 
   const newInsight = {
     id: Date.now(),
@@ -637,6 +662,7 @@ writeForm.addEventListener("submit", (e) => {
     date: rawDate,
     title: document.getElementById("input-title").value,
     content: document.getElementById("input-content").value,
+    tags: [],
     reflect: null,
     action: null,
     discussionTopic: null,
@@ -646,6 +672,7 @@ writeForm.addEventListener("submit", (e) => {
   renderInsights();
   writeModal.classList.add("hidden");
   writeForm.reset();
+  if (currentView === "stats") renderStatistics();
 });
 
 // 알림창
@@ -715,6 +742,11 @@ function closeRichInputModal() {
   currentCardId = null;
   currentLogType = null;
   document.getElementById("rich-input-field").value = "";
+  // 태그 입력 초기화
+  const tagInput = document.querySelector(
+    "#rich-input-modal input[type='text']",
+  );
+  if (tagInput) tagInput.value = "";
 }
 function selectLogType(type) {
   if (!currentCardId) return;
@@ -742,6 +774,16 @@ function openRichInputModal(type) {
           : currentLang === "ko"
             ? "논의해보고 싶은 질문을 던져보세요."
             : "Pose a question to discuss.";
+
+  // 태그 불러오기 (기존 태그가 있다면)
+  const card = insights.find((c) => c.id === currentCardId);
+  const tagInput = document.querySelector(
+    "#rich-input-modal input[type='text']",
+  );
+  if (card && card.tags && tagInput) {
+    tagInput.value = card.tags.join(", ");
+  }
+
   document.getElementById("rich-input-field").focus();
   richModal.classList.remove("hidden");
 }
@@ -762,6 +804,16 @@ function saveRichInput() {
       card.status = "logged";
     }
     if (currentLogType === "topic") card.discussionTopic = inputVal;
+
+    // [New] 태그 저장 로직 추가
+    const tagInput = document.querySelector(
+      "#rich-input-modal input[type='text']",
+    );
+    if (tagInput && tagInput.value.trim()) {
+      // 쉼표로 구분하여 배열로 저장
+      card.tags = tagInput.value.split(",").map((t) => t.trim());
+    }
+
     renderInsights();
     closeRichInputModal();
   }
@@ -893,50 +945,33 @@ document.addEventListener("keydown", (e) => {
 /* =========================================
    5. 초기화
    ========================================= */
-// --- [헤더 및 반응형 관련 추가 기능] ---
 
-// 1. 모바일 검색창 토글 함수
 function toggleMobileSearch() {
   const bar = document.getElementById("mobile-search-bar");
   const input = document.getElementById("mobile-search-input");
-
-  // 숨겨져 있으면 보이고 포커스, 보이면 숨김
   if (bar.classList.contains("hidden")) {
     bar.classList.remove("hidden");
-    // 다른 드롭다운(알림, 프로필) 닫기
     document.getElementById("notification-dropdown").classList.add("hidden");
     document.getElementById("profile-dropdown").classList.add("hidden");
-    setTimeout(() => input.focus(), 100); // 부드러운 UX를 위해 약간의 지연 후 포커스
+    setTimeout(() => input.focus(), 100);
   } else {
     bar.classList.add("hidden");
   }
 }
 
-// 2. 홈 버튼 기능 (대쉬보드 초기화)
 function resetDashboard() {
-  // 필터 초기화
+  switchView("hub");
   setFilter("all");
-  // 스크롤 최상단으로 이동
   window.scrollTo({ top: 0, behavior: "smooth" });
-
-  // 열려있는 모바일 검색창이나 모달 닫기
   document.getElementById("mobile-search-bar").classList.add("hidden");
   document.getElementById("write-modal").classList.add("hidden");
-  closeLogModal();
-  closeRichInputModal();
-
-  // 시각적 피드백 (로고 깜빡임 효과 등 필요시 추가 가능)
-  console.log("Dashboard Reset to Home");
 }
 
-// 3. 외부 클릭 시 모바일 검색창 닫기 (이벤트 리스너 추가)
 document.addEventListener("click", (e) => {
   const searchBar = document.getElementById("mobile-search-bar");
   const searchBtn = document.querySelector(
     "button[onclick='toggleMobileSearch()']",
   );
-
-  // 검색창이 열려있고, 검색창이나 토글 버튼을 클릭한 게 아니라면 닫기
   if (
     !searchBar.classList.contains("hidden") &&
     !searchBar.contains(e.target) &&
@@ -946,13 +981,10 @@ document.addEventListener("click", (e) => {
   }
 });
 
-// 4. 검색어 동기화 (데스크탑 <-> 모바일)
-// 데스크탑과 모바일 검색창의 입력값을 서로 동기화하여 UX 끊김 방지
 document.getElementById("desktop-search")?.addEventListener("input", (e) => {
   const val = e.target.value;
   const mobileInput = document.getElementById("mobile-search-input");
   if (mobileInput) mobileInput.value = val;
-  // 여기에 실제 검색 로직(filterInsightsByText 등) 연결 가능
 });
 
 document
@@ -963,28 +995,21 @@ document
     if (desktopInput) desktopInput.value = val;
   });
 
-// --- SPA Navigation & Statistics Logic ---
+// SPA & Statistics Logic
 
-let currentView = localStorage.getItem("lastView") || "hub";
-
-// 1. 뷰 전환 함수
 function switchView(viewName) {
   currentView = viewName;
   localStorage.setItem("lastView", viewName);
-
   const hubView = document.getElementById("view-hub");
   const statsView = document.getElementById("view-stats");
   const navHub = document.getElementById("nav-hub");
   const navStats = document.getElementById("nav-stats");
 
-  // 활성 스타일 클래스 (밑줄 포함)
   const activeClass =
     "flex items-center gap-2 text-primary relative after:absolute after:bottom-[-22px] after:left-0 after:w-full after:h-0.5 after:bg-primary dark:text-primary-light";
-  // 비활성 스타일 클래스
   const inactiveClass =
     "flex items-center gap-2 text-text-sub hover:text-primary transition-colors dark:text-gray-400 dark:hover:text-primary-light";
 
-  // 스타일 적용
   if (navHub)
     navHub.className = viewName === "hub" ? activeClass : inactiveClass;
   if (navStats)
@@ -996,74 +1021,88 @@ function switchView(viewName) {
   } else {
     hubView.classList.add("hidden");
     statsView.classList.remove("hidden");
-    renderStatistics(); // 통계 화면 진입 시 데이터 계산 및 렌더링
+    renderStatistics();
   }
 }
 
-// 2. 통계 데이터 계산 및 렌더링 메인 함수
 function renderStatistics() {
   renderSummaryCards();
   renderHeatmap();
   renderCategoryAnalysis();
+  renderGraph();
+  renderBadges();
 }
 
-// 2-1. 요약 카드 (Total, Streak, Month)
-function renderSummaryCards() {
-  // Total
-  document.getElementById("stats-total-count").innerText = insights.length;
+function calculateStreak() {
+  if (insights.length === 0) return 0;
+  const sorted = insights
+    .map((i) => new Date(i.id).setHours(0, 0, 0, 0))
+    .sort((a, b) => b - a);
+  const uniqueDates = [...new Set(sorted)];
 
-  // Month
+  let streak = 0;
+  let today = new Date().setHours(0, 0, 0, 0);
+
+  if (uniqueDates[0] !== today && uniqueDates[0] !== today - 86400000) return 0;
+
+  let checkDate = uniqueDates[0];
+  streak = 1;
+  for (let i = 1; i < uniqueDates.length; i++) {
+    if (uniqueDates[i] === checkDate - 86400000) {
+      streak++;
+      checkDate = uniqueDates[i];
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+function renderSummaryCards() {
+  document.getElementById("stats-total-count").innerText = insights.length;
   const now = new Date();
-  // insights의 date 필드가 "Jan 2026" 같은 문자열이라 파싱이 필요하지만,
-  // 여기서는 간단히 id(timestamp)나 현재 날짜 기준으로 필터링하는 예시입니다.
-  // 정확도를 위해선 insights 데이터 저장 시 ISO 날짜 필드를 추가하는 것이 좋습니다.
-  // 일단 현재는 전체 개수로 예시를 듭니다.
-  const thisMonthCount = insights.length; // (임시) 실제 날짜 비교 로직 필요
+  const thisMonthCount = insights.filter((i) => {
+    const d = new Date(i.id);
+    return (
+      d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+    );
+  }).length;
   document.getElementById("stats-month-count").innerText = thisMonthCount;
 
-  // Streak
-  document.getElementById("stats-streak").innerText =
-    insights.length > 0 ? "3 days" : "0 days";
+  const streak = calculateStreak();
+  const unit = translations[currentLang].stats.streakUnit;
+  document.getElementById("stats-streak").innerText = streak + unit;
 }
 
-// 2-2. 활동 히트맵 (GitHub Style)
 function renderHeatmap() {
   const grid = document.getElementById("heatmap-grid");
   if (!grid) return;
   grid.innerHTML = "";
-
-  // 1년 전 날짜부터 오늘까지 생성
   const today = new Date();
   const oneYearAgo = new Date();
   oneYearAgo.setFullYear(today.getFullYear() - 1);
-
-  // 임시 데이터 생성 (실제 데이터가 있으면 그것을 매핑)
   const dateMap = {};
   insights.forEach((i) => {
-    // id가 타임스탬프라고 가정
     const d = new Date(i.id);
     const key = d.toISOString().split("T")[0];
     dateMap[key] = (dateMap[key] || 0) + 1;
   });
 
-  // 365일 루프 (약 53주)
   for (let d = new Date(oneYearAgo); d <= today; d.setDate(d.getDate() + 1)) {
     const dateStr = d.toISOString().split("T")[0];
     const count = dateMap[dateStr] || 0;
-
     let colorClass = "bg-gray-100 dark:bg-gray-700";
     if (count >= 1) colorClass = "bg-primary/30";
-    if (count >= 3) colorClass = "bg-primary/60";
-    if (count >= 5) colorClass = "bg-primary";
+    if (count >= 2) colorClass = "bg-primary/60";
+    if (count >= 4) colorClass = "bg-primary";
 
     const cell = document.createElement("div");
     cell.className = `size-3 rounded-sm ${colorClass} transition-colors hover:ring-1 hover:ring-text-sub cursor-pointer relative group`;
-    cell.title = `${dateStr}: ${count} insights`;
+    cell.title = `${dateStr}: ${count}`;
     grid.appendChild(cell);
   }
 }
 
-// 2-3. 카테고리 분석
 function renderCategoryAnalysis() {
   const counts = {
     nonfiction: 0,
@@ -1076,33 +1115,27 @@ function renderCategoryAnalysis() {
   insights.forEach((item) => {
     if (counts.hasOwnProperty(item.category)) counts[item.category]++;
   });
-
   const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
   const maxVal = sorted[0][1] || 1;
-
   const listEl = document.getElementById("stats-category-list");
   if (!listEl) return;
   listEl.innerHTML = "";
-
   sorted.forEach(([cat, count]) => {
     if (count === 0) return;
     const pct = (count / insights.length) * 100;
     const widthPct = (count / maxVal) * 100;
-
     const style = styles[cat] || styles.nonfiction;
     const name = translations[currentLang].filters[cat];
-
     const html = `
-            <div class="mb-2">
-                <div class="flex justify-between text-xs font-bold mb-1 text-text-sub dark:text-gray-300">
-                    <span class="flex items-center gap-1"><span class="material-symbols-outlined !text-[14px] ${style.badgeText}">${style.icon}</span> ${name}</span>
-                    <span>${count} (${Math.round(pct)}%)</span>
-                </div>
-                <div class="w-full bg-background-section rounded-full h-2.5 dark:bg-gray-700 overflow-hidden">
-                    <div class="h-full rounded-full ${style.badgeText.replace("text-", "bg-")}" style="width: ${widthPct}%"></div>
-                </div>
-            </div>
-        `;
+      <div class="mb-2">
+          <div class="flex justify-between text-xs font-bold mb-1 text-text-sub dark:text-gray-300">
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined !text-[14px] ${style.badgeText}">${style.icon}</span> ${name}</span>
+              <span>${count} (${Math.round(pct)}%)</span>
+          </div>
+          <div class="w-full bg-background-section rounded-full h-2.5 dark:bg-gray-700 overflow-hidden">
+              <div class="h-full rounded-full ${style.badgeText.replace("text-", "bg-")}" style="width: ${widthPct}%"></div>
+          </div>
+      </div>`;
     listEl.insertAdjacentHTML("beforeend", html);
   });
 
@@ -1110,7 +1143,6 @@ function renderCategoryAnalysis() {
   const worstCat =
     translations[currentLang].filters[sorted[sorted.length - 1][0]];
   const msgEl = document.getElementById("stats-coach-msg");
-
   if (insights.length < 3) {
     msgEl.innerText = translations[currentLang].stats.coachDefault;
   } else {
@@ -1120,11 +1152,188 @@ function renderCategoryAnalysis() {
   }
 }
 
+function renderGraph() {
+  const canvas = document.getElementById("knowledge-graph");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+
+  const container = canvas.parentElement;
+  canvas.width = container.clientWidth;
+  canvas.height = container.clientHeight;
+
+  const nodes = [];
+  const links = [];
+
+  // [New] 카테고리별 색상 매핑 (Hex 코드 사용)
+  const catColors = {
+    nonfiction: "#648F73",
+    fiction: "#B38F64",
+    news: "#7D8FA1",
+    movie: "#8E7CC3",
+    art: "#D0607A",
+    media: "#E08E79",
+  };
+
+  insights.forEach((i) => {
+    nodes.push({
+      id: `i-${i.id}`,
+      type: "insight",
+      label: i.title,
+      category: i.category,
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: 0,
+      vy: 0,
+    });
+    if (i.tags && i.tags.length > 0) {
+      i.tags.forEach((tag) => {
+        let tagNode = nodes.find((n) => n.type === "tag" && n.label === tag);
+        if (!tagNode) {
+          tagNode = {
+            id: `t-${tag}`,
+            type: "tag",
+            label: tag,
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: 0,
+            vy: 0,
+          };
+          nodes.push(tagNode);
+        }
+        links.push({ source: `i-${i.id}`, target: tagNode.id });
+      });
+    }
+  });
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    nodes.forEach((node) => {
+      let dx = canvas.width / 2 - node.x;
+      let dy = canvas.height / 2 - node.y;
+      node.vx += dx * 0.005;
+      node.vy += dy * 0.005;
+
+      nodes.forEach((other) => {
+        if (node === other) return;
+        let dx = node.x - other.x;
+        let dy = node.y - other.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 100) {
+          let force = (100 - dist) / 100;
+          node.vx += (dx / dist) * force * 2;
+          node.vy += (dy / dist) * force * 2;
+        }
+      });
+    });
+
+    links.forEach((link) => {
+      let source = nodes.find((n) => n.id === link.source);
+      let target = nodes.find((n) => n.id === link.target);
+      if (source && target) {
+        let dx = target.x - source.x;
+        let dy = target.y - source.y;
+        source.vx += dx * 0.05;
+        source.vy += dy * 0.05;
+        target.vx -= dx * 0.05;
+        target.vy -= dy * 0.05;
+
+        ctx.beginPath();
+        ctx.moveTo(source.x, source.y);
+        ctx.lineTo(target.x, target.y);
+        ctx.strokeStyle =
+          currentTheme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
+        ctx.stroke();
+      }
+    });
+
+    nodes.forEach((node) => {
+      node.x += node.vx;
+      node.y += node.vy;
+      node.vx *= 0.9;
+      node.vy *= 0.9;
+
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, node.type === "insight" ? 6 : 4, 0, Math.PI * 2);
+
+      if (node.type === "insight") {
+        // [New] 매핑된 색상 사용
+        ctx.fillStyle = catColors[node.category] || "#3E5C53";
+      } else {
+        ctx.fillStyle = "#999999";
+      }
+      ctx.fill();
+
+      ctx.fillStyle = currentTheme === "dark" ? "#eee" : "#333";
+      ctx.font = "10px Noto Sans KR";
+      ctx.fillText(node.label, node.x + 8, node.y + 3);
+    });
+
+    if (window.graphFrameCount < 100) {
+      window.graphFrameCount++;
+      requestAnimationFrame(animate);
+    }
+  }
+  window.graphFrameCount = 0;
+  animate();
+}
+
+function renderBadges() {
+  const badgeList = document.getElementById("badge-list");
+  if (!badgeList) return;
+  badgeList.innerHTML = "";
+
+  const total = insights.length;
+  const streak = calculateStreak();
+  const catCounts = {};
+  insights.forEach(
+    (i) => (catCounts[i.category] = (catCounts[i.category] || 0) + 1),
+  );
+
+  const currentLvl =
+    levelSystem.find((l, i) => total < (levelSystem[i + 1]?.max || 9999)) ||
+    levelSystem[levelSystem.length - 1];
+  const nextMax =
+    levelSystem.find((l) => l.lv === currentLvl.lv + 1)?.max || currentLvl.max;
+
+  document.getElementById("stats-lvl-name").innerText =
+    currentLang === "ko" ? currentLvl.ko : currentLvl.en;
+  document.getElementById("stats-lvl-progress").innerText =
+    `${total} / ${nextMax}`;
+  let pct = (total / nextMax) * 100;
+  if (total >= nextMax) pct = 100;
+  document.getElementById("stats-lvl-bar").style.width = `${pct}%`;
+
+  const msg =
+    currentLang === "ko"
+      ? "훌륭합니다! 계속 정진하세요."
+      : "Great job! Keep moving forward.";
+  document.getElementById("stats-lvl-msg").innerText = msg;
+
+  badgeSystem.forEach((badge) => {
+    const isUnlocked = badge.condition(total, streak, catCounts);
+    const opacity = isUnlocked ? "opacity-100" : "opacity-30 grayscale";
+    const bg = isUnlocked
+      ? "bg-white dark:bg-gray-800 shadow-sm"
+      : "bg-gray-100 dark:bg-gray-800";
+    const name = currentLang === "ko" ? badge.ko : badge.en;
+
+    const html = `
+      <div class="flex flex-col items-center p-3 rounded-2xl ${bg} ${opacity} transition-all border border-border dark:border-gray-700">
+        <div class="size-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 text-primary">
+          <span class="material-symbols-outlined">${badge.icon}</span>
+        </div>
+        <span class="text-xs font-bold text-text-main dark:text-white">${name}</span>
+      </div>
+    `;
+    badgeList.insertAdjacentHTML("beforeend", html);
+  });
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   setTheme(currentTheme);
   setLanguage(currentLang);
 
-  // 프로필 초기화
   const savedName = localStorage.getItem("userName");
   if (savedName)
     document.getElementById("profile-name-display").innerText = savedName;
@@ -1141,6 +1350,5 @@ window.addEventListener("DOMContentLoaded", () => {
   const savedColor = localStorage.getItem("userProfileColor");
   if (savedColor) tempColor = savedColor;
 
-  // 마지막으로 보고 있던 탭(Hub 혹은 Stats)으로 화면 전환
   switchView(currentView);
 });
