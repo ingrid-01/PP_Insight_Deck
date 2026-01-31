@@ -89,6 +89,13 @@ const translations = {
         "최근 '{best}' 분야에 집중하고 계시네요. 균형을 위해 '{worst}' 분야의 경험도 넓혀보는 건 어떨까요?",
       streakUnit: "일",
     },
+    archive: {
+      title: "지식 서재",
+      subtitle: "내재화된 통찰들이 머무는 공간",
+      collections: "컬렉션 (Tags)",
+      empty: "아직 서재가 비어있습니다. 통찰을 내재화(Internalize) 해보세요.",
+      moveBtn: "서재로 보내기 (완료)", // [New] Hub 카드에 추가될 버튼
+    },
     searchPlaceholder: "통찰, 주제, 질문 검색...",
     newInsightBtn: "새로운 통찰",
     logBtn: "로그",
@@ -186,6 +193,13 @@ const translations = {
       coachBias:
         "You're focused on '{best}' lately. How about exploring '{worst}' to balance your perspective?",
       streakUnit: " days",
+    },
+    archive: {
+      title: "The Library",
+      subtitle: "Where verified insights rest.",
+      collections: "Collections",
+      empty: "The library is empty. Try internalizing your insights.",
+      moveBtn: "Archive (Done)", // [New]
     },
     searchPlaceholder: "Search insights, topics...",
     newInsightBtn: "New Insight",
