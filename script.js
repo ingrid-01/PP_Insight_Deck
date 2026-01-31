@@ -865,6 +865,75 @@ document.addEventListener("keydown", (e) => {
 /* =========================================
    5. 초기화
    ========================================= */
+// --- [헤더 및 반응형 관련 추가 기능] ---
+
+// 1. 모바일 검색창 토글 함수
+function toggleMobileSearch() {
+  const bar = document.getElementById("mobile-search-bar");
+  const input = document.getElementById("mobile-search-input");
+
+  // 숨겨져 있으면 보이고 포커스, 보이면 숨김
+  if (bar.classList.contains("hidden")) {
+    bar.classList.remove("hidden");
+    // 다른 드롭다운(알림, 프로필) 닫기
+    document.getElementById("notification-dropdown").classList.add("hidden");
+    document.getElementById("profile-dropdown").classList.add("hidden");
+    setTimeout(() => input.focus(), 100); // 부드러운 UX를 위해 약간의 지연 후 포커스
+  } else {
+    bar.classList.add("hidden");
+  }
+}
+
+// 2. 홈 버튼 기능 (대쉬보드 초기화)
+function resetDashboard() {
+  // 필터 초기화
+  setFilter("all");
+  // 스크롤 최상단으로 이동
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  // 열려있는 모바일 검색창이나 모달 닫기
+  document.getElementById("mobile-search-bar").classList.add("hidden");
+  document.getElementById("write-modal").classList.add("hidden");
+  closeLogModal();
+  closeRichInputModal();
+
+  // 시각적 피드백 (로고 깜빡임 효과 등 필요시 추가 가능)
+  console.log("Dashboard Reset to Home");
+}
+
+// 3. 외부 클릭 시 모바일 검색창 닫기 (이벤트 리스너 추가)
+document.addEventListener("click", (e) => {
+  const searchBar = document.getElementById("mobile-search-bar");
+  const searchBtn = document.querySelector(
+    "button[onclick='toggleMobileSearch()']",
+  );
+
+  // 검색창이 열려있고, 검색창이나 토글 버튼을 클릭한 게 아니라면 닫기
+  if (
+    !searchBar.classList.contains("hidden") &&
+    !searchBar.contains(e.target) &&
+    !searchBtn.contains(e.target)
+  ) {
+    searchBar.classList.add("hidden");
+  }
+});
+
+// 4. 검색어 동기화 (데스크탑 <-> 모바일)
+// 데스크탑과 모바일 검색창의 입력값을 서로 동기화하여 UX 끊김 방지
+document.getElementById("desktop-search")?.addEventListener("input", (e) => {
+  const val = e.target.value;
+  const mobileInput = document.getElementById("mobile-search-input");
+  if (mobileInput) mobileInput.value = val;
+  // 여기에 실제 검색 로직(filterInsightsByText 등) 연결 가능
+});
+
+document
+  .getElementById("mobile-search-input")
+  ?.addEventListener("input", (e) => {
+    const val = e.target.value;
+    const desktopInput = document.getElementById("desktop-search");
+    if (desktopInput) desktopInput.value = val;
+  });
 window.addEventListener("DOMContentLoaded", () => {
   setTheme(currentTheme);
   setLanguage(currentLang);
