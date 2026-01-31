@@ -1033,29 +1033,38 @@ document
 function switchView(viewName) {
   currentView = viewName;
   localStorage.setItem("lastView", viewName);
-  const hubView = document.getElementById("view-hub");
-  const statsView = document.getElementById("view-stats");
-  const navHub = document.getElementById("nav-hub");
-  const navStats = document.getElementById("nav-stats");
+
+  const views = {
+    hub: document.getElementById("view-hub"),
+    stats: document.getElementById("view-stats"),
+    archive: document.getElementById("view-archive"), // [New]
+  };
+
+  const navs = {
+    hub: document.getElementById("nav-hub"),
+    stats: document.getElementById("nav-stats"),
+    archive: document.getElementById("nav-archive"), // [New]
+  };
 
   const activeClass =
     "flex items-center gap-2 text-primary relative after:absolute after:bottom-[-22px] after:left-0 after:w-full after:h-0.5 after:bg-primary dark:text-primary-light";
   const inactiveClass =
     "flex items-center gap-2 text-text-sub hover:text-primary transition-colors dark:text-gray-400 dark:hover:text-primary-light";
 
-  if (navHub)
-    navHub.className = viewName === "hub" ? activeClass : inactiveClass;
-  if (navStats)
-    navStats.className = viewName === "stats" ? activeClass : inactiveClass;
+  // 모든 뷰 숨기고 nav 스타일 초기화
+  Object.keys(views).forEach((key) => {
+    if (views[key]) views[key].classList.add("hidden");
+    if (navs[key]) navs[key].className = inactiveClass;
+  });
 
-  if (viewName === "hub") {
-    hubView.classList.remove("hidden");
-    statsView.classList.add("hidden");
-  } else {
-    hubView.classList.add("hidden");
-    statsView.classList.remove("hidden");
-    renderStatistics();
-  }
+  // 선택된 뷰 보이기 & nav 활성화
+  if (views[viewName]) views[viewName].classList.remove("hidden");
+  if (navs[viewName]) navs[viewName].className = activeClass;
+
+  // 뷰별 렌더링 함수 호출
+  if (viewName === "stats") renderStatistics();
+  if (viewName === "archive") renderArchive(); // [New]
+  if (viewName === "hub") renderInsights();
 }
 
 function renderStatistics() {
@@ -1361,6 +1370,165 @@ function renderBadges() {
     `;
     badgeList.insertAdjacentHTML("beforeend", html);
   });
+}
+
+/* =========================================
+   [NEW] 아카이브 (Archive) 로직
+   ========================================= */
+
+// 카드 상태 변경 함수 (Hub -> Archive)
+function moveToArchive(id) {
+  const card = insights.find((c) => c.id === id);
+  if (card) {
+    if (
+      confirm(
+        currentLang === "ko"
+          ? "이 통찰을 서재(Archive)로 옮기시겠습니까? 허브에서는 사라집니다."
+          : "Move this insight to Archive? It will be hidden from the Hub.",
+      )
+    ) {
+      card.status = "internalized";
+      renderInsights(); // Hub 갱신
+      // 만약 현재 통계 화면이라면 통계도 갱신
+      if (currentView === "stats") renderStatistics();
+    }
+  }
+}
+
+let activeArchiveTag = "all";
+
+function renderArchive() {
+  const container = document.getElementById("archive-timeline");
+  const tagContainer = document.getElementById("archive-tags");
+  const countEl = document.getElementById("archive-count");
+
+  if (!container || !tagContainer) return;
+
+  container.innerHTML = "";
+  tagContainer.innerHTML = "";
+
+  // 1. 내재화된 데이터만 필터링
+  let archivedData = insights.filter((i) => i.status === "internalized");
+  countEl.innerText = archivedData.length;
+
+  // 2. 태그 추출 및 렌더링
+  const allTags = {};
+  archivedData.forEach((i) => {
+    if (i.tags) i.tags.forEach((t) => (allTags[t] = (allTags[t] || 0) + 1));
+  });
+
+  // 'All' 태그
+  const allActive =
+    activeArchiveTag === "all"
+      ? "bg-primary text-white"
+      : "bg-white border border-border text-text-sub hover:border-primary hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300";
+  tagContainer.insertAdjacentHTML(
+    "beforeend",
+    `<button onclick="filterArchiveTag('all')" class="px-3 py-1 rounded-full text-xs font-bold transition-all ${allActive}">All (${archivedData.length})</button>`,
+  );
+
+  Object.entries(allTags)
+    .sort((a, b) => b[1] - a[1])
+    .forEach(([tag, count]) => {
+      const isActive =
+        activeArchiveTag === tag
+          ? "bg-primary text-white"
+          : "bg-white border border-border text-text-sub hover:border-primary hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300";
+      tagContainer.insertAdjacentHTML(
+        "beforeend",
+        `<button onclick="filterArchiveTag('${tag}')" class="px-3 py-1 rounded-full text-xs font-bold transition-all ${isActive}">#${tag} (${count})</button>`,
+      );
+    });
+
+  // 3. 태그 필터링 적용
+  if (activeArchiveTag !== "all") {
+    archivedData = archivedData.filter(
+      (i) => i.tags && i.tags.includes(activeArchiveTag),
+    );
+  }
+
+  if (archivedData.length === 0) {
+    container.innerHTML = `<div class="pl-12 py-10 text-text-muted text-sm font-medium italic">${translations[currentLang].archive.empty}</div>`;
+    return;
+  }
+
+  // 4. 날짜별 그룹핑 (연도 -> 월)
+  // 날짜 포맷이 'Jan 2026' 또는 timestamp일 수 있음. timestamp 기준으로 정렬 권장.
+  // 여기선 단순화를 위해 id(timestamp) 역순 정렬
+  archivedData.sort((a, b) => b.id - a.id);
+
+  let lastYear = null;
+  let lastMonth = null;
+
+  archivedData.forEach((data) => {
+    const dateObj = new Date(data.id);
+    const year = dateObj.getFullYear();
+    const month = dateObj.toLocaleString(
+      currentLang === "ko" ? "ko-KR" : "en-US",
+      { month: "long" },
+    );
+
+    // 연도 헤더
+    if (year !== lastYear) {
+      container.insertAdjacentHTML(
+        "beforeend",
+        `
+                <div class="relative pl-8 mb-6">
+                    <span class="absolute left-[-5px] top-1 size-3 rounded-full bg-primary ring-4 ring-white dark:ring-gray-900"></span>
+                    <h3 class="text-2xl font-black text-primary dark:text-primary-light">${year}</h3>
+                </div>
+            `,
+      );
+      lastYear = year;
+      lastMonth = null; // 연도가 바뀌면 월도 초기화
+    }
+
+    // 월 헤더 (같은 연도 내에서 월이 바뀔 때)
+    if (month !== lastMonth) {
+      container.insertAdjacentHTML(
+        "beforeend",
+        `
+                <div class="relative pl-8 mb-4">
+                    <span class="absolute left-[0px] top-2 size-1.5 rounded-full bg-border dark:bg-gray-600"></span>
+                    <h4 class="text-sm font-bold text-text-muted uppercase tracking-wider dark:text-gray-400">${month}</h4>
+                </div>
+            `,
+      );
+      lastMonth = month;
+    }
+
+    // 카드 아이템 (타임라인 스타일)
+    const style = styles[data.category];
+    const displayDate = formatDate(data.date);
+
+    const itemHTML = `
+            <div onclick="openArchiveDetail(${data.id})" class="relative ml-8 mb-6 bg-white p-5 rounded-2xl border border-border shadow-sm hover:shadow-md hover:translate-x-1 transition-all cursor-pointer group dark:bg-gray-800 dark:border-gray-700">
+                <div class="flex justify-between items-start mb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined ${style.badgeText} !text-[20px]">${style.icon}</span>
+                        <h5 class="font-bold text-text-main text-base group-hover:text-primary transition-colors dark:text-white">${data.title}</h5>
+                    </div>
+                    <span class="text-[10px] font-bold text-text-muted dark:text-gray-500">${displayDate}</span>
+                </div>
+                <p class="text-sm text-text-sub line-clamp-2 mb-2 dark:text-gray-300">${data.content}</p>
+                <div class="flex gap-2">
+                    ${data.tags ? data.tags.map((t) => `<span class="text-[10px] text-text-muted bg-background-section px-1.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-400">#${t}</span>`).join("") : ""}
+                </div>
+            </div>
+        `;
+    container.insertAdjacentHTML("beforeend", itemHTML);
+  });
+}
+
+function filterArchiveTag(tag) {
+  activeArchiveTag = tag;
+  renderArchive();
+}
+
+function openArchiveDetail(id) {
+  // 아카이브 아이템 클릭 시 상세 보기 (여기서는 일단 로그 모달을 재활용하거나 알림만 띄움)
+  // 추후 '읽기 전용 모달'을 만들면 좋음. 현재는 간단히 로그 모달 띄우기
+  openLogModal(id);
 }
 
 window.addEventListener("DOMContentLoaded", () => {
