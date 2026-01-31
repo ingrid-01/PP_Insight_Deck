@@ -510,17 +510,37 @@ function renderInsights() {
     logged: document.getElementById("zone-logged"),
     internalized: document.getElementById("zone-internalized"),
   };
-  const counts = { ready: 0, logged: 0, internalized: 0 };
-  document.querySelectorAll("article").forEach((el) => el.remove());
+  // 초기화
+  Object.values(zones).forEach((el) => {
+    if (el) el.innerHTML = "";
+  });
 
-  const filteredData =
-    currentFilter === "all"
-      ? insights
-      : insights.filter((item) => item.category === currentFilter);
+  // 헤더 다시 그리기 (innerHTML로 지웠으므로)
+  if (zones.ready)
+    zones.ready.innerHTML = `<div class="flex items-center justify-between"><h3 class="font-black text-lg flex items-center gap-2 dark:text-white"><span class="size-2.5 rounded-full bg-accent-dialogue"></span> ${translations[currentLang].zones.ready}</h3><span id="count-ready" class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full dark:bg-gray-700 dark:text-gray-400">0</span></div>`;
+  if (zones.logged)
+    zones.logged.innerHTML = `<div class="flex items-center justify-between"><h3 class="font-black text-lg flex items-center gap-2 dark:text-white"><span class="size-2.5 rounded-full bg-primary"></span> ${translations[currentLang].zones.logged}</h3><span id="count-logged" class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full dark:bg-gray-700 dark:text-gray-400">0</span></div>`;
+  // Internalized 존은 Hub에서 보여주긴 하되, 데이터는 비워둠 (혹은 최근 3개만 보여주는 방식도 가능하나, 깔끔하게 숨김 처리)
+  if (zones.internalized)
+    zones.internalized.innerHTML = `<div class="flex items-center justify-between opacity-50"><h3 class="font-black text-lg flex items-center gap-2 dark:text-white"><span class="size-2.5 rounded-full bg-accent-nonfiction"></span> ${translations[currentLang].zones.internalized} (Moved to Archive)</h3></div>`;
+
+  const counts = { ready: 0, logged: 0, internalized: 0 };
+
+  // [중요] 필터링: 현재 필터 + status가 internalized가 아닌 것만 Hub에 표시
+  const filteredData = insights.filter((item) => {
+    if (item.status === "internalized") {
+      counts.internalized++; // 카운트는 세지만 렌더링은 안 함
+      return false;
+    }
+    if (currentFilter !== "all" && item.category !== currentFilter)
+      return false;
+    return true;
+  });
 
   filteredData.forEach((data) => {
     counts[data.status]++;
     if (!zones[data.status]) return;
+
     const style = styles[data.category] || styles.nonfiction;
     const subCatText =
       typeof data.subCategory === "object"
@@ -528,21 +548,36 @@ function renderInsights() {
         : data.subCategory;
     const displayDate = formatDate(data.date);
 
+    // 태그 HTML 생성
+    const tagHTML =
+      data.tags && data.tags.length > 0
+        ? `<div class="flex flex-wrap gap-1 mb-3">${data.tags.map((t) => `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-text-sub dark:bg-gray-700 dark:text-gray-300">#${t}</span>`).join("")}</div>`
+        : "";
+
+    // [New] 아카이브 이동 버튼 (Logged 상태일 때만 표시)
+    const archiveBtn =
+      data.status === "logged"
+        ? `<button onclick="moveToArchive(${data.id})" class="mt-2 w-full py-2 rounded-xl bg-accent-nonfiction/10 text-accent-nonfiction text-xs font-bold hover:bg-accent-nonfiction hover:text-white transition-all flex items-center justify-center gap-2"><span class="material-symbols-outlined !text-[16px]">inventory_2</span> ${translations[currentLang].archive.moveBtn}</button>`
+        : "";
+
     const cardHTML = `
-      <article id="card-${data.id}" class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer group mt-5 dark:bg-gray-800 dark:border-gray-700">
+      <article id="card-${data.id}" class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer group mt-5 dark:bg-gray-800 dark:border-gray-700 relative">
           <div class="flex justify-between items-start mb-3">
               <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider"><span class="material-symbols-outlined !text-[14px]">${style.icon}</span>${subCatText}</div>
               <span class="text-[10px] font-bold text-text-muted dark:text-gray-400">${displayDate}</span>
           </div>
-          <h4 class="font-bold text-lg leading-snug mb-3 serif group-hover:text-primary transition-colors dark:text-white dark:group-hover:text-primary-light">${data.title}</h4>
+          <h4 class="font-bold text-lg leading-snug mb-2 serif group-hover:text-primary transition-colors dark:text-white dark:group-hover:text-primary-light">${data.title}</h4>
+          ${tagHTML}
           <p class="text-sm text-text-sub font-medium leading-relaxed mb-4 line-clamp-3 dark:text-gray-300">"${data.content}"</p>
-          ${data.reflect ? `<div class="bg-background-section/50 p-4 rounded-xl mb-4 dark:bg-gray-700"><h5 class="text-xs font-bold text-accent-dialogue mb-2 flex items-center gap-1.5 uppercase tracking-wider"><span class="material-symbols-outlined !text-[16px]">psychology_alt</span> ${translations[currentLang].logModal.reflect.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium line-clamp-3 dark:text-gray-200">${data.reflect}</p></div>` : ""}
-          ${data.action ? `<div class="bg-accent-action/10 p-4 rounded-xl mb-4 dark:bg-green-900/20"><h5 class="text-xs font-bold text-accent-action mb-2 flex items-center gap-1.5 uppercase tracking-wider"><span class="material-symbols-outlined !text-[16px]">bolt</span> ${translations[currentLang].logModal.action.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium dark:text-gray-200">${data.action}</p></div>` : ""}
-          ${data.dialogue ? `<div class="bg-primary/5 p-4 rounded-xl mb-4 border border-primary/10 dark:bg-gray-700 dark:border-gray-600"><h5 class="text-xs font-bold text-primary mb-2 flex items-center gap-1.5 uppercase tracking-wider dark:text-primary-light"><span class="material-symbols-outlined !text-[16px]">forum</span> ${translations[currentLang].logModal.dialogue.title}</h5><p class="text-xs text-text-main leading-relaxed font-medium italic dark:text-gray-200">"${data.dialogue}"</p></div>` : ""}
-          ${data.discussionTopic ? `<div class="bg-accent-dialogue/10 p-3 rounded-xl mb-4 border border-accent-dialogue/20 dark:bg-orange-900/20"><h5 class="text-[10px] font-bold text-accent-dialogue mb-1 uppercase">💬 ${translations[currentLang].logModal.topic.title}</h5><p class="text-xs text-text-main font-bold dark:text-gray-200">"${data.discussionTopic}"</p></div>` : ""}
+          
+          ${data.reflect ? `<div class="bg-background-section/50 p-3 rounded-xl mb-3 dark:bg-gray-700"><h5 class="text-[10px] font-bold text-accent-dialogue mb-1 uppercase flex items-center gap-1"><span class="material-symbols-outlined !text-[14px]">psychology_alt</span> ${translations[currentLang].logModal.reflect.title}</h5><p class="text-xs text-text-main line-clamp-2 dark:text-gray-200">${data.reflect}</p></div>` : ""}
+          ${data.action ? `<div class="bg-accent-action/10 p-3 rounded-xl mb-3 dark:bg-green-900/20"><h5 class="text-[10px] font-bold text-accent-action mb-1 uppercase flex items-center gap-1"><span class="material-symbols-outlined !text-[14px]">bolt</span> ${translations[currentLang].logModal.action.title}</h5><p class="text-xs text-text-main line-clamp-2 dark:text-gray-200">${data.action}</p></div>` : ""}
+          ${data.dialogue ? `<div class="bg-primary/5 p-3 rounded-xl mb-3 border border-primary/10 dark:bg-gray-700 dark:border-gray-600"><h5 class="text-[10px] font-bold text-primary mb-1 uppercase flex items-center gap-1 dark:text-primary-light"><span class="material-symbols-outlined !text-[14px]">forum</span> ${translations[currentLang].logModal.dialogue.title}</h5><p class="text-xs text-text-main italic line-clamp-2 dark:text-gray-200">"${data.dialogue}"</p></div>` : ""}
+          
           <button onclick="openLogModal(${data.id})" class="w-full py-2.5 rounded-xl border border-dashed border-border text-text-sub text-xs font-bold flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary-light hover:text-primary transition-all dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-primary-light">
             <span class="material-symbols-outlined !text-[18px]">add</span> ${translations[currentLang].logBtn}
           </button>
+          ${archiveBtn}
       </article>`;
     zones[data.status].insertAdjacentHTML("beforeend", cardHTML);
   });
@@ -551,22 +586,6 @@ function renderInsights() {
     document.getElementById("count-ready").innerText = counts.ready;
   if (document.getElementById("count-logged"))
     document.getElementById("count-logged").innerText = counts.logged;
-  if (document.getElementById("count-internalized"))
-    document.getElementById("count-internalized").innerText =
-      counts.internalized;
-  if (document.getElementById("stat-month"))
-    document.getElementById("stat-month").innerText = insights.length;
-  if (document.getElementById("stat-hub"))
-    document.getElementById("stat-hub").innerText = counts.logged;
-  if (document.getElementById("stat-total"))
-    document.getElementById("stat-total").innerText = insights.length;
-
-  document.querySelector("#zone-ready h3").innerHTML =
-    `<span class="size-2.5 rounded-full bg-accent-dialogue"></span> ${translations[currentLang].zones.ready}`;
-  document.querySelector("#zone-logged h3").innerHTML =
-    `<span class="size-2.5 rounded-full bg-primary"></span> ${translations[currentLang].zones.logged}`;
-  document.querySelector("#zone-internalized h3").innerHTML =
-    `<span class="size-2.5 rounded-full bg-accent-nonfiction"></span> ${translations[currentLang].zones.internalized}`;
 
   updateMapStats();
   updateProfileUI();
