@@ -16,6 +16,20 @@ const translations = {
   ko: {
     logo: { title: "인사이트 덱", subtitle: "위기지학(爲己之學)" },
     nav: { hub: "대화 허브", archive: "아카이브", stats: "통계" },
+    stats: {
+      total: "총 기록된 통찰",
+      streak: "연속 기록일",
+      month: "이번 달 달성",
+      heatmapTitle: "연간 활동 로그 (Activity Heatmap)",
+      less: "적음",
+      more: "많음",
+      catAnalysis: "관심 분야 분석",
+      suggestion: "인사이트 코치",
+      coachDefault:
+        "아직 데이터가 충분하지 않습니다. 다양한 분야의 경험을 기록해보세요!",
+      coachBias:
+        "최근 '{best}' 분야에 집중하고 계시네요. 균형을 위해 '{worst}' 분야의 경험도 넓혀보는 건 어떨까요?",
+    },
     searchPlaceholder: "통찰, 주제, 질문 검색...",
     newInsightBtn: "새로운 통찰",
     logBtn: "로그", // [New] 로그 버튼 텍스트
@@ -97,6 +111,20 @@ const translations = {
   en: {
     logo: { title: "Insight Deck", subtitle: "Know Thyself" },
     nav: { hub: "Conversation Hub", archive: "Archive", stats: "Statistics" },
+    stats: {
+      total: "Total Insights",
+      streak: "Current Streak",
+      month: "This Month",
+      heatmapTitle: "Activity Log (1 Year)",
+      less: "Less",
+      more: "More",
+      catAnalysis: "Category Analysis",
+      suggestion: "Insight Coach",
+      coachDefault:
+        "Not enough data yet. Try recording experiences from various fields!",
+      coachBias:
+        "You're focused on '{best}' lately. How about exploring '{worst}' to balance your perspective?",
+    },
     searchPlaceholder: "Search insights, topics...",
     newInsightBtn: "New Insight",
     logBtn: "Log", // [New]
