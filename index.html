@@ -803,6 +803,78 @@
             </p>
           </div>
         </section>
+        <section
+          class="bg-white rounded-3xl p-8 border border-border shadow-sm dark:bg-gray-800 dark:border-gray-700 overflow-hidden"
+        >
+          <div class="flex items-center justify-between mb-6">
+            <h3
+              data-i18n="stats.graphTitle"
+              class="font-black text-xl dark:text-white"
+            >
+              Knowledge Graph
+            </h3>
+            <span
+              class="text-xs font-bold text-text-sub bg-background-section px-2 py-1 rounded dark:bg-gray-700 dark:text-gray-400"
+              >Live View</span
+            >
+          </div>
+          <div
+            class="w-full h-[400px] bg-[#F9FAFB] rounded-2xl border border-border relative overflow-hidden dark:bg-gray-900 dark:border-gray-600"
+          >
+            <canvas id="knowledge-graph" class="w-full h-full"></canvas>
+          </div>
+        </section>
+
+        <section
+          class="bg-gradient-to-br from-primary/5 to-primary/10 rounded-3xl p-8 border border-primary/10 dark:from-gray-800 dark:to-gray-700 dark:border-gray-600"
+        >
+          <h3
+            data-i18n="stats.badgeTitle"
+            class="font-black text-xl mb-6 text-primary dark:text-primary-light flex items-center gap-2"
+          >
+            <span class="material-symbols-outlined">military_tech</span> Hall of
+            Fame
+          </h3>
+
+          <div class="mb-8">
+            <div class="flex justify-between items-end mb-2">
+              <span
+                id="stats-lvl-name"
+                class="font-bold text-lg text-text-main dark:text-white"
+                >Insight Newbie</span
+              >
+              <span
+                id="stats-lvl-progress"
+                class="text-xs font-bold text-text-primary dark:text-primary-light"
+                >3 / 5 Insights</span
+              >
+            </div>
+            <div
+              class="w-full bg-white h-4 rounded-full overflow-hidden shadow-inner dark:bg-gray-900"
+            >
+              <div
+                id="stats-lvl-bar"
+                class="bg-gradient-to-r from-primary-light to-primary h-full rounded-full transition-all duration-1000 relative"
+                style="width: 0%"
+              >
+                <div
+                  class="absolute right-0 top-0 bottom-0 w-full animate-pulse bg-white/20"
+                ></div>
+              </div>
+            </div>
+            <p
+              id="stats-lvl-msg"
+              class="text-xs text-text-muted mt-2 text-right"
+            >
+              Keep going!
+            </p>
+          </div>
+
+          <div
+            id="badge-list"
+            class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"
+          ></div>
+        </section>
       </div>
     </main>
     <div
