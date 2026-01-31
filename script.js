@@ -14,6 +14,7 @@ let userStats = { currentLevel: 1, postCount: 3, nextLevelGoal: 5 };
 
 const translations = {
   ko: {
+    logo: { title: "인사이트 덱", subtitle: "위기지학(爲己之學)" },
     nav: { hub: "대화 허브", archive: "아카이브", stats: "통계" },
     searchPlaceholder: "통찰, 주제, 질문 검색...",
     newInsightBtn: "새로운 통찰",
@@ -94,6 +95,7 @@ const translations = {
     },
   },
   en: {
+    logo: { title: "Insight Deck", subtitle: "Know Thyself" },
     nav: { hub: "Conversation Hub", archive: "Archive", stats: "Statistics" },
     searchPlaceholder: "Search insights, topics...",
     newInsightBtn: "New Insight",
