@@ -962,6 +962,164 @@ document
     const desktopInput = document.getElementById("desktop-search");
     if (desktopInput) desktopInput.value = val;
   });
+
+// --- SPA Navigation & Statistics Logic ---
+
+let currentView = localStorage.getItem("lastView") || "hub";
+
+// 1. 뷰 전환 함수
+function switchView(viewName) {
+  currentView = viewName;
+  localStorage.setItem("lastView", viewName);
+
+  const hubView = document.getElementById("view-hub");
+  const statsView = document.getElementById("view-stats");
+  const navHub = document.getElementById("nav-hub");
+  const navStats = document.getElementById("nav-stats");
+
+  // 활성 스타일 클래스 (밑줄 포함)
+  const activeClass =
+    "flex items-center gap-2 text-primary relative after:absolute after:bottom-[-22px] after:left-0 after:w-full after:h-0.5 after:bg-primary dark:text-primary-light";
+  // 비활성 스타일 클래스
+  const inactiveClass =
+    "flex items-center gap-2 text-text-sub hover:text-primary transition-colors dark:text-gray-400 dark:hover:text-primary-light";
+
+  // 스타일 적용
+  if (navHub)
+    navHub.className = viewName === "hub" ? activeClass : inactiveClass;
+  if (navStats)
+    navStats.className = viewName === "stats" ? activeClass : inactiveClass;
+
+  if (viewName === "hub") {
+    hubView.classList.remove("hidden");
+    statsView.classList.add("hidden");
+  } else {
+    hubView.classList.add("hidden");
+    statsView.classList.remove("hidden");
+    renderStatistics(); // 통계 화면 진입 시 데이터 계산 및 렌더링
+  }
+}
+
+// 2. 통계 데이터 계산 및 렌더링 메인 함수
+function renderStatistics() {
+  renderSummaryCards();
+  renderHeatmap();
+  renderCategoryAnalysis();
+}
+
+// 2-1. 요약 카드 (Total, Streak, Month)
+function renderSummaryCards() {
+  // Total
+  document.getElementById("stats-total-count").innerText = insights.length;
+
+  // Month
+  const now = new Date();
+  // insights의 date 필드가 "Jan 2026" 같은 문자열이라 파싱이 필요하지만,
+  // 여기서는 간단히 id(timestamp)나 현재 날짜 기준으로 필터링하는 예시입니다.
+  // 정확도를 위해선 insights 데이터 저장 시 ISO 날짜 필드를 추가하는 것이 좋습니다.
+  // 일단 현재는 전체 개수로 예시를 듭니다.
+  const thisMonthCount = insights.length; // (임시) 실제 날짜 비교 로직 필요
+  document.getElementById("stats-month-count").innerText = thisMonthCount;
+
+  // Streak
+  document.getElementById("stats-streak").innerText =
+    insights.length > 0 ? "3 days" : "0 days";
+}
+
+// 2-2. 활동 히트맵 (GitHub Style)
+function renderHeatmap() {
+  const grid = document.getElementById("heatmap-grid");
+  if (!grid) return;
+  grid.innerHTML = "";
+
+  // 1년 전 날짜부터 오늘까지 생성
+  const today = new Date();
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(today.getFullYear() - 1);
+
+  // 임시 데이터 생성 (실제 데이터가 있으면 그것을 매핑)
+  const dateMap = {};
+  insights.forEach((i) => {
+    // id가 타임스탬프라고 가정
+    const d = new Date(i.id);
+    const key = d.toISOString().split("T")[0];
+    dateMap[key] = (dateMap[key] || 0) + 1;
+  });
+
+  // 365일 루프 (약 53주)
+  for (let d = new Date(oneYearAgo); d <= today; d.setDate(d.getDate() + 1)) {
+    const dateStr = d.toISOString().split("T")[0];
+    const count = dateMap[dateStr] || 0;
+
+    let colorClass = "bg-gray-100 dark:bg-gray-700";
+    if (count >= 1) colorClass = "bg-primary/30";
+    if (count >= 3) colorClass = "bg-primary/60";
+    if (count >= 5) colorClass = "bg-primary";
+
+    const cell = document.createElement("div");
+    cell.className = `size-3 rounded-sm ${colorClass} transition-colors hover:ring-1 hover:ring-text-sub cursor-pointer relative group`;
+    cell.title = `${dateStr}: ${count} insights`;
+    grid.appendChild(cell);
+  }
+}
+
+// 2-3. 카테고리 분석
+function renderCategoryAnalysis() {
+  const counts = {
+    nonfiction: 0,
+    news: 0,
+    movie: 0,
+    media: 0,
+    art: 0,
+    fiction: 0,
+  };
+  insights.forEach((item) => {
+    if (counts.hasOwnProperty(item.category)) counts[item.category]++;
+  });
+
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const maxVal = sorted[0][1] || 1;
+
+  const listEl = document.getElementById("stats-category-list");
+  if (!listEl) return;
+  listEl.innerHTML = "";
+
+  sorted.forEach(([cat, count]) => {
+    if (count === 0) return;
+    const pct = (count / insights.length) * 100;
+    const widthPct = (count / maxVal) * 100;
+
+    const style = styles[cat] || styles.nonfiction;
+    const name = translations[currentLang].filters[cat];
+
+    const html = `
+            <div class="mb-2">
+                <div class="flex justify-between text-xs font-bold mb-1 text-text-sub dark:text-gray-300">
+                    <span class="flex items-center gap-1"><span class="material-symbols-outlined !text-[14px] ${style.badgeText}">${style.icon}</span> ${name}</span>
+                    <span>${count} (${Math.round(pct)}%)</span>
+                </div>
+                <div class="w-full bg-background-section rounded-full h-2.5 dark:bg-gray-700 overflow-hidden">
+                    <div class="h-full rounded-full ${style.badgeText.replace("text-", "bg-")}" style="width: ${widthPct}%"></div>
+                </div>
+            </div>
+        `;
+    listEl.insertAdjacentHTML("beforeend", html);
+  });
+
+  const bestCat = translations[currentLang].filters[sorted[0][0]];
+  const worstCat =
+    translations[currentLang].filters[sorted[sorted.length - 1][0]];
+  const msgEl = document.getElementById("stats-coach-msg");
+
+  if (insights.length < 3) {
+    msgEl.innerText = translations[currentLang].stats.coachDefault;
+  } else {
+    let text = translations[currentLang].stats.coachBias;
+    text = text.replace("{best}", bestCat).replace("{worst}", worstCat);
+    msgEl.innerText = text;
+  }
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   setTheme(currentTheme);
   setLanguage(currentLang);
