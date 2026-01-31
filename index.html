@@ -377,299 +377,429 @@
         </div>
       </div>
     </header>
-    <main
-      class="max-w-7xl mx-auto px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10"
-    >
-      <aside class="lg:col-span-3 space-y-8">
-        <section
-          class="bg-white rounded-3xl p-6 border border-border shadow-sm dark:bg-gray-800 dark:border-gray-700"
+    <main class="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+      <div
+        id="view-hub"
+        class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 animation-fade"
+      >
+        <aside class="lg:col-span-3 space-y-8">
+          <section
+            class="bg-white rounded-3xl p-6 border border-border shadow-sm dark:bg-gray-800 dark:border-gray-700"
+          >
+            <div class="flex items-center justify-between mb-5">
+              <h2
+                data-i18n="sidebar.map"
+                class="font-black text-lg dark:text-white"
+              >
+                나의 지식 지도
+              </h2>
+              <span
+                class="material-symbols-outlined text-text-muted cursor-pointer hover:text-primary"
+                >bubble_chart</span
+              >
+            </div>
+            <div
+              class="h-4 w-full rounded-full bg-background-section overflow-hidden flex mb-4 dark:bg-gray-700"
+            >
+              <div
+                id="bar-nonfiction"
+                class="h-full bg-accent-nonfiction transition-all duration-1000"
+                style="width: 0%"
+              ></div>
+              <div
+                id="bar-news"
+                class="h-full bg-accent-news transition-all duration-1000"
+                style="width: 0%"
+              ></div>
+              <div
+                id="bar-movie"
+                class="h-full bg-accent-movie transition-all duration-1000"
+                style="width: 0%"
+              ></div>
+              <div
+                id="bar-media"
+                class="h-full bg-accent-media transition-all duration-1000"
+                style="width: 0%"
+              ></div>
+              <div
+                id="bar-art"
+                class="h-full bg-accent-art transition-all duration-1000"
+                style="width: 0%"
+              ></div>
+              <div
+                id="bar-fiction"
+                class="h-full bg-accent-fiction transition-all duration-1000"
+                style="width: 0%"
+              ></div>
+            </div>
+            <div class="grid grid-cols-3 gap-y-4 gap-x-2 text-center mb-6">
+              <div class="flex flex-col items-center">
+                <div class="flex items-center gap-1.5 mb-1">
+                  <span class="size-2 rounded-full bg-accent-nonfiction"></span
+                  ><span
+                    data-i18n="sidebar.graph.nonfiction"
+                    class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
+                    >Non-Fi</span
+                  >
+                </div>
+                <span
+                  id="pct-nonfiction"
+                  class="text-xs font-black text-accent-nonfiction"
+                  >0%</span
+                >
+              </div>
+              <div class="flex flex-col items-center">
+                <div class="flex items-center gap-1.5 mb-1">
+                  <span class="size-2 rounded-full bg-accent-news"></span
+                  ><span
+                    data-i18n="sidebar.graph.news"
+                    class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
+                    >News</span
+                  >
+                </div>
+                <span id="pct-news" class="text-xs font-black text-accent-news"
+                  >0%</span
+                >
+              </div>
+              <div class="flex flex-col items-center">
+                <div class="flex items-center gap-1.5 mb-1">
+                  <span class="size-2 rounded-full bg-accent-movie"></span
+                  ><span
+                    data-i18n="sidebar.graph.movie"
+                    class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
+                    >Movie</span
+                  >
+                </div>
+                <span
+                  id="pct-movie"
+                  class="text-xs font-black text-accent-movie"
+                  >0%</span
+                >
+              </div>
+              <div class="flex flex-col items-center">
+                <div class="flex items-center gap-1.5 mb-1">
+                  <span class="size-2 rounded-full bg-accent-media"></span
+                  ><span
+                    data-i18n="sidebar.graph.media"
+                    class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
+                    >Media</span
+                  >
+                </div>
+                <span
+                  id="pct-media"
+                  class="text-xs font-black text-accent-media"
+                  >0%</span
+                >
+              </div>
+              <div class="flex flex-col items-center">
+                <div class="flex items-center gap-1.5 mb-1">
+                  <span class="size-2 rounded-full bg-accent-art"></span
+                  ><span
+                    data-i18n="sidebar.graph.art"
+                    class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
+                    >Art</span
+                  >
+                </div>
+                <span id="pct-art" class="text-xs font-black text-accent-art"
+                  >0%</span
+                >
+              </div>
+              <div class="flex flex-col items-center">
+                <div class="flex items-center gap-1.5 mb-1">
+                  <span class="size-2 rounded-full bg-accent-fiction"></span
+                  ><span
+                    data-i18n="sidebar.graph.fiction"
+                    class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
+                    >Fiction</span
+                  >
+                </div>
+                <span
+                  id="pct-fiction"
+                  class="text-xs font-black text-text-muted"
+                  >0%</span
+                >
+              </div>
+            </div>
+            <div
+              class="grid grid-cols-3 gap-4 border-t border-border pt-5 dark:border-gray-700"
+            >
+              <div class="text-center">
+                <span
+                  id="stat-month"
+                  class="block font-black text-2xl text-primary leading-tight dark:text-primary-light"
+                  >3</span
+                ><span
+                  data-i18n="sidebar.thisMonth"
+                  class="text-[10px] font-bold text-text-muted uppercase tracking-wider dark:text-gray-500"
+                  >This Month</span
+                >
+              </div>
+              <div class="text-center">
+                <span
+                  id="stat-hub"
+                  class="block font-black text-2xl text-accent-dialogue leading-tight"
+                  >0</span
+                ><span
+                  data-i18n="sidebar.hub"
+                  class="text-[10px] font-bold text-text-muted uppercase tracking-wider dark:text-gray-500"
+                  >Hub</span
+                >
+              </div>
+              <div class="text-center">
+                <span
+                  id="stat-total"
+                  class="block font-black text-2xl text-text-main leading-tight dark:text-white"
+                  >3</span
+                ><span
+                  data-i18n="sidebar.total"
+                  class="text-[10px] font-bold text-text-muted uppercase tracking-wider dark:text-gray-500"
+                  >Total</span
+                >
+              </div>
+            </div>
+          </section>
+          <section>
+            <h3
+              class="font-bold text-sm text-text-sub mb-4 uppercase tracking-wider flex items-center gap-2 dark:text-gray-400"
+            >
+              <span class="material-symbols-outlined !text-[18px]"
+                >filter_list</span
+              >
+              <span data-i18n="sidebar.filter">Filters</span>
+            </h3>
+            <div class="flex flex-wrap gap-2">
+              <button
+                id="filter-all"
+                onclick="setFilter('all')"
+                class="px-3 py-1.5 rounded-full bg-primary text-white text-xs font-bold shadow-sm transition-all"
+              >
+                All
+              </button>
+              <button
+                id="filter-nonfiction"
+                onclick="setFilter('nonfiction')"
+                class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
+              >
+                Non-fiction
+              </button>
+              <button
+                id="filter-fiction"
+                onclick="setFilter('fiction')"
+                class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
+              >
+                Fiction
+              </button>
+              <button
+                id="filter-news"
+                onclick="setFilter('news')"
+                class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
+              >
+                News
+              </button>
+              <button
+                id="filter-movie"
+                onclick="setFilter('movie')"
+                class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
+              >
+                Movie
+              </button>
+              <button
+                id="filter-art"
+                onclick="setFilter('art')"
+                class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
+              >
+                Art
+              </button>
+              <button
+                id="filter-media"
+                onclick="setFilter('media')"
+                class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
+              >
+                Media
+              </button>
+            </div>
+          </section>
+        </aside>
+
+        <div
+          class="lg:col-span-9 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 items-start"
         >
-          <div class="flex items-center justify-between mb-5">
-            <h2
-              data-i18n="sidebar.map"
-              class="font-black text-lg dark:text-white"
-            >
-              나의 지식 지도
-            </h2>
-            <span
-              class="material-symbols-outlined text-text-muted cursor-pointer hover:text-primary"
-              >bubble_chart</span
-            >
-          </div>
-
-          <div
-            class="h-4 w-full rounded-full bg-background-section overflow-hidden flex mb-4 dark:bg-gray-700"
-          >
-            <div
-              id="bar-nonfiction"
-              class="h-full bg-accent-nonfiction transition-all duration-1000"
-              style="width: 0%"
-            ></div>
-            <div
-              id="bar-news"
-              class="h-full bg-accent-news transition-all duration-1000"
-              style="width: 0%"
-            ></div>
-            <div
-              id="bar-movie"
-              class="h-full bg-accent-movie transition-all duration-1000"
-              style="width: 0%"
-            ></div>
-            <div
-              id="bar-media"
-              class="h-full bg-accent-media transition-all duration-1000"
-              style="width: 0%"
-            ></div>
-            <div
-              id="bar-art"
-              class="h-full bg-accent-art transition-all duration-1000"
-              style="width: 0%"
-            ></div>
-            <div
-              id="bar-fiction"
-              class="h-full bg-accent-fiction transition-all duration-1000"
-              style="width: 0%"
-            ></div>
-          </div>
-
-          <div class="grid grid-cols-3 gap-y-4 gap-x-2 text-center mb-6">
-            <div class="flex flex-col items-center">
-              <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-nonfiction"></span
-                ><span
-                  data-i18n="sidebar.graph.nonfiction"
-                  class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
-                  >Non-Fi</span
-                >
-              </div>
+          <section id="zone-ready" class="space-y-5">
+            <div class="flex items-center justify-between">
+              <h3
+                class="font-black text-lg flex items-center gap-2 dark:text-white"
+              >
+                <span class="size-2.5 rounded-full bg-accent-dialogue"></span>
+                Ready
+              </h3>
               <span
-                id="pct-nonfiction"
-                class="text-xs font-black text-accent-nonfiction"
-                >0%</span
-              >
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-news"></span
-                ><span
-                  data-i18n="sidebar.graph.news"
-                  class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
-                  >News</span
-                >
-              </div>
-              <span id="pct-news" class="text-xs font-black text-accent-news"
-                >0%</span
-              >
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-movie"></span
-                ><span
-                  data-i18n="sidebar.graph.movie"
-                  class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
-                  >Movie</span
-                >
-              </div>
-              <span id="pct-movie" class="text-xs font-black text-accent-movie"
-                >0%</span
-              >
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-media"></span
-                ><span
-                  data-i18n="sidebar.graph.media"
-                  class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
-                  >Media</span
-                >
-              </div>
-              <span id="pct-media" class="text-xs font-black text-accent-media"
-                >0%</span
-              >
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-art"></span
-                ><span
-                  data-i18n="sidebar.graph.art"
-                  class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
-                  >Art</span
-                >
-              </div>
-              <span id="pct-art" class="text-xs font-black text-accent-art"
-                >0%</span
-              >
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="flex items-center gap-1.5 mb-1">
-                <span class="size-2 rounded-full bg-accent-fiction"></span
-                ><span
-                  data-i18n="sidebar.graph.fiction"
-                  class="text-[10px] font-bold text-text-sub uppercase dark:text-gray-400"
-                  >Fiction</span
-                >
-              </div>
-              <span id="pct-fiction" class="text-xs font-black text-text-muted"
-                >0%</span
-              >
-            </div>
-          </div>
-
-          <div
-            class="grid grid-cols-3 gap-4 border-t border-border pt-5 dark:border-gray-700"
-          >
-            <div class="text-center">
-              <span
-                id="stat-month"
-                class="block font-black text-2xl text-primary leading-tight dark:text-primary-light"
-                >3</span
-              >
-              <span
-                data-i18n="sidebar.thisMonth"
-                class="text-[10px] font-bold text-text-muted uppercase tracking-wider dark:text-gray-500"
-                >This Month</span
-              >
-            </div>
-            <div class="text-center">
-              <span
-                id="stat-hub"
-                class="block font-black text-2xl text-accent-dialogue leading-tight"
+                id="count-ready"
+                class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full dark:bg-gray-700 dark:text-gray-400"
                 >0</span
               >
+            </div>
+          </section>
+          <section id="zone-logged" class="space-y-5">
+            <div class="flex items-center justify-between">
+              <h3
+                class="font-black text-lg flex items-center gap-2 dark:text-white"
+              >
+                <span class="size-2.5 rounded-full bg-primary"></span> Logged
+              </h3>
               <span
-                data-i18n="sidebar.hub"
-                class="text-[10px] font-bold text-text-muted uppercase tracking-wider dark:text-gray-500"
-                >Hub</span
+                id="count-logged"
+                class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full dark:bg-gray-700 dark:text-gray-400"
+                >0</span
               >
             </div>
-            <div class="text-center">
-              <span
-                id="stat-total"
-                class="block font-black text-2xl text-text-main leading-tight dark:text-white"
-                >3</span
+          </section>
+          <section id="zone-internalized" class="space-y-5">
+            <div class="flex items-center justify-between">
+              <h3
+                class="font-black text-lg flex items-center gap-2 dark:text-white"
               >
+                <span class="size-2.5 rounded-full bg-accent-nonfiction"></span>
+                Internalized
+              </h3>
               <span
-                data-i18n="sidebar.total"
-                class="text-[10px] font-bold text-text-muted uppercase tracking-wider dark:text-gray-500"
-                >Total</span
+                id="count-internalized"
+                class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full dark:bg-gray-700 dark:text-gray-400"
+                >0</span
               >
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
+      </div>
 
-        <section>
-          <h3
-            class="font-bold text-sm text-text-sub mb-4 uppercase tracking-wider flex items-center gap-2 dark:text-gray-400"
+      <div id="view-stats" class="hidden animation-fade space-y-10">
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+            class="bg-white rounded-3xl p-6 border border-border shadow-sm dark:bg-gray-800 dark:border-gray-700"
           >
-            <span class="material-symbols-outlined !text-[18px]"
-              >filter_list</span
+            <div class="flex items-center gap-3 mb-2">
+              <span
+                class="p-2 rounded-xl bg-primary/10 text-primary material-symbols-outlined"
+                >library_books</span
+              >
+              <h4
+                data-i18n="stats.total"
+                class="font-bold text-text-sub dark:text-gray-400"
+              >
+                Total Insights
+              </h4>
+            </div>
+            <p
+              id="stats-total-count"
+              class="text-3xl font-black text-text-main dark:text-white"
             >
-            <span data-i18n="sidebar.filter">Filters</span>
-          </h3>
-          <div class="flex flex-wrap gap-2">
-            <button
-              id="filter-all"
-              onclick="setFilter('all')"
-              class="px-3 py-1.5 rounded-full bg-primary text-white text-xs font-bold shadow-sm transition-all"
+              0
+            </p>
+          </div>
+          <div
+            class="bg-white rounded-3xl p-6 border border-border shadow-sm dark:bg-gray-800 dark:border-gray-700"
+          >
+            <div class="flex items-center gap-3 mb-2">
+              <span
+                class="p-2 rounded-xl bg-accent-fire/10 text-accent-fire material-symbols-outlined text-orange-500"
+                >local_fire_department</span
+              >
+              <h4
+                data-i18n="stats.streak"
+                class="font-bold text-text-sub dark:text-gray-400"
+              >
+                Current Streak
+              </h4>
+            </div>
+            <p
+              id="stats-streak"
+              class="text-3xl font-black text-text-main dark:text-white"
             >
-              All
-            </button>
-            <button
-              id="filter-nonfiction"
-              onclick="setFilter('nonfiction')"
-              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
+              0 days
+            </p>
+          </div>
+          <div
+            class="bg-white rounded-3xl p-6 border border-border shadow-sm dark:bg-gray-800 dark:border-gray-700"
+          >
+            <div class="flex items-center gap-3 mb-2">
+              <span
+                class="p-2 rounded-xl bg-accent-movie/10 text-accent-movie material-symbols-outlined"
+                >calendar_month</span
+              >
+              <h4
+                data-i18n="stats.month"
+                class="font-bold text-text-sub dark:text-gray-400"
+              >
+                This Month
+              </h4>
+            </div>
+            <p
+              id="stats-month-count"
+              class="text-3xl font-black text-text-main dark:text-white"
             >
-              Non-fiction
-            </button>
-            <button
-              id="filter-fiction"
-              onclick="setFilter('fiction')"
-              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
-            >
-              Fiction
-            </button>
-            <button
-              id="filter-news"
-              onclick="setFilter('news')"
-              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
-            >
-              News
-            </button>
-            <button
-              id="filter-movie"
-              onclick="setFilter('movie')"
-              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
-            >
-              Movie
-            </button>
-            <button
-              id="filter-art"
-              onclick="setFilter('art')"
-              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
-            >
-              Art
-            </button>
-            <button
-              id="filter-media"
-              onclick="setFilter('media')"
-              class="px-3 py-1.5 rounded-full bg-white border border-border text-text-sub text-xs font-bold transition-all hover:text-primary dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:text-primary-light"
-            >
-              Media
-            </button>
+              0
+            </p>
           </div>
         </section>
-      </aside>
 
-      <div
-        class="lg:col-span-9 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 items-start"
-      >
-        <section id="zone-ready" class="space-y-5">
-          <div class="flex items-center justify-between">
-            <h3
-              class="font-black text-lg flex items-center gap-2 dark:text-white"
-            >
-              <span class="size-2.5 rounded-full bg-accent-dialogue"></span>
-              Ready
-            </h3>
-            <span
-              id="count-ready"
-              class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full dark:bg-gray-700 dark:text-gray-400"
-              >0</span
-            >
+        <section
+          class="bg-white rounded-3xl p-8 border border-border shadow-sm dark:bg-gray-800 dark:border-gray-700"
+        >
+          <h3
+            data-i18n="stats.heatmapTitle"
+            class="font-black text-xl mb-6 dark:text-white"
+          >
+            Activity Log (1 Year)
+          </h3>
+          <div class="overflow-x-auto pb-2">
+            <div
+              id="heatmap-grid"
+              class="grid grid-rows-7 grid-flow-col gap-1 w-max min-w-[700px]"
+            ></div>
+          </div>
+          <div
+            class="flex justify-end items-center gap-2 mt-4 text-xs font-bold text-text-muted"
+          >
+            <span data-i18n="stats.less">Less</span>
+            <div class="size-3 rounded-sm bg-gray-100 dark:bg-gray-700"></div>
+            <div class="size-3 rounded-sm bg-primary/30"></div>
+            <div class="size-3 rounded-sm bg-primary/60"></div>
+            <div class="size-3 rounded-sm bg-primary"></div>
+            <span data-i18n="stats.more">More</span>
           </div>
         </section>
-        <section id="zone-logged" class="space-y-5">
-          <div class="flex items-center justify-between">
+
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div
+            class="bg-white rounded-3xl p-8 border border-border shadow-sm dark:bg-gray-800 dark:border-gray-700"
+          >
             <h3
-              class="font-black text-lg flex items-center gap-2 dark:text-white"
+              data-i18n="stats.catAnalysis"
+              class="font-black text-xl mb-6 dark:text-white"
             >
-              <span class="size-2.5 rounded-full bg-primary"></span> Logged
+              Category Analysis
             </h3>
-            <span
-              id="count-logged"
-              class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full dark:bg-gray-700 dark:text-gray-400"
-              >0</span
-            >
+            <div id="stats-category-list" class="space-y-4"></div>
           </div>
-        </section>
-        <section id="zone-internalized" class="space-y-5">
-          <div class="flex items-center justify-between">
+
+          <div
+            class="bg-primary/5 rounded-3xl p-8 border border-primary/10 dark:bg-gray-700/50 dark:border-gray-600"
+          >
             <h3
-              class="font-black text-lg flex items-center gap-2 dark:text-white"
+              data-i18n="stats.suggestion"
+              class="font-black text-xl mb-4 text-primary dark:text-primary-light"
             >
-              <span class="size-2.5 rounded-full bg-accent-nonfiction"></span>
-              Internalized
+              Insight Coach
             </h3>
-            <span
-              id="count-internalized"
-              class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full dark:bg-gray-700 dark:text-gray-400"
-              >0</span
+            <p
+              id="stats-coach-msg"
+              class="text-sm text-text-main leading-7 font-medium dark:text-gray-200"
             >
+              데이터를 분석 중입니다...
+            </p>
           </div>
         </section>
       </div>
     </main>
-
     <div
       id="write-modal"
       class="fixed inset-0 z-[100] hidden"
