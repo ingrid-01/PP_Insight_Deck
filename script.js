@@ -1123,9 +1123,12 @@ function renderCategoryAnalysis() {
 window.addEventListener("DOMContentLoaded", () => {
   setTheme(currentTheme);
   setLanguage(currentLang);
+
+  // 프로필 초기화
   const savedName = localStorage.getItem("userName");
   if (savedName)
     document.getElementById("profile-name-display").innerText = savedName;
+
   const savedImg = localStorage.getItem("userProfileImg");
   if (savedImg) {
     document.getElementById("profile-img").src = savedImg;
@@ -1134,6 +1137,10 @@ window.addEventListener("DOMContentLoaded", () => {
     const defaultUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${defaultName}&backgroundColor=B38F64&textColor=ffffff&chars=1`;
     document.getElementById("profile-img").src = defaultUrl;
   }
+
   const savedColor = localStorage.getItem("userProfileColor");
   if (savedColor) tempColor = savedColor;
+
+  // 마지막으로 보고 있던 탭(Hub 혹은 Stats)으로 화면 전환
+  switchView(currentView);
 });
