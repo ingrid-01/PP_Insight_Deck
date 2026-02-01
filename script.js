@@ -1703,6 +1703,102 @@ function restoreToHub(id) {
     }
   }
 }
+
+/* =========================================
+   [NEW] 오늘의 고찰 (Daily Reflection) 로직
+   ========================================= */
+
+let currentDailyId = null;
+let currentQuestion = "";
+
+function initDailyReflection() {
+  const section = document.getElementById("daily-reflection-card");
+  const titleEl = document.getElementById("daily-target-title");
+  const contentEl = document.getElementById("daily-target-content");
+  const dateEl = document.getElementById("daily-target-date");
+  const questionEl = document.getElementById("daily-question");
+  const inputEl = document.getElementById("daily-answer");
+
+  // 1. 데이터가 없으면 숨김
+  if (insights.length === 0) {
+    section.classList.add("hidden");
+    return;
+  }
+  section.classList.remove("hidden");
+
+  // 2. 랜덤한 통찰 선택 (internalized 된 것도 포함해서 회고할 수 있게 함)
+  // 단, 너무 최근(오늘 쓴 것)은 제외하고 싶다면 필터링 가능. 일단 전체 대상.
+  const randomIdx = Math.floor(Math.random() * insights.length);
+  const target = insights[randomIdx];
+  currentDailyId = target.id;
+
+  // 3. 랜덤 질문 선택
+  const qList = translations[currentLang].daily.questions;
+  const qIdx = Math.floor(Math.random() * qList.length);
+  currentQuestion = qList[qIdx];
+
+  // 4. UI 렌더링
+  titleEl.innerText = target.title;
+  contentEl.innerText = target.content;
+  dateEl.innerText = formatDate(target.date);
+  questionEl.innerText = `"${currentQuestion}"`;
+
+  // 입력창 초기화 및 번역 적용
+  inputEl.value = "";
+  inputEl.placeholder = translations[currentLang].daily.placeholder;
+
+  // 버튼 텍스트 등도 업데이트 필요하다면 여기서 처리
+}
+
+function refreshDailyReflection() {
+  // 회전 애니메이션 효과를 주면 좋음 (여기선 단순 호출)
+  initDailyReflection();
+}
+
+function saveDailyReflection() {
+  const inputEl = document.getElementById("daily-answer");
+  const text = inputEl.value.trim();
+
+  if (!text) {
+    alert(
+      currentLang === "ko" ? "내용을 입력해주세요." : "Please enter content.",
+    );
+    return;
+  }
+
+  const card = insights.find((c) => c.id === currentDailyId);
+  if (card) {
+    const today = new Date().toLocaleDateString();
+    // 기존 reflect에 덧붙이기 (구분선 사용)
+    // 형식: [2026.2.1 질문?] 답변
+    const newLog = `\n\n[Reflect: ${today}]\nQ: ${currentQuestion}\nA: ${text}`;
+
+    if (card.reflect) {
+      card.reflect += newLog;
+    } else {
+      card.reflect = newLog.trim(); // 앞에 줄바꿈 제거
+    }
+
+    // 저장 완료 알림
+    alert(
+      currentLang === "ko"
+        ? "고찰이 기록에 추가되었습니다."
+        : "Reflection added to the log.",
+    );
+
+    // UI 갱신 (상세 모달이나 리스트에서 보이게)
+    renderInsights();
+    if (currentView === "stats") renderStatistics();
+
+    // 입력창 비우고 새로운 질문 제안? 아니면 그대로 두기? -> 비우기
+    inputEl.value = "";
+
+    // (선택) 카드가 만약 'internalized' 상태가 아니라면, 다시 생각했으니 'logged'로 상태 변경해줄 수도 있음
+    if (card.status === "ready") card.status = "logged";
+    renderInsights();
+  }
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   setTheme(currentTheme);
   setLanguage(currentLang);
