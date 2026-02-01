@@ -1508,20 +1508,25 @@ function renderArchive() {
     // 카드 아이템 (타임라인 스타일)
     const style = styles[data.category];
     const displayDate = formatDate(data.date);
-
     const itemHTML = `
-            <div onclick="openArchiveDetail(${data.id})" class="relative ml-8 mb-6 bg-white p-5 rounded-2xl border border-border shadow-sm hover:shadow-md hover:translate-x-1 transition-all cursor-pointer group dark:bg-gray-800 dark:border-gray-700">
-                <div class="flex justify-between items-start mb-2">
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined ${style.badgeText} !text-[20px]">${style.icon}</span>
-                        <h5 class="font-bold text-text-main text-base group-hover:text-primary transition-colors dark:text-white">${data.title}</h5>
+            <div class="relative ml-8 mb-6 bg-white p-5 rounded-2xl border border-border shadow-sm hover:shadow-md transition-all group dark:bg-gray-800 dark:border-gray-700">
+                <div onclick="openDetailModal(${data.id})" class="cursor-pointer">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined ${style.badgeText} !text-[20px]">${style.icon}</span>
+                            <h5 class="font-bold text-text-main text-base group-hover:text-primary transition-colors dark:text-white">${data.title}</h5>
+                        </div>
+                        <span class="text-[10px] font-bold text-text-muted dark:text-gray-500">${displayDate}</span>
                     </div>
-                    <span class="text-[10px] font-bold text-text-muted dark:text-gray-500">${displayDate}</span>
+                    <p class="text-sm text-text-sub line-clamp-2 mb-2 dark:text-gray-300">${data.content}</p>
+                    <div class="flex gap-2">
+                        ${data.tags ? data.tags.map((t) => `<span class="text-[10px] text-text-muted bg-background-section px-1.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-400">#${t}</span>`).join("") : ""}
+                    </div>
                 </div>
-                <p class="text-sm text-text-sub line-clamp-2 mb-2 dark:text-gray-300">${data.content}</p>
-                <div class="flex gap-2">
-                    ${data.tags ? data.tags.map((t) => `<span class="text-[10px] text-text-muted bg-background-section px-1.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-400">#${t}</span>`).join("") : ""}
-                </div>
+                
+                <button onclick="restoreToHub(${data.id})" class="absolute top-4 right-4 p-1.5 rounded-full text-text-muted hover:text-primary hover:bg-gray-100 transition-all dark:hover:bg-gray-700" title="${translations[currentLang].archive.restoreBtn}">
+                    <span class="material-symbols-outlined !text-[20px]">settings_backup_restore</span>
+                </button>
             </div>
         `;
     container.insertAdjacentHTML("beforeend", itemHTML);
