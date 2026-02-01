@@ -1032,6 +1032,8 @@ function resetDashboard() {
   window.scrollTo({ top: 0, behavior: "smooth" });
   document.getElementById("mobile-search-bar").classList.add("hidden");
   document.getElementById("write-modal").classList.add("hidden");
+
+  initDailyReflection();
 }
 
 document.addEventListener("click", (e) => {
@@ -1819,5 +1821,6 @@ window.addEventListener("DOMContentLoaded", () => {
   const savedColor = localStorage.getItem("userProfileColor");
   if (savedColor) tempColor = savedColor;
 
+  initDailyReflection();
   switchView(currentView);
 });
