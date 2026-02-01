@@ -95,6 +95,7 @@ const translations = {
       collections: "컬렉션 (Tags)",
       empty: "아직 서재가 비어있습니다. 통찰을 내재화(Internalize) 해보세요.",
       moveBtn: "서재로 보내기 (완료)", // [New] Hub 카드에 추가될 버튼
+      restoreBtn: "다시 허브로 보내기",
     },
     searchPlaceholder: "통찰, 주제, 질문 검색...",
     newInsightBtn: "새로운 통찰",
@@ -200,6 +201,7 @@ const translations = {
       collections: "Collections",
       empty: "The library is empty. Try internalizing your insights.",
       moveBtn: "Archive (Done)", // [New]
+      restoreBtn: "Restore to Hub",
     },
     searchPlaceholder: "Search insights, topics...",
     newInsightBtn: "New Insight",
