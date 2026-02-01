@@ -562,24 +562,30 @@ function renderInsights() {
         ? `<button onclick="moveToArchive(${data.id})" class="mt-2 w-full py-2 rounded-xl bg-accent-nonfiction/10 text-accent-nonfiction text-xs font-bold hover:bg-accent-nonfiction hover:text-white transition-all flex items-center justify-center gap-2"><span class="material-symbols-outlined !text-[16px]">inventory_2</span> ${translations[currentLang].archive.moveBtn}</button>`
         : "";
 
+    // renderInsights 함수 내부의 cardHTML 생성 부분 수정
+
     const cardHTML = `
-      <article id="card-${data.id}" class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer group mt-5 dark:bg-gray-800 dark:border-gray-700 relative">
-          <div class="flex justify-between items-start mb-3">
-              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider"><span class="material-symbols-outlined !text-[14px]">${style.icon}</span>${subCatText}</div>
-              <span class="text-[10px] font-bold text-text-muted dark:text-gray-400">${displayDate}</span>
+      <article class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow group mt-5 dark:bg-gray-800 dark:border-gray-700 relative flex flex-col h-full">
+          <div onclick="openDetailModal(${data.id})" class="cursor-pointer flex-1">
+              <div class="flex justify-between items-start mb-3">
+                  <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider"><span class="material-symbols-outlined !text-[14px]">${style.icon}</span>${subCatText}</div>
+                  <span class="text-[10px] font-bold text-text-muted dark:text-gray-400">${displayDate}</span>
+              </div>
+              <h4 class="font-bold text-lg leading-snug mb-2 serif group-hover:text-primary transition-colors dark:text-white dark:group-hover:text-primary-light">${data.title}</h4>
+              ${tagHTML}
+              <p class="text-sm text-text-sub font-medium leading-relaxed mb-4 line-clamp-3 dark:text-gray-300">"${data.content}"</p>
+              
+              ${data.reflect ? `<div class="bg-background-section/50 p-3 rounded-xl mb-2 dark:bg-gray-700"><p class="text-xs text-text-main line-clamp-2 dark:text-gray-200"><span class="font-bold text-accent-dialogue">REFLECT:</span> ${data.reflect}</p></div>` : ""}
           </div>
-          <h4 class="font-bold text-lg leading-snug mb-2 serif group-hover:text-primary transition-colors dark:text-white dark:group-hover:text-primary-light">${data.title}</h4>
-          ${tagHTML}
-          <p class="text-sm text-text-sub font-medium leading-relaxed mb-4 line-clamp-3 dark:text-gray-300">"${data.content}"</p>
           
-          ${data.reflect ? `<div class="bg-background-section/50 p-3 rounded-xl mb-3 dark:bg-gray-700"><h5 class="text-[10px] font-bold text-accent-dialogue mb-1 uppercase flex items-center gap-1"><span class="material-symbols-outlined !text-[14px]">psychology_alt</span> ${translations[currentLang].logModal.reflect.title}</h5><p class="text-xs text-text-main line-clamp-2 dark:text-gray-200">${data.reflect}</p></div>` : ""}
-          ${data.action ? `<div class="bg-accent-action/10 p-3 rounded-xl mb-3 dark:bg-green-900/20"><h5 class="text-[10px] font-bold text-accent-action mb-1 uppercase flex items-center gap-1"><span class="material-symbols-outlined !text-[14px]">bolt</span> ${translations[currentLang].logModal.action.title}</h5><p class="text-xs text-text-main line-clamp-2 dark:text-gray-200">${data.action}</p></div>` : ""}
-          ${data.dialogue ? `<div class="bg-primary/5 p-3 rounded-xl mb-3 border border-primary/10 dark:bg-gray-700 dark:border-gray-600"><h5 class="text-[10px] font-bold text-primary mb-1 uppercase flex items-center gap-1 dark:text-primary-light"><span class="material-symbols-outlined !text-[14px]">forum</span> ${translations[currentLang].logModal.dialogue.title}</h5><p class="text-xs text-text-main italic line-clamp-2 dark:text-gray-200">"${data.dialogue}"</p></div>` : ""}
-          
-          <button onclick="openLogModal(${data.id})" class="w-full py-2.5 rounded-xl border border-dashed border-border text-text-sub text-xs font-bold flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary-light hover:text-primary transition-all dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-primary-light">
-            <span class="material-symbols-outlined !text-[18px]">add</span> ${translations[currentLang].logBtn}
-          </button>
-          ${archiveBtn}
+          <div class="mt-3 pt-3 border-t border-border border-dashed dark:border-gray-700">
+              <div class="grid ${data.status === "logged" ? "grid-cols-2" : "grid-cols-1"} gap-2">
+                  <button onclick="openLogModal(${data.id})" class="py-2 rounded-xl border border-dashed border-border text-text-sub text-xs font-bold flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary-light hover:text-primary transition-all dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-primary-light">
+                    <span class="material-symbols-outlined !text-[16px]">add</span> ${translations[currentLang].logBtn}
+                  </button>
+                  ${archiveBtn}
+              </div>
+          </div>
       </article>`;
     zones[data.status].insertAdjacentHTML("beforeend", cardHTML);
   });
