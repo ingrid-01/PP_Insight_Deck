@@ -389,6 +389,83 @@
         id="view-hub"
         class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 animation-fade"
       >
+        <div class="lg:col-span-12 mb-2">
+          <div
+            id="daily-reflection-card"
+            class="bg-gradient-to-r from-primary to-[#2A4039] rounded-3xl p-6 md:p-8 text-white shadow-lg relative overflow-hidden hidden"
+          >
+            <div
+              class="absolute top-0 right-0 -mr-8 -mt-8 size-40 rounded-full bg-white/10 blur-2xl"
+            ></div>
+
+            <div
+              class="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8 items-center"
+            >
+              <div class="md:col-span-2 space-y-4">
+                <div class="flex items-center gap-2 mb-1">
+                  <span
+                    class="px-2 py-1 rounded bg-white/20 text-[10px] font-bold uppercase tracking-wider"
+                    >Today's Question</span
+                  >
+                  <button
+                    onclick="refreshDailyReflection()"
+                    class="text-white/70 hover:text-white transition-colors"
+                    title="다른 질문 보기"
+                  >
+                    <span class="material-symbols-outlined !text-[18px]"
+                      >refresh</span
+                    >
+                  </button>
+                </div>
+
+                <h3
+                  id="daily-question"
+                  class="text-xl md:text-2xl font-black leading-snug serif"
+                ></h3>
+
+                <div
+                  class="bg-white/10 border border-white/20 rounded-xl p-4 backdrop-blur-sm"
+                >
+                  <div
+                    class="flex items-center gap-2 mb-2 text-white/60 text-xs font-bold"
+                  >
+                    <span class="material-symbols-outlined !text-[14px]"
+                      >history</span
+                    >
+                    <span id="daily-target-date">Jan 2025</span> 의 기록
+                  </div>
+                  <p id="daily-target-title" class="font-bold text-lg mb-1">
+                    제목
+                  </p>
+                  <p
+                    id="daily-target-content"
+                    class="text-sm text-white/80 line-clamp-2"
+                  >
+                    내용...
+                  </p>
+                </div>
+              </div>
+
+              <div class="md:col-span-1 flex flex-col gap-3">
+                <textarea
+                  id="daily-answer"
+                  rows="3"
+                  class="w-full rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 text-sm focus:ring-2 focus:ring-white/50 focus:border-transparent resize-none"
+                  placeholder="이 질문에 대한 현재의 생각은?"
+                ></textarea>
+                <button
+                  onclick="saveDailyReflection()"
+                  class="w-full py-3 rounded-xl bg-white text-primary font-bold text-sm hover:bg-gray-100 transition-colors shadow-md flex items-center justify-center gap-2"
+                >
+                  <span class="material-symbols-outlined !text-[18px]"
+                    >edit_note</span
+                  >
+                  기록에 덧붙이기
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
         <aside class="lg:col-span-3 space-y-8">
           <section
             class="bg-white rounded-3xl p-6 border border-border shadow-sm dark:bg-gray-800 dark:border-gray-700"
