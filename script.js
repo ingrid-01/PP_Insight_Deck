@@ -1543,7 +1543,140 @@ function openArchiveDetail(id) {
   // 추후 '읽기 전용 모달'을 만들면 좋음. 현재는 간단히 로그 모달 띄우기
   openLogModal(id);
 }
+/* =========================================
+   [NEW] 상세 보기 & 복구 로직
+   ========================================= */
 
+// 1. 상세 모달 열기 (View Mode)
+function openDetailModal(id) {
+  const card = insights.find((c) => c.id === id);
+  if (!card) return;
+
+  const modal = document.getElementById("detail-modal");
+  const style = styles[card.category];
+  const subCatText =
+    typeof card.subCategory === "object"
+      ? card.subCategory[currentLang]
+      : card.subCategory;
+
+  // 헤더 정보 주입
+  document.getElementById("detail-category-badge").className =
+    `inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 ${style.badgeBg} ${style.badgeText}`;
+  document.getElementById("detail-category-badge").innerHTML =
+    `<span class="material-symbols-outlined !text-[14px]">${style.icon}</span> ${subCatText}`;
+  document.getElementById("detail-title").innerText = card.title;
+  document.getElementById("detail-date").innerText = formatDate(card.date);
+  document.getElementById("detail-content").innerText = card.content;
+
+  // 태그 주입
+  const tagsContainer = document.getElementById("detail-tags");
+  tagsContainer.innerHTML = "";
+  if (card.tags && card.tags.length > 0) {
+    card.tags.forEach((tag) => {
+      tagsContainer.insertAdjacentHTML(
+        "beforeend",
+        `<span class="px-2 py-1 rounded-lg text-xs font-bold bg-gray-100 text-text-sub dark:bg-gray-700 dark:text-gray-300">#${tag}</span>`,
+      );
+    });
+  }
+
+  // 로그 주입 (작성된 것만 표시)
+  const logsContainer = document.getElementById("detail-logs-container");
+  logsContainer.innerHTML = "";
+  let hasLogs = false;
+
+  // 로그 렌더링 헬퍼
+  const addLogItem = (title, icon, colorClass, text) => {
+    if (!text) return;
+    hasLogs = true;
+    const html = `
+            <div class="bg-gray-50 rounded-2xl p-5 border border-border dark:bg-gray-700/50 dark:border-gray-600">
+                <h5 class="text-xs font-bold ${colorClass} mb-2 flex items-center gap-2 uppercase tracking-wider">
+                    <span class="material-symbols-outlined !text-[18px]">${icon}</span> ${title}
+                </h5>
+                <p class="text-sm text-text-main leading-relaxed dark:text-gray-200 whitespace-pre-wrap">${text}</p>
+            </div>`;
+    logsContainer.insertAdjacentHTML("beforeend", html);
+  };
+
+  addLogItem(
+    translations[currentLang].logModal.reflect.title,
+    "psychology_alt",
+    "text-accent-dialogue",
+    card.reflect,
+  );
+  addLogItem(
+    translations[currentLang].logModal.action.title,
+    "bolt",
+    "text-accent-action",
+    card.action,
+  );
+  addLogItem(
+    translations[currentLang].logModal.dialogue.title,
+    "forum",
+    "text-primary",
+    card.dialogue,
+  );
+  addLogItem(
+    translations[currentLang].logModal.topic.title,
+    "chat_bubble",
+    "text-accent-news",
+    card.discussionTopic,
+  );
+
+  if (!hasLogs) {
+    logsContainer.innerHTML = `<p class="text-center text-text-muted text-sm italic py-4">"${currentLang === "ko" ? "아직 기록된 로그가 없습니다." : "No logs recorded yet."}"</p>`;
+  }
+
+  // 푸터 버튼 설정
+  const restoreBtn = document.getElementById("detail-restore-btn");
+  const addLogBtn = document.getElementById("detail-add-log-btn");
+
+  // 아카이브 상태라면 '복구' 버튼 보이기
+  if (card.status === "internalized") {
+    restoreBtn.classList.remove("hidden");
+    restoreBtn.onclick = () => {
+      restoreToHub(card.id);
+      closeDetailModal();
+    };
+    addLogBtn.classList.add("hidden"); // 아카이브에선 로그 추가 불가 (원칙상)
+  } else {
+    restoreBtn.classList.add("hidden");
+    addLogBtn.classList.remove("hidden");
+    addLogBtn.onclick = () => {
+      closeDetailModal();
+      openLogModal(card.id);
+    };
+  }
+
+  modal.classList.remove("hidden");
+}
+
+function closeDetailModal() {
+  document.getElementById("detail-modal").classList.add("hidden");
+}
+
+// 2. 허브로 되돌리기 (Restore)
+function restoreToHub(id) {
+  const card = insights.find((c) => c.id === id);
+  if (card) {
+    if (
+      confirm(
+        currentLang === "ko"
+          ? "이 통찰을 다시 대화 허브로 가져오시겠습니까?"
+          : "Restore this insight to Conversation Hub?",
+      )
+    ) {
+      // 로그가 있으면 logged, 없으면 ready 상태로 복구
+      const hasLogs = card.reflect || card.action || card.dialogue;
+      card.status = hasLogs ? "logged" : "ready";
+
+      renderInsights(); // Hub 갱신
+      if (currentView === "archive") renderArchive(); // Archive 갱신
+      if (currentView === "stats") renderStatistics(); // 통계 갱신
+    }
+  }
+}
 window.addEventListener("DOMContentLoaded", () => {
   setTheme(currentTheme);
   setLanguage(currentLang);
