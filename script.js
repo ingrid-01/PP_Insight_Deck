@@ -97,6 +97,19 @@ const translations = {
       moveBtn: "서재로 보내기 (완료)", // [New] Hub 카드에 추가될 버튼
       restoreBtn: "다시 허브로 보내기",
     },
+    daily: {
+      refresh: "다른 질문 보기",
+      placeholder: "이 질문에 대한 현재의 생각은?",
+      btn: "기록에 덧붙이기",
+      questions: [
+        "이 생각은 여전히 유효한가요? 아니면 수정이 필요한가요?",
+        "이때와 비교해서 지금의 나는 얼마나 성장했나요?",
+        "이 내용을 지금의 삶에 어떻게 적용해볼 수 있을까요?",
+        "이때의 감정과 지금 느끼는 감정은 어떻게 다른가요?",
+        "이 기록을 통해 얻은 가장 큰 깨달음은 무엇이었나요?",
+        "만약 과거의 나에게 조언을 해준다면 뭐라고 말하고 싶나요?",
+      ],
+    },
     searchPlaceholder: "통찰, 주제, 질문 검색...",
     newInsightBtn: "새로운 통찰",
     logBtn: "로그",
@@ -202,6 +215,19 @@ const translations = {
       empty: "The library is empty. Try internalizing your insights.",
       moveBtn: "Archive (Done)", // [New]
       restoreBtn: "Restore to Hub",
+    },
+    daily: {
+      refresh: "Refresh Question",
+      placeholder: "What are your thoughts on this now?",
+      btn: "Append to Log",
+      questions: [
+        "Is this thought still valid, or does it need updating?",
+        "How much have you grown since you wrote this?",
+        "How can you apply this insight to your life today?",
+        "How does your emotion now compare to back then?",
+        "What was the biggest takeaway from this record?",
+        "What advice would you give to your past self?",
+      ],
     },
     searchPlaceholder: "Search insights, topics...",
     newInsightBtn: "New Insight",
