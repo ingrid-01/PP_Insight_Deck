@@ -312,17 +312,19 @@ const translations = {
   },
 };
 
-const insights = [
+// [수정 1] 하드코딩 된 데이터를 'initialData'라는 이름으로 변경 (초기화용)
+const initialData = [
   {
     id: 1735689600000,
     status: "ready",
     category: "news",
     subCategory: { ko: "신문기사 - 심리학", en: "News - Psychology" },
-    date: "Sep 2025",
+    date: "2025-09-15", // [중요] 날짜 포맷을 달력과 맞추기 위해 YYYY-MM-DD로 변경
     title: "친애하는 나의 결함에게",
-    content: "누구나 결함을 가지고 있다...",
+    content:
+      "누구나 결함을 가지고 있다. 하지만 그것을 감추려 할수록 그림자는 더 짙어진다.",
     tags: ["심리학", "자아", "결핍"],
-    reflect: "내 결함을...",
+    reflect: "나는 결함을 없애야 할 적으로만 여겼다. 하지만...",
     action: null,
     discussionTopic: null,
     dialogue: null,
@@ -332,12 +334,13 @@ const insights = [
     status: "ready",
     category: "nonfiction",
     subCategory: { ko: "비문학 - IT", en: "Non-fiction - IT" },
-    date: "Oct 2025",
+    date: "2025-10-01",
     title: "Moral AI",
-    content: "AI의 도덕적 한계는...",
+    content:
+      "AI의 도덕적 한계는 기술의 문제가 아니라, 그것을 학습시키는 인간 윤리의 투영이다.",
     tags: ["AI", "윤리", "미래"],
     reflect: null,
-    action: "질문하기 전...",
+    action: "AI에게 질문하기 전에 나의 의도를 먼저 점검하자.",
     discussionTopic: null,
     dialogue: null,
   },
@@ -346,16 +349,27 @@ const insights = [
     status: "ready",
     category: "movie",
     subCategory: { ko: "영화 - SF/드라마", en: "Movie - SF/Drama" },
-    date: "Jan 2026",
+    date: "2026-01-15",
     title: "Her",
-    content: "사랑은 사회적으로...",
+    content:
+      "사랑은 사회적으로 정의되는 것이 아니라, 두 존재 사이의 고유한 주파수다.",
     tags: ["AI", "사랑", "고독"],
-    reflect: "AI와의 사랑...",
+    reflect: "AI와의 사랑을 다루지만, 결국 인간 본연의 고독에 대한 이야기였다.",
     action: null,
     discussionTopic: null,
     dialogue: null,
   },
 ];
+
+// [수정 2] 실제 사용할 'insights' 변수는 로컬 스토리지에서 불러옵니다.
+// (저장된 게 있으면 가져오고, 없으면 방금 만든 initialData를 사용합니다.)
+let insights =
+  JSON.parse(localStorage.getItem("insightDeckData")) || initialData;
+
+// [NEW] 데이터를 저장하는 함수 (데이터가 변경될 때마다 호출할 예정)
+function saveInsights() {
+  localStorage.setItem("insightDeckData", JSON.stringify(insights));
+}
 
 const styles = {
   news: {
@@ -880,6 +894,7 @@ writeForm.addEventListener("submit", (e) => {
 
   // 4. 저장 및 렌더링
   insights.unshift(newInsight);
+  saveInsights();
   renderInsights();
 
   if (currentView === "stats") renderStatistics();
@@ -1026,6 +1041,7 @@ function saveRichInput() {
       card.tags = tagInput.value.split(",").map((t) => t.trim());
     }
 
+    saveInsights();
     renderInsights();
     closeRichInputModal();
   }
@@ -1569,6 +1585,7 @@ function moveToArchive(id) {
       )
     ) {
       card.status = "internalized";
+      saveInsights();
       renderInsights(); // Hub 갱신
       // 만약 현재 통계 화면이라면 통계도 갱신
       if (currentView === "stats") renderStatistics();
@@ -1844,6 +1861,7 @@ function restoreToHub(id) {
       const hasLogs = card.reflect || card.action || card.dialogue;
       card.status = hasLogs ? "logged" : "ready";
 
+      saveInsights();
       renderInsights(); // Hub 갱신
       if (currentView === "archive") renderArchive(); // Archive 갱신
       if (currentView === "stats") renderStatistics(); // 통계 갱신
@@ -1925,6 +1943,7 @@ function saveDailyReflection() {
     } else {
       card.reflect = newLog.trim(); // 앞에 줄바꿈 제거
     }
+    saveInsights();
 
     // 저장 완료 알림
     alert(
