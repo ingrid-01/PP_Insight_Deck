@@ -151,7 +151,7 @@ const translations = {
       msgLabel: "핵심 메시지 (Fact)",
       saveBtn: "기록 저장하기",
       cancelBtn: "취소",
-      addLogBtn: "추가 로그 작성하기 (+)", // [New]
+      addLogBtn: "추가 로그 작성하기", // [New]
     },
     logModal: {
       title: "어떤 로그를 추가할까요?",
@@ -201,7 +201,7 @@ const translations = {
       msgLabel: "Core Message",
       saveBtn: "Save Insight",
       cancelBtn: "Cancel",
-      addLogBtn: "Add Optional Log (+)", // [New]
+      addLogBtn: "Add Optional Log", // [New]
     },
     stats: {
       total: "Total Insights",
