@@ -1031,41 +1031,23 @@
         class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
       ></div>
       <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div
-          class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
-        >
-          <div
-            class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg dark:bg-gray-800"
-          >
-            <div
-              class="bg-primary px-4 py-3 sm:px-6 flex justify-between items-center"
-            >
-              <h3
-                data-i18n="modal.title"
-                class="text-base font-bold leading-6 text-white"
-              >
-                New Insight
-              </h3>
-              <button
-                type="button"
-                id="close-modal-btn"
-                class="text-white hover:text-gray-200"
-              >
+<div id="write-modal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeWriteModal()"></div> <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 w-full max-w-lg dark:bg-gray-800">
+            
+            <div class="bg-primary px-4 py-3 sm:px-6 flex justify-between items-center">
+              <h3 data-i18n="modal.title" class="text-base font-bold leading-6 text-white">New Insight</h3>
+              <button type="button" id="close-modal-btn" class="text-white hover:text-gray-200">
                 <span class="material-symbols-outlined">close</span>
               </button>
             </div>
+
             <form id="insight-form" class="px-4 py-5 sm:p-6 space-y-4">
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label
-                    data-i18n="modal.cat"
-                    class="block text-xs font-bold text-text-sub mb-1 dark:text-gray-400"
-                    >Category</label
-                  >
-                  <select
-                    id="input-category"
-                    class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary bg-background-section dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                  >
+                  <label data-i18n="modal.cat" class="block text-xs font-bold text-text-sub mb-1 dark:text-gray-400">Category</label>
+                  <select id="input-category" class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary bg-background-section dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                     <option value="nonfiction">Non-fiction</option>
                     <option value="fiction">Fiction</option>
                     <option value="news">News</option>
@@ -1075,52 +1057,50 @@
                   </select>
                 </div>
                 <div>
-                  <label
-                    data-i18n="modal.date"
-                    class="block text-xs font-bold text-text-sub mb-1 dark:text-gray-400"
-                    >Date</label
-                  >
-                  <input
-                    type="text"
-                    id="input-date"
-                    data-i18n="modal.datePlaceholder"
-                    placeholder="Ex) Jan 2026"
-                    class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                  />
+                  <label data-i18n="modal.date" class="block text-xs font-bold text-text-sub mb-1 dark:text-gray-400">Date</label>
+                  <input type="text" id="input-date" data-i18n="modal.datePlaceholder" placeholder="Ex) Jan 2026" class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                 </div>
               </div>
+
               <div>
-                <label
-                  data-i18n="modal.titleLabel"
-                  class="block text-xs font-bold text-text-sub mb-1 dark:text-gray-400"
-                  >Title</label
-                >
-                <input
-                  type="text"
-                  id="input-title"
-                  required
-                  class="w-full rounded-lg border-border text-sm font-bold focus:border-primary focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                />
+                <label data-i18n="modal.titleLabel" class="block text-xs font-bold text-text-sub mb-1 dark:text-gray-400">Title</label>
+                <input type="text" id="input-title" required class="w-full rounded-lg border-border text-sm font-bold focus:border-primary focus:ring-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
               </div>
+
               <div>
-                <label
-                  data-i18n="modal.msgLabel"
-                  class="block text-xs font-bold text-text-sub mb-1 dark:text-gray-400"
-                  >Core Message</label
-                >
-                <textarea
-                  id="input-content"
-                  rows="3"
-                  required
-                  class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary resize-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                ></textarea>
+                <label data-i18n="modal.msgLabel" class="block text-xs font-bold text-text-sub mb-1 dark:text-gray-400">Core Message</label>
+                <textarea id="input-content" rows="3" required class="w-full rounded-lg border-border text-sm focus:border-primary focus:ring-primary resize-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
               </div>
+
+              <div class="border-t border-border pt-4 mt-2 dark:border-gray-700">
+                <div id="creation-log-container" class="space-y-3 mb-3">
+                  </div>
+
+                <div class="relative">
+                  <button type="button" onclick="toggleLogTypeMenu()" class="text-xs font-bold text-primary flex items-center gap-1 hover:text-primary-dark transition-colors">
+                    <span class="material-symbols-outlined !text-[18px]">add_circle</span>
+                    <span data-i18n="modal.addLogBtn">Add Optional Log</span>
+                  </button>
+                  
+                  <div id="log-type-menu" class="hidden absolute left-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-border z-10 overflow-hidden dark:bg-gray-800 dark:border-gray-600">
+                    <button type="button" onclick="addCreationLog('reflect')" class="w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 flex items-center gap-2 dark:text-white dark:hover:bg-gray-700">
+                      <span class="material-symbols-outlined text-accent-dialogue !text-[16px]">psychology_alt</span> Reflect
+                    </button>
+                    <button type="button" onclick="addCreationLog('action')" class="w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 flex items-center gap-2 dark:text-white dark:hover:bg-gray-700">
+                      <span class="material-symbols-outlined text-accent-action !text-[16px]">bolt</span> Action
+                    </button>
+                    <button type="button" onclick="addCreationLog('dialogue')" class="w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 flex items-center gap-2 dark:text-white dark:hover:bg-gray-700">
+                      <span class="material-symbols-outlined text-primary !text-[16px]">forum</span> Dialogue
+                    </button>
+                    <button type="button" onclick="addCreationLog('topic')" class="w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 flex items-center gap-2 dark:text-white dark:hover:bg-gray-700">
+                      <span class="material-symbols-outlined text-accent-news !text-[16px]">chat_bubble</span> Topic
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               <div class="pt-2">
-                <button
-                  type="submit"
-                  data-i18n="modal.saveBtn"
-                  class="w-full rounded-full bg-primary px-3 py-3 text-sm font-bold text-white hover:bg-primary-dark transition-all"
-                >
+                <button type="submit" data-i18n="modal.saveBtn" class="w-full rounded-full bg-primary px-3 py-3 text-sm font-bold text-white hover:bg-primary-dark transition-all shadow-md">
                   Save Insight
                 </button>
               </div>
@@ -1129,7 +1109,6 @@
         </div>
       </div>
     </div>
-
     <div
       id="log-type-modal"
       class="fixed inset-0 z-[110] hidden"
