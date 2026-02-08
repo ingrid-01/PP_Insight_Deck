@@ -1143,6 +1143,7 @@
                 <div class="relative">
                   <button
                     type="button"
+                    id="add-log-toggle-btn"
                     onclick="toggleLogTypeMenu()"
                     class="text-xs font-bold text-primary flex items-center gap-1 hover:text-primary-dark transition-colors"
                   >
@@ -1160,7 +1161,7 @@
                       class="w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 flex items-center gap-2 dark:text-white dark:hover:bg-gray-700"
                     >
                       <span class="material-symbols-outlined text-accent-dialogue !text-[16px]">psychology_alt</span>
-                      Reflect
+                      <span data-i18n="logModal.reflect.title">Reflect</span>
                     </button>
                     <button
                       type="button"
@@ -1168,7 +1169,7 @@
                       class="w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 flex items-center gap-2 dark:text-white dark:hover:bg-gray-700"
                     >
                       <span class="material-symbols-outlined text-accent-action !text-[16px]">bolt</span>
-                      Action
+                      <span data-i18n="logModal.action.title">Action</span>
                     </button>
                     <button
                       type="button"
@@ -1176,7 +1177,7 @@
                       class="w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 flex items-center gap-2 dark:text-white dark:hover:bg-gray-700"
                     >
                       <span class="material-symbols-outlined text-primary !text-[16px]">forum</span>
-                      Dialogue
+                      <span data-i18n="logModal.dialogue.title">Dialogue</span>
                     </button>
                     <button
                       type="button"
@@ -1184,12 +1185,11 @@
                       class="w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 flex items-center gap-2 dark:text-white dark:hover:bg-gray-700"
                     >
                       <span class="material-symbols-outlined text-accent-news !text-[16px]">chat_bubble</span>
-                      Topic
+                      <span data-i18n="logModal.topic.title">Topic</span>
                     </button>
                   </div>
                 </div>
-              </div>
-              <div class="pt-2">
+              </div>              <div class="pt-2">
                 <button
                   type="submit"
                   data-i18n="modal.saveBtn"

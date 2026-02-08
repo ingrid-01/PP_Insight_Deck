@@ -1995,6 +1995,23 @@ window.addEventListener("DOMContentLoaded", () => {
   const savedColor = localStorage.getItem("userProfileColor");
   if (savedColor) tempColor = savedColor;
 
+  /* =========================================
+   [NEW] 드롭다운 외부 클릭 감지 (닫기)
+   ========================================= */
+  document.addEventListener("click", function (e) {
+    const menu = document.getElementById("log-type-menu");
+    const btn = document.getElementById("add-log-toggle-btn");
+
+    // 메뉴가 열려있고, 클릭된 곳이 메뉴 내부가 아니고, 버튼도 아니라면 -> 닫기
+    if (
+      !menu.classList.contains("hidden") &&
+      !menu.contains(e.target) &&
+      !btn.contains(e.target)
+    ) {
+      menu.classList.add("hidden");
+    }
+  });
+
   initDailyReflection();
   switchView(currentView);
 });
