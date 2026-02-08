@@ -94,7 +94,7 @@ const translations = {
       subtitle: "내재화된 통찰들이 머무는 공간",
       collections: "컬렉션 (Tags)",
       empty: "아직 서재가 비어있습니다. 통찰을 내재화(Internalize) 해보세요.",
-      moveBtn: "서재로 보내기 (완료)", // [New] Hub 카드에 추가될 버튼
+      moveBtn: "서재로 보내기 (완료)",
       restoreBtn: "다시 허브로 보내기",
     },
     daily: {
@@ -151,6 +151,7 @@ const translations = {
       msgLabel: "핵심 메시지 (Fact)",
       saveBtn: "기록 저장하기",
       cancelBtn: "취소",
+      addLogBtn: "추가 로그 작성하기 (+)", // [New]
     },
     logModal: {
       title: "어떤 로그를 추가할까요?",
@@ -191,6 +192,17 @@ const translations = {
   en: {
     logo: { title: "Insight Deck", subtitle: "Know Thyself" },
     nav: { hub: "Conversation Hub", archive: "Archive", stats: "Statistics" },
+    modal: {
+      title: "New Insight",
+      cat: "Category",
+      date: "Date",
+      datePlaceholder: "Ex) Jan 2026",
+      titleLabel: "Title",
+      msgLabel: "Core Message",
+      saveBtn: "Save Insight",
+      cancelBtn: "Cancel",
+      addLogBtn: "Add Optional Log (+)", // [New]
+    },
     stats: {
       total: "Total Insights",
       streak: "Current Streak",
@@ -213,7 +225,7 @@ const translations = {
       subtitle: "Where verified insights rest.",
       collections: "Collections",
       empty: "The library is empty. Try internalizing your insights.",
-      moveBtn: "Archive (Done)", // [New]
+      moveBtn: "Archive (Done)",
       restoreBtn: "Restore to Hub",
     },
     daily: {
@@ -260,16 +272,6 @@ const translations = {
       ready: "Ready for Discussion",
       logged: "Discussion Logged",
       internalized: "Internalized",
-    },
-    modal: {
-      title: "New Insight",
-      cat: "Category",
-      date: "Date",
-      datePlaceholder: "Ex) Jan 2026",
-      titleLabel: "Title",
-      msgLabel: "Core Message",
-      saveBtn: "Save Insight",
-      cancelBtn: "Cancel",
     },
     logModal: {
       title: "Add New Log",
@@ -588,8 +590,6 @@ function renderInsights() {
         ? `<button onclick="moveToArchive(${data.id})" class="mt-2 w-full py-2 rounded-xl bg-accent-nonfiction/10 text-accent-nonfiction text-xs font-bold hover:bg-accent-nonfiction hover:text-white transition-all flex items-center justify-center gap-2"><span class="material-symbols-outlined !text-[16px]">inventory_2</span> ${translations[currentLang].archive.moveBtn}</button>`
         : "";
 
-    // renderInsights 함수 내부의 cardHTML 생성 부분 수정
-
     const cardHTML = `
       <article class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow group mt-5 dark:bg-gray-800 dark:border-gray-700 relative flex flex-col h-full">
           <div onclick="openDetailModal(${data.id})" class="cursor-pointer flex-1">
@@ -695,15 +695,100 @@ function updateProfileUI() {
 }
 
 // 이벤트 리스너
+
+// [UPDATED] 포스트 작성 (Create Insight) 로직
+
+// 모달 닫기 공통 함수 (초기화 포함)
+function closeWriteModal() {
+  writeModal.classList.add("hidden");
+  document.getElementById("log-type-menu").classList.add("hidden");
+  document.getElementById("creation-log-container").innerHTML = ""; // 추가된 로그 입력창 초기화
+  writeForm.reset();
+}
+
+// 모달 열기/닫기 이벤트
 writeOpenBtn.addEventListener("click", () =>
   writeModal.classList.remove("hidden"),
 );
-writeCloseBtn.addEventListener("click", () =>
-  writeModal.classList.add("hidden"),
-);
+writeCloseBtn.addEventListener("click", closeWriteModal);
+
+// [NEW] 로그 타입 메뉴 토글
+function toggleLogTypeMenu() {
+  const menu = document.getElementById("log-type-menu");
+  menu.classList.toggle("hidden");
+}
+
+// [NEW] 작성 화면에 로그 입력창 동적 추가
+function addCreationLog(type) {
+  const container = document.getElementById("creation-log-container");
+  const menu = document.getElementById("log-type-menu");
+
+  // UI 설정을 위한 데이터
+  const config = {
+    reflect: {
+      icon: "psychology_alt",
+      color: "text-accent-dialogue",
+      label: translations[currentLang].logModal.reflect.title,
+    },
+    action: {
+      icon: "bolt",
+      color: "text-accent-action",
+      label: translations[currentLang].logModal.action.title,
+    },
+    dialogue: {
+      icon: "forum",
+      color: "text-primary",
+      label: translations[currentLang].logModal.dialogue.title,
+    },
+    topic: {
+      icon: "chat_bubble",
+      color: "text-accent-news",
+      label: translations[currentLang].logModal.topic.title,
+    },
+  };
+
+  const conf = config[type];
+  const uniqueId = Date.now(); // 고유 ID 생성 (삭제 등을 위해)
+
+  const html = `
+        <div id="log-entry-${uniqueId}" class="group relative bg-gray-50 p-3 rounded-xl border border-border dark:bg-gray-700/50 dark:border-gray-600 animation-fade" data-log-type="${type}">
+            <div class="flex justify-between items-center mb-1">
+                <span class="text-xs font-bold ${conf.color} flex items-center gap-1">
+                    <span class="material-symbols-outlined !text-[14px]">${conf.icon}</span> ${conf.label}
+                </span>
+                <button type="button" onclick="removeCreationLog('${uniqueId}')" class="text-text-muted hover:text-red-500 transition-colors">
+                    <span class="material-symbols-outlined !text-[16px]">close</span>
+                </button>
+            </div>
+            <textarea rows="2" class="w-full bg-transparent border-none p-0 text-sm focus:ring-0 placeholder:text-text-muted dark:text-white" placeholder="내용을 입력하세요..."></textarea>
+        </div>
+    `;
+
+  container.insertAdjacentHTML("beforeend", html);
+  menu.classList.add("hidden"); // 메뉴 닫기
+
+  // 새로 생긴 textarea에 포커스
+  const newEntry = document.getElementById(`log-entry-${uniqueId}`);
+  if (newEntry) newEntry.querySelector("textarea").focus();
+}
+
+// [NEW] 동적 로그 삭제
+function removeCreationLog(id) {
+  const el = document.getElementById(`log-entry-${id}`);
+  if (el) el.remove();
+}
+
+// [UPDATED] 폼 제출 핸들러 수정
 writeForm.addEventListener("submit", (e) => {
   e.preventDefault();
+
+  // 1. 기본 정보 수집
   const category = document.getElementById("input-category").value;
+  const rawDate = document.getElementById("input-date").value || "Jan 2026";
+  const title = document.getElementById("input-title").value;
+  const content = document.getElementById("input-content").value;
+
+  // 카테고리 다국어 처리
   let subCatKo = "기타",
     subCatEn = "Other";
   const catMap = {
@@ -719,27 +804,51 @@ writeForm.addEventListener("submit", (e) => {
     subCatEn = catMap[category][1];
   }
 
-  const rawDate = document.getElementById("input-date").value || "Jan 2026";
+  // 2. 동적 로그 데이터 수집
+  // 같은 타입이 여러 개일 경우 줄바꿈으로 합침
+  const logs = { reflect: [], action: [], dialogue: [], discussionTopic: [] };
 
+  document.querySelectorAll("#creation-log-container > div").forEach((el) => {
+    const type = el.getAttribute("data-log-type"); // reflect, action ...
+    const val = el.querySelector("textarea").value.trim();
+    if (val) {
+      // discussionTopic 처리를 위해 키 매핑 (type은 topic, DB키는 discussionTopic)
+      const key = type === "topic" ? "discussionTopic" : type;
+      if (logs[key]) logs[key].push(val);
+    }
+  });
+
+  // 3. 데이터 객체 생성
   const newInsight = {
     id: Date.now(),
-    status: "ready",
+    status: "ready", // 로그가 있으면 logged 상태로 시작할 수도 있지만, 일단 ready가 기본
     category: category,
     subCategory: { ko: subCatKo, en: subCatEn },
     date: rawDate,
-    title: document.getElementById("input-title").value,
-    content: document.getElementById("input-content").value,
+    title: title,
+    content: content,
     tags: [],
-    reflect: null,
-    action: null,
-    discussionTopic: null,
-    dialogue: null,
+    reflect: logs.reflect.length > 0 ? logs.reflect.join("\n\n") : null,
+    action: logs.action.length > 0 ? logs.action.join("\n\n") : null,
+    dialogue: logs.dialogue.length > 0 ? logs.dialogue.join("\n\n") : null,
+    discussionTopic:
+      logs.discussionTopic.length > 0
+        ? logs.discussionTopic.join("\n\n")
+        : null,
   };
+
+  // 로그가 하나라도 있으면 상태를 'logged'로 변경 (선택 사항)
+  if (newInsight.reflect || newInsight.action || newInsight.dialogue) {
+    newInsight.status = "logged";
+  }
+
+  // 4. 저장 및 렌더링
   insights.unshift(newInsight);
   renderInsights();
-  writeModal.classList.add("hidden");
-  writeForm.reset();
+
   if (currentView === "stats") renderStatistics();
+
+  closeWriteModal(); // 초기화 및 닫기
 });
 
 // 알림창
