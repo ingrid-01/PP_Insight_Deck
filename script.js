@@ -9,6 +9,7 @@ let currentLogType = null;
 let tempColor = "B38F64";
 let currentPreviewUrl = "";
 let currentView = localStorage.getItem("lastView") || "hub";
+let datePicker = null;
 
 // 레벨 시스템 데이터
 const levelSystem = [
@@ -416,6 +417,7 @@ const fileInput = document.getElementById("profile-upload-input");
 function setLanguage(lang) {
   currentLang = lang;
   localStorage.setItem("userLang", lang);
+  initDatePicker();
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const keys = el.getAttribute("data-i18n").split(".");
     let text = translations[lang];
@@ -454,28 +456,48 @@ function updateFormCategoryOptions(lang) {
 }
 
 function formatDate(dateStr) {
-  if (currentLang === "en") return dateStr;
-  const parts = dateStr.split(" ");
-  if (parts.length !== 2) return dateStr;
-  const monthMap = {
-    Jan: "1월",
-    Feb: "2월",
-    Mar: "3월",
-    Apr: "4월",
-    May: "5월",
-    Jun: "6월",
-    Jul: "7월",
-    Aug: "8월",
-    Sep: "9월",
-    Oct: "10월",
-    Nov: "11월",
-    Dec: "12월",
-  };
-  const mon = monthMap[parts[0]];
-  const year = parts[1];
-  return mon && year ? `${year}년 ${mon}` : dateStr;
-}
+  if (!dateStr) return "";
 
+  // 만약 기존 데이터(Jan 2026) 형식이면 기존 로직 처리
+  if (dateStr.includes(" ")) {
+    if (currentLang === "en") return dateStr;
+    const parts = dateStr.split(" ");
+    if (parts.length !== 2) return dateStr;
+    const monthMap = {
+      Jan: "1월",
+      Feb: "2월",
+      Mar: "3월",
+      Apr: "4월",
+      May: "5월",
+      Jun: "6월",
+      Jul: "7월",
+      Aug: "8월",
+      Sep: "9월",
+      Oct: "10월",
+      Nov: "11월",
+      Dec: "12월",
+    };
+    const mon = monthMap[parts[0]];
+    const year = parts[1];
+    return mon && year ? `${year}년 ${mon}` : dateStr;
+  }
+
+  // [NEW] YYYY-MM-DD 형식 파싱
+  const dateObj = new Date(dateStr);
+  if (isNaN(dateObj.getTime())) return dateStr; // 날짜가 아니면 그대로 반환
+
+  if (currentLang === "ko") {
+    // 한국어: 2026년 1월 15일
+    return `${dateObj.getFullYear()}년 ${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일`;
+  } else {
+    // 영어: Jan 15, 2026
+    return dateObj.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  }
+}
 function setTheme(theme) {
   currentTheme = theme;
   localStorage.setItem("userTheme", theme);
@@ -784,7 +806,21 @@ writeForm.addEventListener("submit", (e) => {
 
   // 1. 기본 정보 수집
   const category = document.getElementById("input-category").value;
-  const rawDate = document.getElementById("input-date").value || "Jan 2026";
+  // writeForm 이벤트 리스너 내부 수정
+
+  // [수정] 날짜 값 가져오기
+  // Flatpickr를 쓰면 input-date의 value는 "YYYY-MM-DD"가 됩니다.
+  // 만약 값이 비어있으면 오늘 날짜를 포맷팅해서 넣습니다.
+  let rawDate = document.getElementById("input-date").value;
+  if (!rawDate) {
+    // 값이 없으면 오늘 날짜 생성
+    const today = new Date();
+    // YYYY-MM-DD 형식으로 변환
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, "0");
+    const d = String(today.getDate()).padStart(2, "0");
+    rawDate = `${y}-${m}-${d}`;
+  }
   const title = document.getElementById("input-title").value;
   const content = document.getElementById("input-content").value;
 
@@ -1910,8 +1946,37 @@ function saveDailyReflection() {
   }
 }
 
+/* =========================================
+   [NEW] 달력(Flatpickr) 초기화 로직
+   ========================================= */
+function initDatePicker() {
+  // 이미 생성된 달력이 있다면 설정만 업데이트 (언어 변경 대응)
+  if (datePicker) {
+    datePicker.destroy(); // 기존 인스턴스 삭제 후 재생성 (가장 안전한 방법)
+  }
+
+  const inputElement = document.getElementById("input-date");
+  if (!inputElement) return;
+
+  // 언어 설정에 따른 달력 설정
+  const locale = currentLang === "ko" ? "ko" : "default";
+  // 보여지는 포맷: 한국어면 "2026년 1월 15일", 영어면 "Jan 15, 2026"
+  const altFormat = currentLang === "ko" ? "Y년 m월 d일" : "M j, Y";
+
+  datePicker = flatpickr("#input-date", {
+    locale: locale,
+    dateFormat: "Y-m-d", // 실제 데이터 저장 값 (2026-01-15)
+    altInput: true, // 유저에게는 다른 포맷으로 보여줌
+    altFormat: altFormat,
+    defaultDate: "today", // 기본값 오늘
+    theme: currentTheme === "dark" ? "dark" : "light", // 테마는 CSS로 제어되지만 클래스 명시
+    disableMobile: "true", // 모바일에서도 네이티브 대신 이 캘린더 사용 (선택사항)
+  });
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   setTheme(currentTheme);
+  initDatePicker();
   setLanguage(currentLang);
 
   const savedName = localStorage.getItem("userName");
