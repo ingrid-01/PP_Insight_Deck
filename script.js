@@ -636,11 +636,19 @@ function renderInsights() {
         ? `<button onclick="moveToArchive(${data.id})" class="mt-2 w-full py-2 rounded-xl bg-accent-nonfiction/10 text-accent-nonfiction text-xs font-bold hover:bg-accent-nonfiction hover:text-white transition-all flex items-center justify-center gap-2"><span class="material-symbols-outlined !text-[16px]">inventory_2</span> ${translations[currentLang].archive.moveBtn}</button>`
         : "";
 
+    // renderInsights 함수 내부 cardHTML 변수 부분 교체
+
+    // renderInsights 함수 내부 cardHTML 변수 부분 교체
+
     const cardHTML = `
       <article class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow group mt-5 dark:bg-gray-800 dark:border-gray-700 relative flex flex-col h-full">
+          
+          <button onclick="deleteInsight(${data.id}, event)" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-colors z-10 p-1" title="Delete">
+            <span class="material-symbols-outlined !text-[20px]">delete</span>
+          </button>
+
           <div onclick="openDetailModal(${data.id})" class="cursor-pointer flex-1">
-              <div class="flex justify-between items-start mb-3">
-                  <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider"><span class="material-symbols-outlined !text-[14px]">${style.icon}</span>${subCatText}</div>
+              <div class="flex justify-between items-start mb-3 pr-8"> <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider"><span class="material-symbols-outlined !text-[14px]">${style.icon}</span>${subCatText}</div>
                   <span class="text-[10px] font-bold text-text-muted dark:text-gray-400">${displayDate}</span>
               </div>
               <h4 class="font-bold text-lg leading-snug mb-2 serif group-hover:text-primary transition-colors dark:text-white dark:group-hover:text-primary-light">${data.title}</h4>
