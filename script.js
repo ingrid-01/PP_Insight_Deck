@@ -642,10 +642,14 @@ function renderInsights() {
 
     const cardHTML = `
       <article class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow group mt-5 dark:bg-gray-800 dark:border-gray-700 relative flex flex-col h-full">
-          
+        <div class="absolute top-4 right-4 flex gap-1 z-10"> 
+          <button onclick="openEditModal(${data.id}, event)" class="text-gray-300 hover:text-primary transition-colors p-1" title="Edit">
+            <span class="material-symbols-outlined !text-[20px]">edit</span>
+          </button>
           <button onclick="deleteInsight(${data.id}, event)" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-colors z-10 p-1" title="Delete">
             <span class="material-symbols-outlined !text-[20px]">delete</span>
           </button>
+        </div>
 
           <div onclick="openDetailModal(${data.id})" class="cursor-pointer flex-1">
               <div class="flex justify-between items-start mb-3 pr-8"> <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider"><span class="material-symbols-outlined !text-[14px]">${style.icon}</span>${subCatText}</div>
@@ -757,6 +761,11 @@ function closeWriteModal() {
   writeModal.classList.add("hidden");
   document.getElementById("log-type-menu").classList.add("hidden");
   document.getElementById("creation-log-container").innerHTML = ""; // 추가된 로그 입력창 초기화
+  document.getElementById("edit-mode-id").value = ""; // 편집 모드 초기화
+  document.querySelector("#write-modal h3").innerText =
+    translations[currentLang].writeModal.title;
+  document.querySelector('#insight-form button[type="submit"]').innerText =
+    translations[currentLang].modal.saveBtn;
   writeForm.reset();
 }
 
@@ -773,7 +782,7 @@ function toggleLogTypeMenu() {
 }
 
 // [NEW] 작성 화면에 로그 입력창 동적 추가
-function addCreationLog(type) {
+function addCreationLog(type, initialValue = "") {
   const container = document.getElementById("creation-log-container");
   const menu = document.getElementById("log-type-menu");
 
@@ -802,7 +811,7 @@ function addCreationLog(type) {
   };
 
   const conf = config[type];
-  const uniqueId = Date.now(); // 고유 ID 생성 (삭제 등을 위해)
+  const uniqueId = Date.now() + Math.random().toString(36).substr(2, 9); // 고유 ID 생성 (삭제 등을 위해) + 강화
 
   const html = `
         <div id="log-entry-${uniqueId}" class="group relative bg-gray-50 p-3 rounded-xl border border-border dark:bg-gray-700/50 dark:border-gray-600 animation-fade" data-log-type="${type}">
@@ -836,7 +845,9 @@ function removeCreationLog(id) {
 writeForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  // 1. 기본 정보 수집
+  const editId = document.getElementById("edit-mode-id").value;
+
+  // 1. 공통 정보 수집
   const category = document.getElementById("input-category").value;
   // writeForm 이벤트 리스너 내부 수정
 
@@ -886,7 +897,29 @@ writeForm.addEventListener("submit", (e) => {
     }
   });
 
-  // 3. 데이터 객체 생성
+  // 3. 수정 vs 데이터 객체 생성
+  if (editId) {
+    const targetIndex = insights.findIndex(c => c.id == editId); // 타입이 다를 수 있으니 ==
+    if (targetIndex > -1) {
+      // 기존 데이터 유지하면서 새 데이터 덮어쓰기 (tags, status 등은 유지)
+      insights[targetIndex] = {
+        ...insights[targetIndex],
+        category: category,
+        subCategory: { ko: subCatKo, en: subCatEn },
+        date: rawDate,
+        title: title,
+        content: content,
+        reflect: logs.reflect.length > 0 ? logs.reflect.join("\n\n") : null,
+        action: logs.action.length > 0 ? logs.action.join("\n\n") : null,
+        dialogue: logs.dialogue.length > 0 ? logs.dialogue.join("\n\n") : null,
+        discussionTopic:
+          logs.discussionTopic.length > 0
+            ? logs.discussionTopic.join("\n\n")
+            : null,
+      };
+    }
+  } else {
+
   const newInsight = {
     id: Date.now(),
     status: "ready", // 로그가 있으면 logged 상태로 시작할 수도 있지만, 일단 ready가 기본
@@ -916,6 +949,8 @@ writeForm.addEventListener("submit", (e) => {
   renderInsights();
 
   if (currentView === "stats") renderStatistics();
+
+  if(editId && currentDailyId == editId) initDailyReflection();
 
   closeWriteModal(); // 초기화 및 닫기
 });
@@ -1750,6 +1785,58 @@ function openArchiveDetail(id) {
   // 아카이브 아이템 클릭 시 상세 보기 (여기서는 일단 로그 모달을 재활용하거나 알림만 띄움)
   // 추후 '읽기 전용 모달'을 만들면 좋음. 현재는 간단히 로그 모달 띄우기
   openLogModal(id);
+}
+
+/* =========================================
+   [NEW] 포스트 수정 (Edit) 로직
+   ========================================= */
+function openEditModal(id, event) {
+  if (event) event.stopPropagation();
+
+  const card = insights.find((c) => c.id === id);
+  if (!card) return;
+
+  // 1. 기본 필드 값 채우기
+  document.getElementById("input-category").value = card.category;
+
+  // 날짜 처리 (Flatpickr 인스턴스 업데이트)
+  if (datePicker) {
+    datePicker.setDate(card.date);
+  } else {
+    document.getElementById("input-date").value = card.date;
+  }
+
+  document.getElementById("input-title").value = card.title;
+  document.getElementById("input-content").value = card.content;
+
+  // 2. 동적 로그들 다시 생성해서 채우기
+  const container = document.getElementById("creation-log-container");
+  container.innerHTML = ""; // 기존 비우기
+
+  if (card.reflect)
+    card.reflect.split("\n\n").forEach((txt) => addCreationLog("reflect", txt));
+  if (card.action)
+    card.action.split("\n\n").forEach((txt) => addCreationLog("action", txt));
+  if (card.dialogue)
+    card.dialogue
+      .split("\n\n")
+      .forEach((txt) => addCreationLog("dialogue", txt));
+  if (card.discussionTopic)
+    card.discussionTopic
+      .split("\n\n")
+      .forEach((txt) => addCreationLog("topic", txt));
+
+  // 3. 수정 모드 설정
+  document.getElementById("edit-mode-id").value = card.id;
+
+  // 4. UI 텍스트 변경 (Edit Mode임을 표시)
+  document.querySelector("#write-modal h3").innerText =
+    currentLang === "ko" ? "통찰 수정하기" : "Edit Insight";
+  document.querySelector("#insight-form button[type='submit']").innerText =
+    currentLang === "ko" ? "수정 완료" : "Update Insight";
+
+  // 5. 모달 열기
+  writeModal.classList.remove("hidden");
 }
 
 /* =========================================
