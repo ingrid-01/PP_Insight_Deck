@@ -152,7 +152,7 @@ const translations = {
       msgLabel: "핵심 메시지 (Fact)",
       saveBtn: "기록 저장하기",
       cancelBtn: "취소",
-      addLogBtn: "추가 로그 작성하기", // [New]
+      addLogBtn: "추가 로그 작성하기",
     },
     logModal: {
       title: "어떤 로그를 추가할까요?",
@@ -207,7 +207,7 @@ const translations = {
       msgLabel: "Core Message",
       saveBtn: "Save Insight",
       cancelBtn: "Cancel",
-      addLogBtn: "Add Optional Log", // [New]
+      addLogBtn: "Add Optional Log",
     },
     stats: {
       total: "Total Insights",
@@ -322,14 +322,14 @@ const translations = {
   },
 };
 
-// [수정 1] 하드코딩 된 데이터를 'initialData'라는 이름으로 변경 (초기화용)
+// [수정 1] 하드코딩 된 데이터를 'initialData'라는 이름으로 변경
 const initialData = [
   {
     id: 1735689600000,
     status: "ready",
     category: "news",
     subCategory: { ko: "신문기사 - 심리학", en: "News - Psychology" },
-    date: "2025-09-15", // [중요] 날짜 포맷을 달력과 맞추기 위해 YYYY-MM-DD로 변경
+    date: "2025-09-15",
     title: "친애하는 나의 결함에게",
     content:
       "누구나 결함을 가지고 있다. 하지만 그것을 감추려 할수록 그림자는 더 짙어진다.",
@@ -371,12 +371,10 @@ const initialData = [
   },
 ];
 
-// [수정 2] 실제 사용할 'insights' 변수는 로컬 스토리지에서 불러옵니다.
-// (저장된 게 있으면 가져오고, 없으면 방금 만든 initialData를 사용합니다.)
+// [수정 2] 로컬 스토리지 데이터 로드
 let insights =
   JSON.parse(localStorage.getItem("insightDeckData")) || initialData;
 
-// [NEW] 데이터를 저장하는 함수 (데이터가 변경될 때마다 호출할 예정)
 function saveInsights() {
   localStorage.setItem("insightDeckData", JSON.stringify(insights));
 }
@@ -481,9 +479,8 @@ function updateFormCategoryOptions(lang) {
 
 function formatDate(dateStr) {
   if (!dateStr) return "";
-
-  // 만약 기존 데이터(Jan 2026) 형식이면 기존 로직 처리
   if (dateStr.includes(" ")) {
+    // 예전 데이터 호환용
     if (currentLang === "en") return dateStr;
     const parts = dateStr.split(" ");
     if (parts.length !== 2) return dateStr;
@@ -505,16 +502,11 @@ function formatDate(dateStr) {
     const year = parts[1];
     return mon && year ? `${year}년 ${mon}` : dateStr;
   }
-
-  // [NEW] YYYY-MM-DD 형식 파싱
   const dateObj = new Date(dateStr);
-  if (isNaN(dateObj.getTime())) return dateStr; // 날짜가 아니면 그대로 반환
-
+  if (isNaN(dateObj.getTime())) return dateStr;
   if (currentLang === "ko") {
-    // 한국어: 2026년 1월 15일
     return `${dateObj.getFullYear()}년 ${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일`;
   } else {
-    // 영어: Jan 15, 2026
     return dateObj.toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -522,6 +514,7 @@ function formatDate(dateStr) {
     });
   }
 }
+
 function setTheme(theme) {
   currentTheme = theme;
   localStorage.setItem("userTheme", theme);
@@ -586,26 +579,22 @@ function renderInsights() {
     logged: document.getElementById("zone-logged"),
     internalized: document.getElementById("zone-internalized"),
   };
-  // 초기화
   Object.values(zones).forEach((el) => {
     if (el) el.innerHTML = "";
   });
 
-  // 헤더 다시 그리기 (innerHTML로 지웠으므로)
   if (zones.ready)
     zones.ready.innerHTML = `<div class="flex items-center justify-between"><h3 class="font-black text-lg flex items-center gap-2 dark:text-white"><span class="size-2.5 rounded-full bg-accent-dialogue"></span> ${translations[currentLang].zones.ready}</h3><span id="count-ready" class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full dark:bg-gray-700 dark:text-gray-400">0</span></div>`;
   if (zones.logged)
     zones.logged.innerHTML = `<div class="flex items-center justify-between"><h3 class="font-black text-lg flex items-center gap-2 dark:text-white"><span class="size-2.5 rounded-full bg-primary"></span> ${translations[currentLang].zones.logged}</h3><span id="count-logged" class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full dark:bg-gray-700 dark:text-gray-400">0</span></div>`;
-  // Internalized 존은 Hub에서 보여주긴 하되, 데이터는 비워둠 (혹은 최근 3개만 보여주는 방식도 가능하나, 깔끔하게 숨김 처리)
   if (zones.internalized)
     zones.internalized.innerHTML = `<div class="flex items-center justify-between opacity-50"><h3 class="font-black text-lg flex items-center gap-2 dark:text-white"><span class="size-2.5 rounded-full bg-accent-nonfiction"></span> ${translations[currentLang].zones.internalized} (Moved to Archive)</h3></div>`;
 
   const counts = { ready: 0, logged: 0, internalized: 0 };
 
-  // [중요] 필터링: 현재 필터 + status가 internalized가 아닌 것만 Hub에 표시
   const filteredData = insights.filter((item) => {
     if (item.status === "internalized") {
-      counts.internalized++; // 카운트는 세지만 렌더링은 안 함
+      counts.internalized++;
       return false;
     }
     if (currentFilter !== "all" && item.category !== currentFilter)
@@ -624,44 +613,35 @@ function renderInsights() {
         : data.subCategory;
     const displayDate = formatDate(data.date);
 
-    // 태그 HTML 생성
     const tagHTML =
       data.tags && data.tags.length > 0
         ? `<div class="flex flex-wrap gap-1 mb-3">${data.tags.map((t) => `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-text-sub dark:bg-gray-700 dark:text-gray-300">#${t}</span>`).join("")}</div>`
         : "";
-
-    // [New] 아카이브 이동 버튼 (Logged 상태일 때만 표시)
     const archiveBtn =
       data.status === "logged"
         ? `<button onclick="moveToArchive(${data.id})" class="mt-2 w-full py-2 rounded-xl bg-accent-nonfiction/10 text-accent-nonfiction text-xs font-bold hover:bg-accent-nonfiction hover:text-white transition-all flex items-center justify-center gap-2"><span class="material-symbols-outlined !text-[16px]">inventory_2</span> ${translations[currentLang].archive.moveBtn}</button>`
         : "";
 
-    // renderInsights 함수 내부 cardHTML 변수 부분 교체
-
-    // renderInsights 함수 내부 cardHTML 변수 부분 교체
-
     const cardHTML = `
       <article class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow group mt-5 dark:bg-gray-800 dark:border-gray-700 relative flex flex-col h-full">
-        <div class="absolute top-4 right-4 flex gap-1 z-10"> 
+        <div class="absolute top-4 right-4 flex gap-1 z-10">
           <button onclick="openEditModal(${data.id}, event)" class="text-gray-300 hover:text-primary transition-colors p-1" title="Edit">
             <span class="material-symbols-outlined !text-[20px]">edit</span>
           </button>
-          <button onclick="deleteInsight(${data.id}, event)" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-colors z-10 p-1" title="Delete">
+          <button onclick="deleteInsight(${data.id}, event)" class="text-gray-300 hover:text-red-500 transition-colors p-1" title="Delete">
             <span class="material-symbols-outlined !text-[20px]">delete</span>
           </button>
         </div>
-
           <div onclick="openDetailModal(${data.id})" class="cursor-pointer flex-1">
-              <div class="flex justify-between items-start mb-3 pr-8"> <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider"><span class="material-symbols-outlined !text-[14px]">${style.icon}</span>${subCatText}</div>
+              <div class="flex justify-between items-start mb-3 pr-8">
+                  <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider"><span class="material-symbols-outlined !text-[14px]">${style.icon}</span>${subCatText}</div>
                   <span class="text-[10px] font-bold text-text-muted dark:text-gray-400">${displayDate}</span>
               </div>
               <h4 class="font-bold text-lg leading-snug mb-2 serif group-hover:text-primary transition-colors dark:text-white dark:group-hover:text-primary-light">${data.title}</h4>
               ${tagHTML}
               <p class="text-sm text-text-sub font-medium leading-relaxed mb-4 line-clamp-3 dark:text-gray-300">"${data.content}"</p>
-              
               ${data.reflect ? `<div class="bg-background-section/50 p-3 rounded-xl mb-2 dark:bg-gray-700"><p class="text-xs text-text-main line-clamp-2 dark:text-gray-200"><span class="font-bold text-accent-dialogue">REFLECT:</span> ${data.reflect}</p></div>` : ""}
           </div>
-          
           <div class="mt-3 pt-3 border-t border-border border-dashed dark:border-gray-700">
               <div class="grid ${data.status === "logged" ? "grid-cols-2" : "grid-cols-1"} gap-2">
                   <button onclick="openLogModal(${data.id})" class="py-2 rounded-xl border border-dashed border-border text-text-sub text-xs font-bold flex items-center justify-center gap-2 hover:bg-background-hover hover:border-primary-light hover:text-primary transition-all dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-primary-light">
@@ -713,7 +693,6 @@ function updateMapStats() {
 function updateProfileUI() {
   const totalInsights = insights.length;
   let currentLvlObj = levelSystem[0];
-
   for (let i = 0; i < levelSystem.length; i++) {
     if (totalInsights >= levelSystem[i].max) {
       /* keep going */
@@ -723,7 +702,6 @@ function updateProfileUI() {
     }
     if (i === levelSystem.length - 1) currentLvlObj = levelSystem[i];
   }
-
   const title =
     currentLang === "ko"
       ? `${currentLvlObj.en} (${currentLvlObj.ko})`
@@ -732,11 +710,9 @@ function updateProfileUI() {
     currentLang === "ko"
       ? `다음: 기록 ${currentLvlObj.max}개`
       : `Next: ${currentLvlObj.max} Insights`;
-
   document.getElementById("profile-level-badge").innerText =
     `Lv.${currentLvlObj.lv}`;
   document.getElementById("profile-title-display").innerText = title;
-
   let prevMax =
     currentLvlObj.lv === 0 ? 0 : levelSystem[currentLvlObj.lv - 1].max;
   let range = currentLvlObj.max - prevMax;
@@ -747,46 +723,38 @@ function updateProfileUI() {
     totalInsights >= currentLvlObj.max
   )
     progress = 100;
-
   document.getElementById("profile-progress-bar").style.width = `${progress}%`;
   document.getElementById("profile-next-goal").innerText = next;
 }
 
 // 이벤트 리스너
 
-// [UPDATED] 포스트 작성 (Create Insight) 로직
-
-// 모달 닫기 공통 함수 (초기화 포함)
+// 모달 닫기 공통 함수
 function closeWriteModal() {
   writeModal.classList.add("hidden");
   document.getElementById("log-type-menu").classList.add("hidden");
-  document.getElementById("creation-log-container").innerHTML = ""; // 추가된 로그 입력창 초기화
-  document.getElementById("edit-mode-id").value = ""; // 편집 모드 초기화
+  document.getElementById("creation-log-container").innerHTML = "";
+  document.getElementById("edit-mode-id").value = "";
   document.querySelector("#write-modal h3").innerText =
-    translations[currentLang].writeModal.title;
+    translations[currentLang].modal.title;
   document.querySelector('#insight-form button[type="submit"]').innerText =
     translations[currentLang].modal.saveBtn;
   writeForm.reset();
 }
 
-// 모달 열기/닫기 이벤트
 writeOpenBtn.addEventListener("click", () =>
   writeModal.classList.remove("hidden"),
 );
 writeCloseBtn.addEventListener("click", closeWriteModal);
 
-// [NEW] 로그 타입 메뉴 토글
 function toggleLogTypeMenu() {
   const menu = document.getElementById("log-type-menu");
   menu.classList.toggle("hidden");
 }
 
-// [NEW] 작성 화면에 로그 입력창 동적 추가
 function addCreationLog(type, initialValue = "") {
   const container = document.getElementById("creation-log-container");
   const menu = document.getElementById("log-type-menu");
-
-  // UI 설정을 위한 데이터
   const config = {
     reflect: {
       icon: "psychology_alt",
@@ -809,10 +777,8 @@ function addCreationLog(type, initialValue = "") {
       label: translations[currentLang].logModal.topic.title,
     },
   };
-
   const conf = config[type];
-  const uniqueId = Date.now() + Math.random().toString(36).substr(2, 9); // 고유 ID 생성 (삭제 등을 위해) + 강화
-
+  const uniqueId = Date.now() + Math.random().toString(36).substr(2, 9);
   const html = `
         <div id="log-entry-${uniqueId}" class="group relative bg-gray-50 p-3 rounded-xl border border-border dark:bg-gray-700/50 dark:border-gray-600 animation-fade" data-log-type="${type}">
             <div class="flex justify-between items-center mb-1">
@@ -823,42 +789,28 @@ function addCreationLog(type, initialValue = "") {
                     <span class="material-symbols-outlined !text-[16px]">close</span>
                 </button>
             </div>
-            <textarea rows="2" class="w-full bg-transparent border-none p-0 text-sm focus:ring-0 placeholder:text-text-muted dark:text-white" placeholder="내용을 입력하세요..."></textarea>
-        </div>
-    `;
-
+            <textarea rows="2" class="w-full bg-transparent border-none p-0 text-sm focus:ring-0 placeholder:text-text-muted dark:text-white" placeholder="내용을 입력하세요...">${initialValue}</textarea>
+        </div>`;
   container.insertAdjacentHTML("beforeend", html);
-  menu.classList.add("hidden"); // 메뉴 닫기
-
-  // 새로 생긴 textarea에 포커스
+  if (menu) menu.classList.add("hidden");
   const newEntry = document.getElementById(`log-entry-${uniqueId}`);
   if (newEntry) newEntry.querySelector("textarea").focus();
 }
 
-// [NEW] 동적 로그 삭제
 function removeCreationLog(id) {
   const el = document.getElementById(`log-entry-${id}`);
   if (el) el.remove();
 }
 
-// [UPDATED] 폼 제출 핸들러 수정
+// [UPDATED] 폼 제출 핸들러 (수정된 부분)
 writeForm.addEventListener("submit", (e) => {
   e.preventDefault();
-
   const editId = document.getElementById("edit-mode-id").value;
 
-  // 1. 공통 정보 수집
   const category = document.getElementById("input-category").value;
-  // writeForm 이벤트 리스너 내부 수정
-
-  // [수정] 날짜 값 가져오기
-  // Flatpickr를 쓰면 input-date의 value는 "YYYY-MM-DD"가 됩니다.
-  // 만약 값이 비어있으면 오늘 날짜를 포맷팅해서 넣습니다.
   let rawDate = document.getElementById("input-date").value;
   if (!rawDate) {
-    // 값이 없으면 오늘 날짜 생성
     const today = new Date();
-    // YYYY-MM-DD 형식으로 변환
     const y = today.getFullYear();
     const m = String(today.getMonth() + 1).padStart(2, "0");
     const d = String(today.getDate()).padStart(2, "0");
@@ -867,7 +819,6 @@ writeForm.addEventListener("submit", (e) => {
   const title = document.getElementById("input-title").value;
   const content = document.getElementById("input-content").value;
 
-  // 카테고리 다국어 처리
   let subCatKo = "기타",
     subCatEn = "Other";
   const catMap = {
@@ -883,25 +834,20 @@ writeForm.addEventListener("submit", (e) => {
     subCatEn = catMap[category][1];
   }
 
-  // 2. 동적 로그 데이터 수집
-  // 같은 타입이 여러 개일 경우 줄바꿈으로 합침
   const logs = { reflect: [], action: [], dialogue: [], discussionTopic: [] };
-
   document.querySelectorAll("#creation-log-container > div").forEach((el) => {
-    const type = el.getAttribute("data-log-type"); // reflect, action ...
+    const type = el.getAttribute("data-log-type");
     const val = el.querySelector("textarea").value.trim();
     if (val) {
-      // discussionTopic 처리를 위해 키 매핑 (type은 topic, DB키는 discussionTopic)
       const key = type === "topic" ? "discussionTopic" : type;
       if (logs[key]) logs[key].push(val);
     }
   });
 
-  // 3. 수정 vs 데이터 객체 생성
   if (editId) {
-    const targetIndex = insights.findIndex(c => c.id == editId); // 타입이 다를 수 있으니 ==
+    // --- 수정 모드 ---
+    const targetIndex = insights.findIndex((c) => c.id == editId);
     if (targetIndex > -1) {
-      // 기존 데이터 유지하면서 새 데이터 덮어쓰기 (tags, status 등은 유지)
       insights[targetIndex] = {
         ...insights[targetIndex],
         category: category,
@@ -919,40 +865,35 @@ writeForm.addEventListener("submit", (e) => {
       };
     }
   } else {
-
-  const newInsight = {
-    id: Date.now(),
-    status: "ready", // 로그가 있으면 logged 상태로 시작할 수도 있지만, 일단 ready가 기본
-    category: category,
-    subCategory: { ko: subCatKo, en: subCatEn },
-    date: rawDate,
-    title: title,
-    content: content,
-    tags: [],
-    reflect: logs.reflect.length > 0 ? logs.reflect.join("\n\n") : null,
-    action: logs.action.length > 0 ? logs.action.join("\n\n") : null,
-    dialogue: logs.dialogue.length > 0 ? logs.dialogue.join("\n\n") : null,
-    discussionTopic:
-      logs.discussionTopic.length > 0
-        ? logs.discussionTopic.join("\n\n")
-        : null,
-  };
-
-  // 로그가 하나라도 있으면 상태를 'logged'로 변경 (선택 사항)
-  if (newInsight.reflect || newInsight.action || newInsight.dialogue) {
-    newInsight.status = "logged";
+    // --- 생성 모드 ---
+    const newInsight = {
+      id: Date.now(),
+      status: "ready",
+      category: category,
+      subCategory: { ko: subCatKo, en: subCatEn },
+      date: rawDate,
+      title: title,
+      content: content,
+      tags: [],
+      reflect: logs.reflect.length > 0 ? logs.reflect.join("\n\n") : null,
+      action: logs.action.length > 0 ? logs.action.join("\n\n") : null,
+      dialogue: logs.dialogue.length > 0 ? logs.dialogue.join("\n\n") : null,
+      discussionTopic:
+        logs.discussionTopic.length > 0
+          ? logs.discussionTopic.join("\n\n")
+          : null,
+    };
+    if (newInsight.reflect || newInsight.action || newInsight.dialogue) {
+      newInsight.status = "logged";
+    }
+    insights.unshift(newInsight);
   }
 
-  // 4. 저장 및 렌더링
-  insights.unshift(newInsight);
   saveInsights();
   renderInsights();
-
   if (currentView === "stats") renderStatistics();
-
-  if(editId && currentDailyId == editId) initDailyReflection();
-
-  closeWriteModal(); // 초기화 및 닫기
+  if (editId && currentDailyId == editId) initDailyReflection();
+  closeWriteModal();
 });
 
 // 알림창
@@ -1022,7 +963,6 @@ function closeRichInputModal() {
   currentCardId = null;
   currentLogType = null;
   document.getElementById("rich-input-field").value = "";
-  // 태그 입력 초기화
   const tagInput = document.querySelector(
     "#rich-input-modal input[type='text']",
   );
@@ -1054,8 +994,6 @@ function openRichInputModal(type) {
           : currentLang === "ko"
             ? "논의해보고 싶은 질문을 던져보세요."
             : "Pose a question to discuss.";
-
-  // 태그 불러오기 (기존 태그가 있다면)
   const card = insights.find((c) => c.id === currentCardId);
   const tagInput = document.querySelector(
     "#rich-input-modal input[type='text']",
@@ -1063,7 +1001,6 @@ function openRichInputModal(type) {
   if (card && card.tags && tagInput) {
     tagInput.value = card.tags.join(", ");
   }
-
   document.getElementById("rich-input-field").focus();
   richModal.classList.remove("hidden");
 }
@@ -1084,16 +1021,12 @@ function saveRichInput() {
       card.status = "logged";
     }
     if (currentLogType === "topic") card.discussionTopic = inputVal;
-
-    // [New] 태그 저장 로직 추가
     const tagInput = document.querySelector(
       "#rich-input-modal input[type='text']",
     );
     if (tagInput && tagInput.value.trim()) {
-      // 쉼표로 구분하여 배열로 저장
       card.tags = tagInput.value.split(",").map((t) => t.trim());
     }
-
     saveInsights();
     renderInsights();
     closeRichInputModal();
@@ -1246,7 +1179,6 @@ function resetDashboard() {
   window.scrollTo({ top: 0, behavior: "smooth" });
   document.getElementById("mobile-search-bar").classList.add("hidden");
   document.getElementById("write-modal").classList.add("hidden");
-
   initDailyReflection();
 }
 
@@ -1283,37 +1215,31 @@ document
 function switchView(viewName) {
   currentView = viewName;
   localStorage.setItem("lastView", viewName);
-
   const views = {
     hub: document.getElementById("view-hub"),
     stats: document.getElementById("view-stats"),
-    archive: document.getElementById("view-archive"), // [New]
+    archive: document.getElementById("view-archive"),
   };
-
   const navs = {
     hub: document.getElementById("nav-hub"),
     stats: document.getElementById("nav-stats"),
-    archive: document.getElementById("nav-archive"), // [New]
+    archive: document.getElementById("nav-archive"),
   };
-
   const activeClass =
     "flex items-center gap-2 text-primary relative after:absolute after:bottom-[-22px] after:left-0 after:w-full after:h-0.5 after:bg-primary dark:text-primary-light";
   const inactiveClass =
     "flex items-center gap-2 text-text-sub hover:text-primary transition-colors dark:text-gray-400 dark:hover:text-primary-light";
 
-  // 모든 뷰 숨기고 nav 스타일 초기화
   Object.keys(views).forEach((key) => {
     if (views[key]) views[key].classList.add("hidden");
     if (navs[key]) navs[key].className = inactiveClass;
   });
 
-  // 선택된 뷰 보이기 & nav 활성화
   if (views[viewName]) views[viewName].classList.remove("hidden");
   if (navs[viewName]) navs[viewName].className = activeClass;
 
-  // 뷰별 렌더링 함수 호출
   if (viewName === "stats") renderStatistics();
-  if (viewName === "archive") renderArchive(); // [New]
+  if (viewName === "archive") renderArchive();
   if (viewName === "hub") renderInsights();
 }
 
@@ -1331,12 +1257,9 @@ function calculateStreak() {
     .map((i) => new Date(i.id).setHours(0, 0, 0, 0))
     .sort((a, b) => b - a);
   const uniqueDates = [...new Set(sorted)];
-
   let streak = 0;
   let today = new Date().setHours(0, 0, 0, 0);
-
   if (uniqueDates[0] !== today && uniqueDates[0] !== today - 86400000) return 0;
-
   let checkDate = uniqueDates[0];
   streak = 1;
   for (let i = 1; i < uniqueDates.length; i++) {
@@ -1360,7 +1283,6 @@ function renderSummaryCards() {
     );
   }).length;
   document.getElementById("stats-month-count").innerText = thisMonthCount;
-
   const streak = calculateStreak();
   const unit = translations[currentLang].stats.streakUnit;
   document.getElementById("stats-streak").innerText = streak + unit;
@@ -1387,7 +1309,6 @@ function renderHeatmap() {
     if (count >= 1) colorClass = "bg-primary/30";
     if (count >= 2) colorClass = "bg-primary/60";
     if (count >= 4) colorClass = "bg-primary";
-
     const cell = document.createElement("div");
     cell.className = `size-3 rounded-sm ${colorClass} transition-colors hover:ring-1 hover:ring-text-sub cursor-pointer relative group`;
     cell.title = `${dateStr}: ${count}`;
@@ -1430,7 +1351,6 @@ function renderCategoryAnalysis() {
       </div>`;
     listEl.insertAdjacentHTML("beforeend", html);
   });
-
   const bestCat = translations[currentLang].filters[sorted[0][0]];
   const worstCat =
     translations[currentLang].filters[sorted[sorted.length - 1][0]];
@@ -1448,15 +1368,11 @@ function renderGraph() {
   const canvas = document.getElementById("knowledge-graph");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
-
   const container = canvas.parentElement;
   canvas.width = container.clientWidth;
   canvas.height = container.clientHeight;
-
   const nodes = [];
   const links = [];
-
-  // [New] 카테고리별 색상 매핑 (Hex 코드 사용)
   const catColors = {
     nonfiction: "#648F73",
     fiction: "#B38F64",
@@ -1499,13 +1415,11 @@ function renderGraph() {
 
   function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     nodes.forEach((node) => {
       let dx = canvas.width / 2 - node.x;
       let dy = canvas.height / 2 - node.y;
       node.vx += dx * 0.005;
       node.vy += dy * 0.005;
-
       nodes.forEach((other) => {
         if (node === other) return;
         let dx = node.x - other.x;
@@ -1518,7 +1432,6 @@ function renderGraph() {
         }
       });
     });
-
     links.forEach((link) => {
       let source = nodes.find((n) => n.id === link.source);
       let target = nodes.find((n) => n.id === link.target);
@@ -1529,7 +1442,6 @@ function renderGraph() {
         source.vy += dy * 0.05;
         target.vx -= dx * 0.05;
         target.vy -= dy * 0.05;
-
         ctx.beginPath();
         ctx.moveTo(source.x, source.y);
         ctx.lineTo(target.x, target.y);
@@ -1538,29 +1450,23 @@ function renderGraph() {
         ctx.stroke();
       }
     });
-
     nodes.forEach((node) => {
       node.x += node.vx;
       node.y += node.vy;
       node.vx *= 0.9;
       node.vy *= 0.9;
-
       ctx.beginPath();
       ctx.arc(node.x, node.y, node.type === "insight" ? 6 : 4, 0, Math.PI * 2);
-
       if (node.type === "insight") {
-        // [New] 매핑된 색상 사용
         ctx.fillStyle = catColors[node.category] || "#3E5C53";
       } else {
         ctx.fillStyle = "#999999";
       }
       ctx.fill();
-
       ctx.fillStyle = currentTheme === "dark" ? "#eee" : "#333";
       ctx.font = "10px Noto Sans KR";
       ctx.fillText(node.label, node.x + 8, node.y + 3);
     });
-
     if (window.graphFrameCount < 100) {
       window.graphFrameCount++;
       requestAnimationFrame(animate);
@@ -1574,20 +1480,17 @@ function renderBadges() {
   const badgeList = document.getElementById("badge-list");
   if (!badgeList) return;
   badgeList.innerHTML = "";
-
   const total = insights.length;
   const streak = calculateStreak();
   const catCounts = {};
   insights.forEach(
     (i) => (catCounts[i.category] = (catCounts[i.category] || 0) + 1),
   );
-
   const currentLvl =
     levelSystem.find((l, i) => total < (levelSystem[i + 1]?.max || 9999)) ||
     levelSystem[levelSystem.length - 1];
   const nextMax =
     levelSystem.find((l) => l.lv === currentLvl.lv + 1)?.max || currentLvl.max;
-
   document.getElementById("stats-lvl-name").innerText =
     currentLang === "ko" ? currentLvl.ko : currentLvl.en;
   document.getElementById("stats-lvl-progress").innerText =
@@ -1595,13 +1498,11 @@ function renderBadges() {
   let pct = (total / nextMax) * 100;
   if (total >= nextMax) pct = 100;
   document.getElementById("stats-lvl-bar").style.width = `${pct}%`;
-
   const msg =
     currentLang === "ko"
       ? "훌륭합니다! 계속 정진하세요."
       : "Great job! Keep moving forward.";
   document.getElementById("stats-lvl-msg").innerText = msg;
-
   badgeSystem.forEach((badge) => {
     const isUnlocked = badge.condition(total, streak, catCounts);
     const opacity = isUnlocked ? "opacity-100" : "opacity-30 grayscale";
@@ -1609,24 +1510,17 @@ function renderBadges() {
       ? "bg-white dark:bg-gray-800 shadow-sm"
       : "bg-gray-100 dark:bg-gray-800";
     const name = currentLang === "ko" ? badge.ko : badge.en;
-
     const html = `
       <div class="flex flex-col items-center p-3 rounded-2xl ${bg} ${opacity} transition-all border border-border dark:border-gray-700">
         <div class="size-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 text-primary">
           <span class="material-symbols-outlined">${badge.icon}</span>
         </div>
         <span class="text-xs font-bold text-text-main dark:text-white">${name}</span>
-      </div>
-    `;
+      </div>`;
     badgeList.insertAdjacentHTML("beforeend", html);
   });
 }
 
-/* =========================================
-   [NEW] 아카이브 (Archive) 로직
-   ========================================= */
-
-// 카드 상태 변경 함수 (Hub -> Archive)
 function moveToArchive(id) {
   const card = insights.find((c) => c.id === id);
   if (card) {
@@ -1639,36 +1533,25 @@ function moveToArchive(id) {
     ) {
       card.status = "internalized";
       saveInsights();
-      renderInsights(); // Hub 갱신
-      // 만약 현재 통계 화면이라면 통계도 갱신
+      renderInsights();
       if (currentView === "stats") renderStatistics();
     }
   }
 }
 
-let activeArchiveTag = "all";
-
 function renderArchive() {
   const container = document.getElementById("archive-timeline");
   const tagContainer = document.getElementById("archive-tags");
   const countEl = document.getElementById("archive-count");
-
   if (!container || !tagContainer) return;
-
   container.innerHTML = "";
   tagContainer.innerHTML = "";
-
-  // 1. 내재화된 데이터만 필터링
   let archivedData = insights.filter((i) => i.status === "internalized");
   countEl.innerText = archivedData.length;
-
-  // 2. 태그 추출 및 렌더링
   const allTags = {};
   archivedData.forEach((i) => {
     if (i.tags) i.tags.forEach((t) => (allTags[t] = (allTags[t] || 0) + 1));
   });
-
-  // 'All' 태그
   const allActive =
     activeArchiveTag === "all"
       ? "bg-primary text-white"
@@ -1677,7 +1560,6 @@ function renderArchive() {
     "beforeend",
     `<button onclick="filterArchiveTag('all')" class="px-3 py-1 rounded-full text-xs font-bold transition-all ${allActive}">All (${archivedData.length})</button>`,
   );
-
   Object.entries(allTags)
     .sort((a, b) => b[1] - a[1])
     .forEach(([tag, count]) => {
@@ -1690,27 +1572,18 @@ function renderArchive() {
         `<button onclick="filterArchiveTag('${tag}')" class="px-3 py-1 rounded-full text-xs font-bold transition-all ${isActive}">#${tag} (${count})</button>`,
       );
     });
-
-  // 3. 태그 필터링 적용
   if (activeArchiveTag !== "all") {
     archivedData = archivedData.filter(
       (i) => i.tags && i.tags.includes(activeArchiveTag),
     );
   }
-
   if (archivedData.length === 0) {
     container.innerHTML = `<div class="pl-12 py-10 text-text-muted text-sm font-medium italic">${translations[currentLang].archive.empty}</div>`;
     return;
   }
-
-  // 4. 날짜별 그룹핑 (연도 -> 월)
-  // 날짜 포맷이 'Jan 2026' 또는 timestamp일 수 있음. timestamp 기준으로 정렬 권장.
-  // 여기선 단순화를 위해 id(timestamp) 역순 정렬
   archivedData.sort((a, b) => b.id - a.id);
-
   let lastYear = null;
   let lastMonth = null;
-
   archivedData.forEach((data) => {
     const dateObj = new Date(data.id);
     const year = dateObj.getFullYear();
@@ -1718,37 +1591,21 @@ function renderArchive() {
       currentLang === "ko" ? "ko-KR" : "en-US",
       { month: "long" },
     );
-
-    // 연도 헤더
     if (year !== lastYear) {
       container.insertAdjacentHTML(
         "beforeend",
-        `
-                <div class="relative pl-8 mb-6">
-                    <span class="absolute left-[-5px] top-1 size-3 rounded-full bg-primary ring-4 ring-white dark:ring-gray-900"></span>
-                    <h3 class="text-2xl font-black text-primary dark:text-primary-light">${year}</h3>
-                </div>
-            `,
+        `<div class="relative pl-8 mb-6"><span class="absolute left-[-5px] top-1 size-3 rounded-full bg-primary ring-4 ring-white dark:ring-gray-900"></span><h3 class="text-2xl font-black text-primary dark:text-primary-light">${year}</h3></div>`,
       );
       lastYear = year;
-      lastMonth = null; // 연도가 바뀌면 월도 초기화
+      lastMonth = null;
     }
-
-    // 월 헤더 (같은 연도 내에서 월이 바뀔 때)
     if (month !== lastMonth) {
       container.insertAdjacentHTML(
         "beforeend",
-        `
-                <div class="relative pl-8 mb-4">
-                    <span class="absolute left-[0px] top-2 size-1.5 rounded-full bg-border dark:bg-gray-600"></span>
-                    <h4 class="text-sm font-bold text-text-muted uppercase tracking-wider dark:text-gray-400">${month}</h4>
-                </div>
-            `,
+        `<div class="relative pl-8 mb-4"><span class="absolute left-[0px] top-2 size-1.5 rounded-full bg-border dark:bg-gray-600"></span><h4 class="text-sm font-bold text-text-muted uppercase tracking-wider dark:text-gray-400">${month}</h4></div>`,
       );
       lastMonth = month;
     }
-
-    // 카드 아이템 (타임라인 스타일)
     const style = styles[data.category];
     const displayDate = formatDate(data.date);
     const itemHTML = `
@@ -1766,125 +1623,23 @@ function renderArchive() {
                         ${data.tags ? data.tags.map((t) => `<span class="text-[10px] text-text-muted bg-background-section px-1.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-400">#${t}</span>`).join("") : ""}
                     </div>
                 </div>
-                
                 <button onclick="restoreToHub(${data.id})" class="absolute top-4 right-4 p-1.5 rounded-full text-text-muted hover:text-primary hover:bg-gray-100 transition-all dark:hover:bg-gray-700" title="${translations[currentLang].archive.restoreBtn}">
                     <span class="material-symbols-outlined !text-[20px]">settings_backup_restore</span>
                 </button>
-            </div>
-        `;
+            </div>`;
     container.insertAdjacentHTML("beforeend", itemHTML);
   });
 }
 
-function filterArchiveTag(tag) {
-  activeArchiveTag = tag;
-  renderArchive();
-}
-
-function openArchiveDetail(id) {
-  // 아카이브 아이템 클릭 시 상세 보기 (여기서는 일단 로그 모달을 재활용하거나 알림만 띄움)
-  // 추후 '읽기 전용 모달'을 만들면 좋음. 현재는 간단히 로그 모달 띄우기
-  openLogModal(id);
-}
-
-/* =========================================
-   [NEW] 포스트 수정 (Edit) 로직
-   ========================================= */
-function openEditModal(id, event) {
-  if (event) event.stopPropagation();
-
-  const card = insights.find((c) => c.id === id);
-  if (!card) return;
-
-  // 1. 기본 필드 값 채우기
-  document.getElementById("input-category").value = card.category;
-
-  // 날짜 처리 (Flatpickr 인스턴스 업데이트)
-  if (datePicker) {
-    datePicker.setDate(card.date);
-  } else {
-    document.getElementById("input-date").value = card.date;
-  }
-
-  document.getElementById("input-title").value = card.title;
-  document.getElementById("input-content").value = card.content;
-
-  // 2. 동적 로그들 다시 생성해서 채우기
-  const container = document.getElementById("creation-log-container");
-  container.innerHTML = ""; // 기존 비우기
-
-  if (card.reflect)
-    card.reflect.split("\n\n").forEach((txt) => addCreationLog("reflect", txt));
-  if (card.action)
-    card.action.split("\n\n").forEach((txt) => addCreationLog("action", txt));
-  if (card.dialogue)
-    card.dialogue
-      .split("\n\n")
-      .forEach((txt) => addCreationLog("dialogue", txt));
-  if (card.discussionTopic)
-    card.discussionTopic
-      .split("\n\n")
-      .forEach((txt) => addCreationLog("topic", txt));
-
-  // 3. 수정 모드 설정
-  document.getElementById("edit-mode-id").value = card.id;
-
-  // 4. UI 텍스트 변경 (Edit Mode임을 표시)
-  document.querySelector("#write-modal h3").innerText =
-    currentLang === "ko" ? "통찰 수정하기" : "Edit Insight";
-  document.querySelector("#insight-form button[type='submit']").innerText =
-    currentLang === "ko" ? "수정 완료" : "Update Insight";
-
-  // 5. 모달 열기
-  writeModal.classList.remove("hidden");
-}
-
-/* =========================================
-   [NEW] 포스트 삭제 로직
-   ========================================= */
-function deleteInsight(id, event) {
-  if (event) event.stopPropagation(); // 카드 클릭(상세보기) 이벤트 방지
-
-  // 삭제 확인 (다국어 지원)
-  const confirmMsg = translations[currentLang].msg
-    ? translations[currentLang].msg.deleteConfirm
-    : "Delete this insight?";
-
-  if (confirm(confirmMsg)) {
-    // 배열에서 해당 id를 가진 항목 제거
-    insights = insights.filter((item) => item.id !== id);
-
-    // 변경 사항 저장
-    saveInsights();
-
-    // 화면 갱신
-    renderInsights();
-    if (currentView === "archive") renderArchive();
-    if (currentView === "stats") renderStatistics();
-
-    // 만약 오늘의 질문이 삭제된 카드를 가리키고 있었다면 갱신
-    if (currentDailyId === id) {
-      initDailyReflection();
-    }
-  }
-}
-/* =========================================
-   [NEW] 상세 보기 & 복구 로직
-   ========================================= */
-
-// 1. 상세 모달 열기 (View Mode)
 function openDetailModal(id) {
   const card = insights.find((c) => c.id === id);
   if (!card) return;
-
   const modal = document.getElementById("detail-modal");
   const style = styles[card.category];
   const subCatText =
     typeof card.subCategory === "object"
       ? card.subCategory[currentLang]
       : card.subCategory;
-
-  // 헤더 정보 주입
   document.getElementById("detail-category-badge").className =
     `inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider mb-2 ${style.badgeBg} ${style.badgeText}`;
   document.getElementById("detail-category-badge").innerHTML =
@@ -1892,8 +1647,6 @@ function openDetailModal(id) {
   document.getElementById("detail-title").innerText = card.title;
   document.getElementById("detail-date").innerText = formatDate(card.date);
   document.getElementById("detail-content").innerText = card.content;
-
-  // 태그 주입
   const tagsContainer = document.getElementById("detail-tags");
   tagsContainer.innerHTML = "";
   if (card.tags && card.tags.length > 0) {
@@ -1904,26 +1657,15 @@ function openDetailModal(id) {
       );
     });
   }
-
-  // 로그 주입 (작성된 것만 표시)
   const logsContainer = document.getElementById("detail-logs-container");
   logsContainer.innerHTML = "";
   let hasLogs = false;
-
-  // 로그 렌더링 헬퍼
   const addLogItem = (title, icon, colorClass, text) => {
     if (!text) return;
     hasLogs = true;
-    const html = `
-            <div class="bg-gray-50 rounded-2xl p-5 border border-border dark:bg-gray-700/50 dark:border-gray-600">
-                <h5 class="text-xs font-bold ${colorClass} mb-2 flex items-center gap-2 uppercase tracking-wider">
-                    <span class="material-symbols-outlined !text-[18px]">${icon}</span> ${title}
-                </h5>
-                <p class="text-sm text-text-main leading-relaxed dark:text-gray-200 whitespace-pre-wrap">${text}</p>
-            </div>`;
+    const html = `<div class="bg-gray-50 rounded-2xl p-5 border border-border dark:bg-gray-700/50 dark:border-gray-600"><h5 class="text-xs font-bold ${colorClass} mb-2 flex items-center gap-2 uppercase tracking-wider"><span class="material-symbols-outlined !text-[18px]">${icon}</span> ${title}</h5><p class="text-sm text-text-main leading-relaxed dark:text-gray-200 whitespace-pre-wrap">${text}</p></div>`;
     logsContainer.insertAdjacentHTML("beforeend", html);
   };
-
   addLogItem(
     translations[currentLang].logModal.reflect.title,
     "psychology_alt",
@@ -1948,23 +1690,18 @@ function openDetailModal(id) {
     "text-accent-news",
     card.discussionTopic,
   );
-
   if (!hasLogs) {
     logsContainer.innerHTML = `<p class="text-center text-text-muted text-sm italic py-4">"${currentLang === "ko" ? "아직 기록된 로그가 없습니다." : "No logs recorded yet."}"</p>`;
   }
-
-  // 푸터 버튼 설정
   const restoreBtn = document.getElementById("detail-restore-btn");
   const addLogBtn = document.getElementById("detail-add-log-btn");
-
-  // 아카이브 상태라면 '복구' 버튼 보이기
   if (card.status === "internalized") {
     restoreBtn.classList.remove("hidden");
     restoreBtn.onclick = () => {
       restoreToHub(card.id);
       closeDetailModal();
     };
-    addLogBtn.classList.add("hidden"); // 아카이브에선 로그 추가 불가 (원칙상)
+    addLogBtn.classList.add("hidden");
   } else {
     restoreBtn.classList.add("hidden");
     addLogBtn.classList.remove("hidden");
@@ -1973,7 +1710,6 @@ function openDetailModal(id) {
       openLogModal(card.id);
     };
   }
-
   modal.classList.remove("hidden");
 }
 
@@ -1981,7 +1717,6 @@ function closeDetailModal() {
   document.getElementById("detail-modal").classList.add("hidden");
 }
 
-// 2. 허브로 되돌리기 (Restore)
 function restoreToHub(id) {
   const card = insights.find((c) => c.id === id);
   if (card) {
@@ -1992,21 +1727,15 @@ function restoreToHub(id) {
           : "Restore this insight to Conversation Hub?",
       )
     ) {
-      // 로그가 있으면 logged, 없으면 ready 상태로 복구
       const hasLogs = card.reflect || card.action || card.dialogue;
       card.status = hasLogs ? "logged" : "ready";
-
       saveInsights();
-      renderInsights(); // Hub 갱신
-      if (currentView === "archive") renderArchive(); // Archive 갱신
-      if (currentView === "stats") renderStatistics(); // 통계 갱신
+      renderInsights();
+      if (currentView === "archive") renderArchive();
+      if (currentView === "stats") renderStatistics();
     }
   }
 }
-
-/* =========================================
-   [NEW] 오늘의 고찰 (Daily Reflection) 로직
-   ========================================= */
 
 let currentDailyId = null;
 let currentQuestion = "";
@@ -2018,113 +1747,77 @@ function initDailyReflection() {
   const dateEl = document.getElementById("daily-target-date");
   const questionEl = document.getElementById("daily-question");
   const inputEl = document.getElementById("daily-answer");
-
-  // 1. 데이터가 없으면 숨김
   if (insights.length === 0) {
     section.classList.add("hidden");
     return;
   }
   section.classList.remove("hidden");
-
-  // 2. 랜덤한 통찰 선택 (internalized 된 것도 포함해서 회고할 수 있게 함)
-  // 단, 너무 최근(오늘 쓴 것)은 제외하고 싶다면 필터링 가능. 일단 전체 대상.
   const randomIdx = Math.floor(Math.random() * insights.length);
   const target = insights[randomIdx];
   currentDailyId = target.id;
-
-  // 3. 랜덤 질문 선택
   const qList = translations[currentLang].daily.questions;
   const qIdx = Math.floor(Math.random() * qList.length);
   currentQuestion = qList[qIdx];
-
-  // 4. UI 렌더링
   titleEl.innerText = target.title;
   contentEl.innerText = target.content;
   dateEl.innerText = formatDate(target.date);
   questionEl.innerText = `"${currentQuestion}"`;
-
-  // 입력창 초기화 및 번역 적용
   inputEl.value = "";
   inputEl.placeholder = translations[currentLang].daily.placeholder;
-
-  // 버튼 텍스트 등도 업데이트 필요하다면 여기서 처리
 }
 
 function refreshDailyReflection() {
-  // 회전 애니메이션 효과를 주면 좋음 (여기선 단순 호출)
   initDailyReflection();
 }
 
 function saveDailyReflection() {
   const inputEl = document.getElementById("daily-answer");
   const text = inputEl.value.trim();
-
   if (!text) {
     alert(
       currentLang === "ko" ? "내용을 입력해주세요." : "Please enter content.",
     );
     return;
   }
-
   const card = insights.find((c) => c.id === currentDailyId);
   if (card) {
     const today = new Date().toLocaleDateString();
-    // 기존 reflect에 덧붙이기 (구분선 사용)
-    // 형식: [2026.2.1 질문?] 답변
     const newLog = `\n\n[Reflect: ${today}]\nQ: ${currentQuestion}\nA: ${text}`;
-
     if (card.reflect) {
       card.reflect += newLog;
     } else {
-      card.reflect = newLog.trim(); // 앞에 줄바꿈 제거
+      card.reflect = newLog.trim();
     }
     saveInsights();
-
-    // 저장 완료 알림
     alert(
       currentLang === "ko"
         ? "고찰이 기록에 추가되었습니다."
         : "Reflection added to the log.",
     );
-
-    // UI 갱신 (상세 모달이나 리스트에서 보이게)
     renderInsights();
     if (currentView === "stats") renderStatistics();
-
-    // 입력창 비우고 새로운 질문 제안? 아니면 그대로 두기? -> 비우기
     inputEl.value = "";
-
-    // (선택) 카드가 만약 'internalized' 상태가 아니라면, 다시 생각했으니 'logged'로 상태 변경해줄 수도 있음
     if (card.status === "ready") card.status = "logged";
     renderInsights();
   }
 }
 
-/* =========================================
-   [NEW] 달력(Flatpickr) 초기화 로직
-   ========================================= */
 function initDatePicker() {
-  // 이미 생성된 달력이 있다면 설정만 업데이트 (언어 변경 대응)
   if (datePicker) {
-    datePicker.destroy(); // 기존 인스턴스 삭제 후 재생성 (가장 안전한 방법)
+    datePicker.destroy();
   }
-
   const inputElement = document.getElementById("input-date");
   if (!inputElement) return;
-
-  // 언어 설정에 따른 달력 설정
   const locale = currentLang === "ko" ? "ko" : "default";
-  // 보여지는 포맷: 한국어면 "2026년 1월 15일", 영어면 "Jan 15, 2026"
   const altFormat = currentLang === "ko" ? "Y년 m월 d일" : "M j, Y";
-
   datePicker = flatpickr("#input-date", {
     locale: locale,
-    dateFormat: "Y-m-d", // 실제 데이터 저장 값 (2026-01-15)
-    altInput: true, // 유저에게는 다른 포맷으로 보여줌
+    dateFormat: "Y-m-d",
+    altInput: true,
     altFormat: altFormat,
-    defaultDate: "today", // 기본값 오늘
-    theme: currentTheme === "dark" ? "dark" : "light", // 테마는 CSS로 제어되지만 클래스 명시
-    disableMobile: "true", // 모바일에서도 네이티브 대신 이 캘린더 사용 (선택사항)
+    defaultDate: "today",
+    theme: currentTheme === "dark" ? "dark" : "light",
+    disableMobile: "true",
   });
 }
 
@@ -2132,11 +1825,9 @@ window.addEventListener("DOMContentLoaded", () => {
   setTheme(currentTheme);
   initDatePicker();
   setLanguage(currentLang);
-
   const savedName = localStorage.getItem("userName");
   if (savedName)
     document.getElementById("profile-name-display").innerText = savedName;
-
   const savedImg = localStorage.getItem("userProfileImg");
   if (savedImg) {
     document.getElementById("profile-img").src = savedImg;
@@ -2145,18 +1836,11 @@ window.addEventListener("DOMContentLoaded", () => {
     const defaultUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${defaultName}&backgroundColor=B38F64&textColor=ffffff&chars=1`;
     document.getElementById("profile-img").src = defaultUrl;
   }
-
   const savedColor = localStorage.getItem("userProfileColor");
   if (savedColor) tempColor = savedColor;
-
-  /* =========================================
-   [NEW] 드롭다운 외부 클릭 감지 (닫기)
-   ========================================= */
   document.addEventListener("click", function (e) {
     const menu = document.getElementById("log-type-menu");
     const btn = document.getElementById("add-log-toggle-btn");
-
-    // 메뉴가 열려있고, 클릭된 곳이 메뉴 내부가 아니고, 버튼도 아니라면 -> 닫기
     if (
       !menu.classList.contains("hidden") &&
       !menu.contains(e.target) &&
@@ -2165,7 +1849,6 @@ window.addEventListener("DOMContentLoaded", () => {
       menu.classList.add("hidden");
     }
   });
-
   initDailyReflection();
   switchView(currentView);
 });
