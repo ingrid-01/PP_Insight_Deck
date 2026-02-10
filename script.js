@@ -160,6 +160,7 @@ const translations = {
       action: { title: "실천 과제", sub: "" },
       dialogue: { title: "대화 로그", sub: "" },
       topic: { title: "토론 주제", sub: "" },
+      cancelBtn: "취소",
     },
     richModal: {
       save: "기록 저장",
@@ -188,6 +189,10 @@ const translations = {
       placeholder: "변경할 이름",
       applyBtn: "변경 완료",
       cancelBtn: "취소",
+    },
+    msg: {
+      deleteConfirm:
+        "이 기록을 정말 삭제하시겠습니까? 이 작업은 복구할 수 없습니다.",
     },
   },
   en: {
@@ -280,6 +285,7 @@ const translations = {
       action: { title: "Action Item", sub: "" },
       dialogue: { title: "Dialogue Log", sub: "" },
       topic: { title: "Discussion Topic", sub: "" },
+      cancelBtn: "Cancel",
     },
     richModal: {
       save: "Save Log",
@@ -308,6 +314,10 @@ const translations = {
       placeholder: "New Name",
       applyBtn: "Done",
       cancelBtn: "Cancel",
+    },
+    msg: {
+      deleteConfirm:
+        "Are you sure you want to delete this insight? This action cannot be undone.",
     },
   },
 };
