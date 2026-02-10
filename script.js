@@ -1751,6 +1751,36 @@ function openArchiveDetail(id) {
   // 추후 '읽기 전용 모달'을 만들면 좋음. 현재는 간단히 로그 모달 띄우기
   openLogModal(id);
 }
+
+/* =========================================
+   [NEW] 포스트 삭제 로직
+   ========================================= */
+function deleteInsight(id, event) {
+  if (event) event.stopPropagation(); // 카드 클릭(상세보기) 이벤트 방지
+
+  // 삭제 확인 (다국어 지원)
+  const confirmMsg = translations[currentLang].msg
+    ? translations[currentLang].msg.deleteConfirm
+    : "Delete this insight?";
+
+  if (confirm(confirmMsg)) {
+    // 배열에서 해당 id를 가진 항목 제거
+    insights = insights.filter((item) => item.id !== id);
+
+    // 변경 사항 저장
+    saveInsights();
+
+    // 화면 갱신
+    renderInsights();
+    if (currentView === "archive") renderArchive();
+    if (currentView === "stats") renderStatistics();
+
+    // 만약 오늘의 질문이 삭제된 카드를 가리키고 있었다면 갱신
+    if (currentDailyId === id) {
+      initDailyReflection();
+    }
+  }
+}
 /* =========================================
    [NEW] 상세 보기 & 복구 로직
    ========================================= */
