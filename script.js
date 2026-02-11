@@ -128,7 +128,7 @@ const translations = {
         media: "미디어",
         art: "공연",
         fiction: "문학",
-        others: "기타", // [수정 2]
+        others: "기타 등등", // [수정 2] 사이드바 그래프 이름
       },
     },
     filters: {
@@ -139,12 +139,12 @@ const translations = {
       movie: "영화",
       art: "공연",
       media: "미디어",
-      others: "기타 등등", // [수정 2] 필터 이름 추가
+      others: "기타 등등", // [수정 3] 필터 버튼 이름
     },
     zones: {
       ready: "토론 대기",
       logged: "토론 기록됨",
-      internalized: "아카이브로 옮겨짐", // [수정 3] 한글 문구 수정
+      internalized: "아카이브로 옮겨짐",
     },
     modal: {
       title: "새로운 통찰 기록하기",
@@ -278,12 +278,12 @@ const translations = {
       movie: "Movie",
       art: "Art",
       media: "Media",
-      others: "Others", // [수정 2]
+      others: "Others", // [수정 3]
     },
     zones: {
       ready: "Ready for Discussion",
       logged: "Discussion Logged",
-      internalized: "Archived", // [수정 3] 영어 문구 수정
+      internalized: "Archived",
     },
     logModal: {
       title: "Add New Log",
@@ -414,7 +414,6 @@ const styles = {
     badgeText: "text-accent-media",
     icon: "play_circle",
   },
-  // [수정 2] Others 스타일 추가
   others: {
     badgeBg: "bg-gray-100 dark:bg-gray-700",
     badgeText: "text-gray-600 dark:text-gray-300",
@@ -473,7 +472,7 @@ function setLanguage(lang) {
   updateFilterButtons();
   updateProfileUI();
   updateLangButtons();
-  initDailyReflection(); // [수정 1] 언어 변경 시 데일리 질문 텍스트 업데이트
+  initDailyReflection(); // [수정 1] 언어 변경 시 Today's Question 즉시 반영
 
   if (currentView === "stats") renderStatistics();
 }
@@ -481,7 +480,7 @@ function setLanguage(lang) {
 function updateFormCategoryOptions(lang) {
   const select = document.getElementById("input-category");
   const options = select.options;
-  // [수정 2] 카테고리 옵션에 others가 없다면 추가 (HTML에 수동으로 넣지 않았을 경우 대비)
+  // Others 카테고리 옵션 자동 추가 (HTML에 없을 경우)
   let hasOthers = false;
   for (let i = 0; i < options.length; i++) {
     if (options[i].value === "others") hasOthers = true;
@@ -581,12 +580,22 @@ function updateFilterButtons() {
     "movie",
     "art",
     "media",
-    "others", // [수정 2] Others 필터 버튼 추가
+    "others", // [수정 3] Others 포함
   ];
-  // HTML에 필터 버튼이 없을 수 있으므로 체크 (생략 가능하지만 안전을 위해)
-  // 실제로는 HTML에 <button id="filter-others">가 있어야 함.
-  // 없으면 JS에서 동적으로 생성하지 않으므로, HTML 수정도 필요할 수 있음.
-  // 여기서는 기존 DOM 요소 ID 규칙을 따름.
+  
+  // [수정 3] 필터 버튼 자동 생성 로직
+  // 'Others' 버튼이 HTML에 없다면 동적으로 생성해서 추가함
+  const othersBtn = document.getElementById("filter-others");
+  if (!othersBtn) {
+    const allBtn = document.getElementById("filter-all");
+    if (allBtn && allBtn.parentNode) {
+       const newBtn = document.createElement("button");
+       newBtn.id = "filter-others";
+       newBtn.onclick = () => setFilter('others');
+       // 스타일은 아래 루프에서 적용됨
+       allBtn.parentNode.appendChild(newBtn);
+    }
+  }
 
   filters.forEach((type) => {
     const btn = document.getElementById(`filter-${type}`);
@@ -615,7 +624,6 @@ function renderInsights() {
   if (zones.logged)
     zones.logged.innerHTML = `<div class="flex items-center justify-between"><h3 class="font-black text-lg flex items-center gap-2 dark:text-white"><span class="size-2.5 rounded-full bg-primary"></span> ${translations[currentLang].zones.logged}</h3><span id="count-logged" class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full dark:bg-gray-700 dark:text-gray-400">0</span></div>`;
   if (zones.internalized)
-    // [수정 3] 내재화 문구 변수 처리 (아카이브로 옮겨짐 / Archived)
     zones.internalized.innerHTML = `<div class="flex items-center justify-between opacity-50"><h3 class="font-black text-lg flex items-center gap-2 dark:text-white"><span class="size-2.5 rounded-full bg-accent-nonfiction"></span> ${translations[currentLang].zones.internalized}</h3></div>`;
 
   const counts = { ready: 0, logged: 0, internalized: 0 };
@@ -634,7 +642,6 @@ function renderInsights() {
     counts[data.status]++;
     if (!zones[data.status]) return;
 
-    // [수정 2] Others 스타일 적용
     const style = styles[data.category] || styles.others;
     const subCatText =
       typeof data.subCategory === "object"
@@ -694,7 +701,6 @@ function renderInsights() {
 
 function updateMapStats() {
   const total = insights.length;
-  // [수정 2] Counts에 others 추가
   const counts = {
     nonfiction: 0,
     news: 0,
@@ -714,7 +720,6 @@ function updateMapStats() {
     const txt = document.getElementById(`pct-${cat}`);
     if (txt) txt.innerText = `${pct}%`;
     if (txt) {
-      // Others 스타일 적용
       const st = styles[cat] || styles.others;
       txt.className =
         pct === 0
@@ -855,7 +860,6 @@ writeForm.addEventListener("submit", (e) => {
 
   let subCatKo = "기타",
     subCatEn = "Other";
-  // [수정 2] Others 카테고리 매핑 추가
   const catMap = {
     news: ["신문기사", "News"],
     fiction: ["문학", "Fiction"],
@@ -863,7 +867,7 @@ writeForm.addEventListener("submit", (e) => {
     movie: ["영화", "Movie"],
     art: ["공연", "Performance"],
     media: ["영상/미디어", "Media"],
-    others: ["기타 등등", "Others"], // 추가됨
+    others: ["기타 등등", "Others"],
   };
   if (catMap[category]) {
     subCatKo = catMap[category][0];
@@ -1360,7 +1364,7 @@ function renderCategoryAnalysis() {
     media: 0,
     art: 0,
     fiction: 0,
-    others: 0, // [수정 2] Others 카운트 추가
+    others: 0,
   };
   insights.forEach((item) => {
     if (counts.hasOwnProperty(item.category)) counts[item.category]++;
@@ -1374,7 +1378,6 @@ function renderCategoryAnalysis() {
     if (count === 0) return;
     const pct = (count / insights.length) * 100;
     const widthPct = (count / maxVal) * 100;
-    // [수정 2] Others 스타일 적용
     const style = styles[cat] || styles.others;
     const name = translations[currentLang].filters[cat];
     const html = `
@@ -1411,7 +1414,6 @@ function renderGraph() {
   canvas.height = container.clientHeight;
   const nodes = [];
   const links = [];
-  // [수정 2] Others 컬러 추가
   const catColors = {
     nonfiction: "#648F73",
     fiction: "#B38F64",
@@ -1419,7 +1421,7 @@ function renderGraph() {
     movie: "#8E7CC3",
     art: "#D0607A",
     media: "#E08E79",
-    others: "#9CA3AF", // 회색
+    others: "#9CA3AF", // [수정 2] Others 그래프 컬러
   };
 
   insights.forEach((i) => {
@@ -1496,7 +1498,13 @@ function renderGraph() {
       node.vx *= 0.9;
       node.vy *= 0.9;
       ctx.beginPath();
-      ctx.arc(node.x, node.y, node.type === "insight" ? 6 : 4, 0, Math.PI * 2);
+      ctx.arc(
+        node.x,
+        node.y,
+        node.type === "insight" ? 6 : 4,
+        0,
+        Math.PI * 2,
+      );
       if (node.type === "insight") {
         ctx.fillStyle = catColors[node.category] || "#9CA3AF";
       } else {
@@ -1646,7 +1654,6 @@ function renderArchive() {
       );
       lastMonth = month;
     }
-    // [수정 2] Others 스타일 적용
     const style = styles[data.category] || styles.others;
     const displayDate = formatDate(data.date);
     const itemHTML = `
@@ -1676,7 +1683,6 @@ function openDetailModal(id) {
   const card = insights.find((c) => c.id === id);
   if (!card) return;
   const modal = document.getElementById("detail-modal");
-  // [수정 2] Others 스타일 적용
   const style = styles[card.category] || styles.others;
   const subCatText =
     typeof card.subCategory === "object"
@@ -1851,13 +1857,23 @@ function initDailyReflection() {
   const dateEl = document.getElementById("daily-target-date");
   const questionEl = document.getElementById("daily-question");
   const inputEl = document.getElementById("daily-answer");
-
-  // [수정 1] 랜덤 질문 박스 제목 ("오늘의 질문" / "Today's Question") 변경 로직
-  // HTML 구조상 섹션 내부의 h3 태그가 제목이라고 가정합니다.
+  
+  // [수정 1] 아이콘을 유지하면서 "오늘의 질문" 텍스트만 업데이트
   if (section) {
     const headerEl = section.querySelector("h3");
     if (headerEl) {
-      headerEl.innerText = translations[currentLang].daily.title;
+        // 기존 아이콘(span)이 있다면 보존
+        const icon = headerEl.querySelector("span");
+        const titleText = translations[currentLang].daily.title;
+        if (icon) {
+            // HTML을 초기화하지 않고 텍스트 노드만 변경 (맨 뒤 텍스트)
+            // 가장 안전한 방법: 내용을 비우고 아이콘과 텍스트를 다시 append
+            headerEl.innerHTML = '';
+            headerEl.appendChild(icon);
+            headerEl.append(' ' + titleText);
+        } else {
+            headerEl.innerText = titleText;
+        }
     }
   }
 
