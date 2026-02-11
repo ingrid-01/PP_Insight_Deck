@@ -99,6 +99,7 @@ const translations = {
       restoreBtn: "다시 허브로 보내기",
     },
     daily: {
+      title: "오늘의 질문", // [수정 1]
       refresh: "다른 질문 보기",
       placeholder: "이 질문에 대한 현재의 생각은?",
       btn: "기록에 덧붙이기",
@@ -127,6 +128,7 @@ const translations = {
         media: "미디어",
         art: "공연",
         fiction: "문학",
+        others: "기타", // [수정 2]
       },
     },
     filters: {
@@ -137,11 +139,12 @@ const translations = {
       movie: "영화",
       art: "공연",
       media: "미디어",
+      others: "기타 등등", // [수정 2] 필터 이름 추가
     },
     zones: {
       ready: "토론 대기",
       logged: "토론 기록됨",
-      internalized: "내재화됨",
+      internalized: "아카이브로 옮겨짐", // [수정 3] 한글 문구 수정
     },
     modal: {
       title: "새로운 통찰 기록하기",
@@ -235,6 +238,7 @@ const translations = {
       restoreBtn: "Restore to Hub",
     },
     daily: {
+      title: "Today's Question", // [수정 1]
       refresh: "Refresh Question",
       placeholder: "What are your thoughts on this now?",
       btn: "Append to Log",
@@ -263,6 +267,7 @@ const translations = {
         media: "Media",
         art: "Art",
         fiction: "Fiction",
+        others: "Others", // [수정 2]
       },
     },
     filters: {
@@ -273,11 +278,12 @@ const translations = {
       movie: "Movie",
       art: "Art",
       media: "Media",
+      others: "Others", // [수정 2]
     },
     zones: {
       ready: "Ready for Discussion",
       logged: "Discussion Logged",
-      internalized: "Internalized",
+      internalized: "Archived", // [수정 3] 영어 문구 수정
     },
     logModal: {
       title: "Add New Log",
@@ -408,6 +414,12 @@ const styles = {
     badgeText: "text-accent-media",
     icon: "play_circle",
   },
+  // [수정 2] Others 스타일 추가
+  others: {
+    badgeBg: "bg-gray-100 dark:bg-gray-700",
+    badgeText: "text-gray-600 dark:text-gray-300",
+    icon: "more_horiz",
+  },
 };
 
 /* =========================================
@@ -461,6 +473,7 @@ function setLanguage(lang) {
   updateFilterButtons();
   updateProfileUI();
   updateLangButtons();
+  initDailyReflection(); // [수정 1] 언어 변경 시 데일리 질문 텍스트 업데이트
 
   if (currentView === "stats") renderStatistics();
 }
@@ -468,6 +481,17 @@ function setLanguage(lang) {
 function updateFormCategoryOptions(lang) {
   const select = document.getElementById("input-category");
   const options = select.options;
+  // [수정 2] 카테고리 옵션에 others가 없다면 추가 (HTML에 수동으로 넣지 않았을 경우 대비)
+  let hasOthers = false;
+  for (let i = 0; i < options.length; i++) {
+    if (options[i].value === "others") hasOthers = true;
+  }
+  if (!hasOthers) {
+    const opt = document.createElement("option");
+    opt.value = "others";
+    select.add(opt);
+  }
+
   for (let i = 0; i < options.length; i++) {
     const key = options[i].value;
     if (translations[lang].filters[key])
@@ -557,7 +581,13 @@ function updateFilterButtons() {
     "movie",
     "art",
     "media",
+    "others", // [수정 2] Others 필터 버튼 추가
   ];
+  // HTML에 필터 버튼이 없을 수 있으므로 체크 (생략 가능하지만 안전을 위해)
+  // 실제로는 HTML에 <button id="filter-others">가 있어야 함.
+  // 없으면 JS에서 동적으로 생성하지 않으므로, HTML 수정도 필요할 수 있음.
+  // 여기서는 기존 DOM 요소 ID 규칙을 따름.
+
   filters.forEach((type) => {
     const btn = document.getElementById(`filter-${type}`);
     if (!btn) return;
@@ -585,7 +615,8 @@ function renderInsights() {
   if (zones.logged)
     zones.logged.innerHTML = `<div class="flex items-center justify-between"><h3 class="font-black text-lg flex items-center gap-2 dark:text-white"><span class="size-2.5 rounded-full bg-primary"></span> ${translations[currentLang].zones.logged}</h3><span id="count-logged" class="text-xs font-bold text-text-muted bg-background-section px-2.5 py-1 rounded-full dark:bg-gray-700 dark:text-gray-400">0</span></div>`;
   if (zones.internalized)
-    zones.internalized.innerHTML = `<div class="flex items-center justify-between opacity-50"><h3 class="font-black text-lg flex items-center gap-2 dark:text-white"><span class="size-2.5 rounded-full bg-accent-nonfiction"></span> ${translations[currentLang].zones.internalized} (Moved to Archive)</h3></div>`;
+    // [수정 3] 내재화 문구 변수 처리 (아카이브로 옮겨짐 / Archived)
+    zones.internalized.innerHTML = `<div class="flex items-center justify-between opacity-50"><h3 class="font-black text-lg flex items-center gap-2 dark:text-white"><span class="size-2.5 rounded-full bg-accent-nonfiction"></span> ${translations[currentLang].zones.internalized}</h3></div>`;
 
   const counts = { ready: 0, logged: 0, internalized: 0 };
 
@@ -603,7 +634,8 @@ function renderInsights() {
     counts[data.status]++;
     if (!zones[data.status]) return;
 
-    const style = styles[data.category] || styles.nonfiction;
+    // [수정 2] Others 스타일 적용
+    const style = styles[data.category] || styles.others;
     const subCatText =
       typeof data.subCategory === "object"
         ? data.subCategory[currentLang]
@@ -619,8 +651,6 @@ function renderInsights() {
         ? `<button onclick="moveToArchive(${data.id})" class="mt-2 w-full py-2 rounded-xl bg-accent-nonfiction/10 text-accent-nonfiction text-xs font-bold hover:bg-accent-nonfiction hover:text-white transition-all flex items-center justify-center gap-2"><span class="material-symbols-outlined !text-[16px]">inventory_2</span> ${translations[currentLang].archive.moveBtn}</button>`
         : "";
 
-    // [수정] 아이콘 위치: top-5 right-5 (카드 padding과 동일하게)
-    // [수정] 헤더 패딩 제거 및 날짜 mt-6으로 간격 조정
     const cardHTML = `
       <article class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow group mt-5 dark:bg-gray-800 dark:border-gray-700 relative flex flex-col h-full">
         <div class="absolute top-5 right-5 flex gap-1 z-20">
@@ -664,6 +694,7 @@ function renderInsights() {
 
 function updateMapStats() {
   const total = insights.length;
+  // [수정 2] Counts에 others 추가
   const counts = {
     nonfiction: 0,
     news: 0,
@@ -671,6 +702,7 @@ function updateMapStats() {
     media: 0,
     art: 0,
     fiction: 0,
+    others: 0,
   };
   insights.forEach((item) => {
     if (counts.hasOwnProperty(item.category)) counts[item.category]++;
@@ -681,11 +713,14 @@ function updateMapStats() {
     if (bar) bar.style.width = `${pct}%`;
     const txt = document.getElementById(`pct-${cat}`);
     if (txt) txt.innerText = `${pct}%`;
-    if (txt)
+    if (txt) {
+      // Others 스타일 적용
+      const st = styles[cat] || styles.others;
       txt.className =
         pct === 0
           ? "text-xs font-black text-text-muted transition-colors dark:text-gray-600"
-          : `text-xs font-black ${styles[cat].badgeText.replace("bg-", "text-")} transition-colors`;
+          : `text-xs font-black ${st.badgeText.replace("bg-", "text-")} transition-colors`;
+    }
   }
 }
 
@@ -801,7 +836,7 @@ function removeCreationLog(id) {
   if (el) el.remove();
 }
 
-// [UPDATED] 폼 제출 핸들러 (수정된 부분)
+// 폼 제출 핸들러
 writeForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const editId = document.getElementById("edit-mode-id").value;
@@ -820,6 +855,7 @@ writeForm.addEventListener("submit", (e) => {
 
   let subCatKo = "기타",
     subCatEn = "Other";
+  // [수정 2] Others 카테고리 매핑 추가
   const catMap = {
     news: ["신문기사", "News"],
     fiction: ["문학", "Fiction"],
@@ -827,6 +863,7 @@ writeForm.addEventListener("submit", (e) => {
     movie: ["영화", "Movie"],
     art: ["공연", "Performance"],
     media: ["영상/미디어", "Media"],
+    others: ["기타 등등", "Others"], // 추가됨
   };
   if (catMap[category]) {
     subCatKo = catMap[category][0];
@@ -1323,6 +1360,7 @@ function renderCategoryAnalysis() {
     media: 0,
     art: 0,
     fiction: 0,
+    others: 0, // [수정 2] Others 카운트 추가
   };
   insights.forEach((item) => {
     if (counts.hasOwnProperty(item.category)) counts[item.category]++;
@@ -1336,7 +1374,8 @@ function renderCategoryAnalysis() {
     if (count === 0) return;
     const pct = (count / insights.length) * 100;
     const widthPct = (count / maxVal) * 100;
-    const style = styles[cat] || styles.nonfiction;
+    // [수정 2] Others 스타일 적용
+    const style = styles[cat] || styles.others;
     const name = translations[currentLang].filters[cat];
     const html = `
       <div class="mb-2">
@@ -1372,6 +1411,7 @@ function renderGraph() {
   canvas.height = container.clientHeight;
   const nodes = [];
   const links = [];
+  // [수정 2] Others 컬러 추가
   const catColors = {
     nonfiction: "#648F73",
     fiction: "#B38F64",
@@ -1379,6 +1419,7 @@ function renderGraph() {
     movie: "#8E7CC3",
     art: "#D0607A",
     media: "#E08E79",
+    others: "#9CA3AF", // 회색
   };
 
   insights.forEach((i) => {
@@ -1457,7 +1498,7 @@ function renderGraph() {
       ctx.beginPath();
       ctx.arc(node.x, node.y, node.type === "insight" ? 6 : 4, 0, Math.PI * 2);
       if (node.type === "insight") {
-        ctx.fillStyle = catColors[node.category] || "#3E5C53";
+        ctx.fillStyle = catColors[node.category] || "#9CA3AF";
       } else {
         ctx.fillStyle = "#999999";
       }
@@ -1605,7 +1646,8 @@ function renderArchive() {
       );
       lastMonth = month;
     }
-    const style = styles[data.category];
+    // [수정 2] Others 스타일 적용
+    const style = styles[data.category] || styles.others;
     const displayDate = formatDate(data.date);
     const itemHTML = `
             <div class="relative ml-8 mb-6 bg-white p-5 rounded-2xl border border-border shadow-sm hover:shadow-md transition-all group dark:bg-gray-800 dark:border-gray-700">
@@ -1634,7 +1676,8 @@ function openDetailModal(id) {
   const card = insights.find((c) => c.id === id);
   if (!card) return;
   const modal = document.getElementById("detail-modal");
-  const style = styles[card.category];
+  // [수정 2] Others 스타일 적용
+  const style = styles[card.category] || styles.others;
   const subCatText =
     typeof card.subCategory === "object"
       ? card.subCategory[currentLang]
@@ -1692,15 +1735,26 @@ function openDetailModal(id) {
   if (!hasLogs) {
     logsContainer.innerHTML = `<p class="text-center text-text-muted text-sm italic py-4">"${currentLang === "ko" ? "아직 기록된 로그가 없습니다." : "No logs recorded yet."}"</p>`;
   }
+
   const restoreBtn = document.getElementById("detail-restore-btn");
   const addLogBtn = document.getElementById("detail-add-log-btn");
+  const deleteBtn = document.getElementById("detail-delete-btn");
+  const editBtn = document.getElementById("detail-edit-btn");
+
+  deleteBtn.onclick = () => deleteInsight(card.id, true);
+
+  editBtn.onclick = () => {
+    closeDetailModal();
+    openEditModal(card.id);
+  };
+
   if (card.status === "internalized") {
     restoreBtn.classList.remove("hidden");
+    addLogBtn.classList.add("hidden");
     restoreBtn.onclick = () => {
       restoreToHub(card.id);
       closeDetailModal();
     };
-    addLogBtn.classList.add("hidden");
   } else {
     restoreBtn.classList.add("hidden");
     addLogBtn.classList.remove("hidden");
@@ -1714,6 +1768,57 @@ function openDetailModal(id) {
 
 function closeDetailModal() {
   document.getElementById("detail-modal").classList.add("hidden");
+}
+
+function deleteInsight(id, eventOrFromModal = null) {
+  let fromModal = false;
+
+  if (eventOrFromModal && eventOrFromModal.stopPropagation) {
+    eventOrFromModal.stopPropagation();
+    fromModal = false;
+  } else if (eventOrFromModal === true) {
+    fromModal = true;
+  }
+
+  if (confirm(translations[currentLang].msg.deleteConfirm)) {
+    insights = insights.filter((i) => i.id !== id);
+    saveInsights();
+    renderInsights();
+    if (currentView === "stats") renderStatistics();
+
+    if (fromModal) {
+      closeDetailModal();
+    }
+  }
+}
+
+function openEditModal(id, event = null) {
+  if (event) {
+    event.stopPropagation();
+  }
+
+  const item = insights.find((i) => i.id === id);
+  if (!item) return;
+
+  document.getElementById("edit-mode-id").value = id;
+  document.querySelector("#write-modal h3").innerText =
+    translations[currentLang].modal.title;
+
+  document.getElementById("input-category").value = item.category;
+  document.getElementById("input-date").value = item.date;
+  if (datePicker) datePicker.setDate(item.date);
+  document.getElementById("input-title").value = item.title;
+  document.getElementById("input-content").value = item.content;
+
+  const container = document.getElementById("creation-log-container");
+  container.innerHTML = "";
+
+  if (item.reflect) addCreationLog("reflect", item.reflect);
+  if (item.action) addCreationLog("action", item.action);
+  if (item.dialogue) addCreationLog("dialogue", item.dialogue);
+  if (item.discussionTopic) addCreationLog("topic", item.discussionTopic);
+
+  writeModal.classList.remove("hidden");
 }
 
 function restoreToHub(id) {
@@ -1746,6 +1851,16 @@ function initDailyReflection() {
   const dateEl = document.getElementById("daily-target-date");
   const questionEl = document.getElementById("daily-question");
   const inputEl = document.getElementById("daily-answer");
+
+  // [수정 1] 랜덤 질문 박스 제목 ("오늘의 질문" / "Today's Question") 변경 로직
+  // HTML 구조상 섹션 내부의 h3 태그가 제목이라고 가정합니다.
+  if (section) {
+    const headerEl = section.querySelector("h3");
+    if (headerEl) {
+      headerEl.innerText = translations[currentLang].daily.title;
+    }
+  }
+
   if (insights.length === 0) {
     section.classList.add("hidden");
     return;
