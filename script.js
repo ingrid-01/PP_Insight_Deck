@@ -322,7 +322,6 @@ const translations = {
   },
 };
 
-// [수정 1] 하드코딩 된 데이터를 'initialData'라는 이름으로 변경
 const initialData = [
   {
     id: 1735689600000,
@@ -371,7 +370,6 @@ const initialData = [
   },
 ];
 
-// [수정 2] 로컬 스토리지 데이터 로드
 let insights =
   JSON.parse(localStorage.getItem("insightDeckData")) || initialData;
 
@@ -480,7 +478,6 @@ function updateFormCategoryOptions(lang) {
 function formatDate(dateStr) {
   if (!dateStr) return "";
   if (dateStr.includes(" ")) {
-    // 예전 데이터 호환용
     if (currentLang === "en") return dateStr;
     const parts = dateStr.split(" ");
     if (parts.length !== 2) return dateStr;
@@ -622,9 +619,11 @@ function renderInsights() {
         ? `<button onclick="moveToArchive(${data.id})" class="mt-2 w-full py-2 rounded-xl bg-accent-nonfiction/10 text-accent-nonfiction text-xs font-bold hover:bg-accent-nonfiction hover:text-white transition-all flex items-center justify-center gap-2"><span class="material-symbols-outlined !text-[16px]">inventory_2</span> ${translations[currentLang].archive.moveBtn}</button>`
         : "";
 
+    // [수정] 아이콘 위치: top-5 right-5 (카드 padding과 동일하게)
+    // [수정] 헤더 패딩 제거 및 날짜 mt-6으로 간격 조정
     const cardHTML = `
       <article class="bg-white rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-shadow group mt-5 dark:bg-gray-800 dark:border-gray-700 relative flex flex-col h-full">
-        <div class="absolute top-4 right-4 flex gap-1 z-10">
+        <div class="absolute top-5 right-5 flex gap-1 z-20">
           <button onclick="openEditModal(${data.id}, event)" class="text-gray-300 hover:text-primary transition-colors p-1" title="Edit">
             <span class="material-symbols-outlined !text-[20px]">edit</span>
           </button>
@@ -633,9 +632,9 @@ function renderInsights() {
           </button>
         </div>
           <div onclick="openDetailModal(${data.id})" class="cursor-pointer flex-1">
-              <div class="flex justify-between items-start mb-3 pr-8">
+              <div class="flex justify-between items-start mb-3">
                   <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full ${style.badgeBg} ${style.badgeText} text-[10px] font-black uppercase tracking-wider"><span class="material-symbols-outlined !text-[14px]">${style.icon}</span>${subCatText}</div>
-                  <span class="text-[10px] font-bold text-text-muted dark:text-gray-400">${displayDate}</span>
+                  <span class="text-[10px] font-bold text-text-muted mt-6 dark:text-gray-400">${displayDate}</span>
               </div>
               <h4 class="font-bold text-lg leading-snug mb-2 serif group-hover:text-primary transition-colors dark:text-white dark:group-hover:text-primary-light">${data.title}</h4>
               ${tagHTML}
