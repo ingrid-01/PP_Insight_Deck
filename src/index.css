@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    /* bg-background text-text-main transition-colors duration-300 */
+    @apply bg-background text-text-main transition-colors duration-300;
+  }
+}
+
+@theme {
+  --color-primary: #3e5c53;
+  --color-primary-light: #5b7c72;
+  --color-primary-dark: #2a4039;
+
+  --color-accent-nonfiction: #648f73;
+  --color-accent-fiction: #b38f64;
+  --color-accent-news: #7d8fa1;
+  --color-accent-movie: #8e7cc3;
+  --color-accent-art: #d0607a;
+  --color-accent-media: #e08e79;
+  --color-accent-dialogue: #9a7d64;
+  --color-accent-action: #3e5c53;
+
+  --color-background: #f5f3f0;
+  --color-background-card: #ffffff;
+  --color-background-hover: #f9f8f6;
+  --color-background-section: #efece8;
+
+  --color-text-main: #333333;
+  --color-text-sub: #666666;
+  --color-text-muted: #999999;
+
+  --color-border: #e0dcd5;
+
+  --font-sans: "Noto Sans KR", sans-serif;
+  --font-serif: "Noto Serif KR", serif;
+}
