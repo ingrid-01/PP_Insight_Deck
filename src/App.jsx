@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { InsightProvider, useInsights } from "./context/InsightContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ProfileProvider } from "./context/ProfileContext";
 import Header from "./components/layout/Header";
 import Sidebar from "./components/layout/Sidebar";
 import Dashboard from "./features/dashboard/Dashboard";
@@ -78,11 +79,13 @@ const AppContent = () => {
 function App() {
   return (
     <AuthProvider>
-      <InsightProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </InsightProvider>
+      <ProfileProvider>
+        <InsightProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </InsightProvider>
+      </ProfileProvider>
     </AuthProvider>
   );
 }
