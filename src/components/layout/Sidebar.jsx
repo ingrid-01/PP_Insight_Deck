@@ -1,9 +1,13 @@
 import React, { useMemo } from "react";
 import { Filter, PieChart } from "lucide-react";
 import { useInsights } from "../../context/InsightContext";
+import { useProfile } from "../../context/ProfileContext";
+import { translations } from "../../lib/translations";
 
 const Sidebar = () => {
   const { insights, filter, setFilter } = useInsights();
+  const { lang } = useProfile();
+  const t = translations[lang]?.sidebar || translations.en.sidebar;
 
   // Calculate Stats dynamically
   const stats = useMemo(() => {
@@ -37,43 +41,43 @@ const Sidebar = () => {
   const categories = [
     {
       id: "nonfiction",
-      label: "Non-Fiction",
+      label: t.labels.nonfiction,
       color: "bg-accent-nonfiction",
       text: "text-accent-nonfiction",
     },
     {
       id: "news",
-      label: "News",
+      label: t.labels.news,
       color: "bg-accent-news",
       text: "text-accent-news",
     },
     {
       id: "movie",
-      label: "Movie",
+      label: t.labels.movie,
       color: "bg-accent-movie",
       text: "text-accent-movie",
     },
     {
       id: "media",
-      label: "Media",
+      label: t.labels.media,
       color: "bg-accent-media",
       text: "text-accent-media",
     },
     {
       id: "art",
-      label: "Art",
+      label: t.labels.art,
       color: "bg-accent-art",
       text: "text-accent-art",
     },
     {
       id: "fiction",
-      label: "Fiction",
+      label: t.labels.fiction,
       color: "bg-accent-fiction",
       text: "text-text-muted",
     },
     {
       id: "others",
-      label: "Others",
+      label: t.labels.others,
       color: "bg-text-muted",
       text: "text-text-muted",
     },
@@ -99,7 +103,7 @@ const Sidebar = () => {
       {/* Knowledge Map Section */}
       <section className="bg-white rounded-3xl p-6 border border-border shadow-sm dark:bg-gray-800 dark:border-gray-700">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="font-black text-lg dark:text-white">Knowledge Map</h2>
+          <h2 className="font-black text-lg dark:text-white">{t.myMap}</h2>
           <PieChart className="text-text-muted w-5 h-5 cursor-pointer hover:text-primary" />
         </div>
 
@@ -138,7 +142,7 @@ const Sidebar = () => {
               {currentMonthCount}
             </span>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider dark:text-gray-500">
-              This Month
+              {t.thisMonth}
             </span>
           </div>
           <div className="text-center">
@@ -146,7 +150,7 @@ const Sidebar = () => {
               0
             </span>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider dark:text-gray-500">
-              Hub
+              {t.hub}
             </span>
           </div>
           <div className="text-center">
@@ -154,7 +158,7 @@ const Sidebar = () => {
               {insights.length}
             </span>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider dark:text-gray-500">
-              Total
+              {t.total}
             </span>
           </div>
         </div>
@@ -162,9 +166,9 @@ const Sidebar = () => {
 
       {/* Filters Section */}
       <section>
-        <h3 className="font-bold text-sm text-text-sub mb-4 uppercase tracking-wider flex items-center gap-2 dark:text-gray-400">
+        <h3 className="font-bold text-sm text-text-sub mb-4 flex items-center gap-2 dark:text-gray-400">
           <Filter className="w-4 h-4" />
-          Filters
+          Filter
         </h3>
         <div className="flex flex-wrap gap-2">
           <button
